@@ -1,0 +1,31 @@
+---
+layout: default
+---
+<article class="page-shell post-shell">
+  <div class="container narrow">
+    <div class="page-heading">
+      <p class="eyebrow">blog</p>
+      <h1>{{ page.title }}</h1>
+      <p class="meta-line">
+        <span>{{ page.date | date: "%d/%m/%Y" }}</span>
+        {% if page.categories and page.categories.size > 0 %}
+          <span>·</span>
+          <span>{{ page.categories | join: " · " }}</span>
+        {% endif %}
+      </p>
+      {% if page.description %}<p class="lead">{{ page.description }}</p>{% endif %}
+    </div>
+
+    {% if page.tags and page.tags.size > 0 %}
+      <div class="chip-row">
+        {% for tag in page.tags %}
+          <span class="chip">#{{ tag }}</span>
+        {% endfor %}
+      </div>
+    {% endif %}
+
+    <div class="content prose">
+      {{ content }}
+    </div>
+  </div>
+</article>

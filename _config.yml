@@ -1,0 +1,67 @@
+title: fjcanogra
+author: Fco. Javier Cano Granado
+email: contacto@tudominio.es
+description: >-
+  Portfolio docente y técnico de Fco. Javier Cano Granado: Formación Profesional de Informática,
+  módulos, talleres, artículos y materiales propios.
+lang: es
+timezone: Europe/Madrid
+url: "https://fjcanogra.es"
+baseurl: ""
+markdown: kramdown
+highlighter: rouge
+permalink: /blog/:year/:month/:day/:title/
+show_excerpts: true
+
+social:
+  linkedin: "https://www.linkedin.com/in/fjcanogra/"
+  github: "https://github.com/fjcanogra"
+  buymeacoffee: "https://buymeacoffee.com/fjcanogra"
+  moodle: "https://campus.tudominio.es"
+
+collections:
+  modules:
+    output: true
+    permalink: /modulos/:name/
+    sort_by: order
+  workshops:
+    output: true
+    permalink: /talleres/:name/
+    sort_by: date
+
+defaults:
+  - scope:
+      path: ""
+    values:
+      layout: page
+  - scope:
+      path: ""
+      type: posts
+    values:
+      layout: post
+  - scope:
+      path: ""
+      type: modules
+    values:
+      layout: module
+  - scope:
+      path: ""
+      type: workshops
+    values:
+      layout: workshop
+
+plugins:
+  - jekyll-feed
+  - jekyll-seo-tag
+  - jekyll-sitemap
+
+sass:
+  style: compressed
+
+exclude:
+  - README.md
+  - DEPLOY_GUIDE.md
+  - CONTENT_WORKFLOW.md
+  - .gitignore
+  - Gemfile
+  - Gemfile.lock

@@ -1,0 +1,31 @@
+---
+layout: default
+---
+<article class="page-shell">
+  <div class="container narrow">
+    <div class="page-heading">
+      <p class="eyebrow">módulo</p>
+      <h1>{{ page.title }}</h1>
+      <p class="lead">{{ page.summary }}</p>
+    </div>
+
+    <div class="meta-grid">
+      <div class="meta-card"><strong>Ciclo</strong><span>{{ page.cycle }}</span></div>
+      <div class="meta-card"><strong>Nivel</strong><span>{{ page.level }}</span></div>
+      <div class="meta-card"><strong>Modalidad</strong><span>{{ page.mode }}</span></div>
+      <div class="meta-card"><strong>Estado</strong><span>{{ page.status }}</span></div>
+    </div>
+
+    {% if page.tech %}
+    <div class="chip-row">
+      {% for item in page.tech %}<span class="chip">{{ item }}</span>{% endfor %}
+    </div>
+    {% endif %}
+
+    <div class="content prose">
+      {{ content }}
+    </div>
+
+    <p><a class="button ghost" href="{{ '/modulos/' | relative_url }}">← Volver a módulos</a></p>
+  </div>
+</article>
