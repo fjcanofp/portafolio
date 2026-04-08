@@ -678,3 +678,85 @@ hr.terminal {
     flex-wrap: wrap;
   }
 }
+
+/* =========================
+   ABOUT
+========================= */
+
+.about-page {
+  display: grid;
+  gap: 1.5rem;
+}
+
+.about-hero {
+  display: grid;
+  grid-template-columns: 220px 1fr;
+  gap: 1.5rem;
+  align-items: center;
+  padding: 1.25rem;
+}
+
+.about-photo-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.about-photo {
+  width: 200px;
+  height: 200px;
+  object-fit: cover;
+  border-radius: 20px;
+  border: 1px solid var(--line);
+  box-shadow: var(--shadow);
+}
+
+.about-intro h1 {
+  margin: 0.25rem 0 0.75rem;
+}
+
+.about-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.9rem;
+  padding-left: 0;
+  list-style: none;
+}
+
+.about-links li {
+  margin: 0;
+}
+
+.lang-block.lang-en {
+  display: none;
+}
+
+html[lang="en"] .lang-block.lang-es {
+  display: none;
+}
+
+html[lang="en"] .lang-block.lang-en {
+  display: block;
+}
+
+html[lang="es"] .lang-block.lang-es,
+html:not([lang]) .lang-block.lang-es {
+  display: block;
+}
+
+html[lang="es"] .lang-block.lang-en,
+html:not([lang]) .lang-block.lang-en {
+  display: none;
+}
+
+@media (max-width: 920px) {
+  .about-hero {
+    grid-template-columns: 1fr;
+    text-align: left;
+  }
+
+  .about-photo {
+    width: 160px;
+    height: 160px;
+  }
+}
