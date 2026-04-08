@@ -17,7 +17,7 @@ Este starter está pensado para un portfolio **serio, ligero y barato de mantene
 - `blog.md` → listado de artículos
 - `contact.md` → contacto
 - `_modules/` → fichas de módulos
-- `_workshops/` → fichas de cursos o talleres
+- `_workshops/` → fichas de cursos o talleres  
 - `_posts/` → artículos del blog
 - `_templates/` → plantillas rápidas para duplicar
 
