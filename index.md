@@ -108,10 +108,3 @@ description: Portfolio docente y técnico de Fco. Javier Cano Granado.
   </div>
 </section>
 
-<section class="section">
-  <div class="container narrow">
-    <div class="notice">
-      <strong>Licencias claras desde el principio.</strong> El contenido publicado puede ofrecerse con <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a> para permitir compartir y adaptar sin uso comercial y manteniendo la misma licencia. El código y diseño del sitio pueden mantenerse con todos los derechos reservados para evitar copias directas del portfolio.
-    </div>
-  </div>
-</section>
