@@ -760,3 +760,30 @@ html:not([lang]) .lang-block.lang-en {
     height: 160px;
   }
 }
+/*efecto typing*/
+.brand-prefix,
+.brand-suffix {
+  color: var(--text);
+}
+
+.brand-typewrite {
+  color: var(--text);
+  position: relative;
+}
+
+.brand-typewrite::after {
+  content: "";
+  display: inline-block;
+  width: 0.55ch;
+  height: 1em;
+  margin-left: 0.12rem;
+  vertical-align: -0.1em;
+  background: var(--accent);
+  animation: brand-caret 1s steps(1) infinite;
+}
+
+@keyframes brand-caret {
+  50% {
+    opacity: 0;
+  }
+}
