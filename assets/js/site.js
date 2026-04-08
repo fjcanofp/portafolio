@@ -82,3 +82,24 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 });
+
+//añado el efecto typping
+  const brandTypewrite = document.getElementById("brand-typewrite");
+
+  if (brandTypewrite) {
+    const text = brandTypewrite.dataset.text || brandTypewrite.textContent || "";
+    brandTypewrite.textContent = "";
+
+    let i = 0;
+    const speed = 75;
+
+    function typeBrand() {
+      if (i < text.length) {
+        brandTypewrite.textContent += text.charAt(i);
+        i += 1;
+        setTimeout(typeBrand, speed);
+      }
+    }
+
+    typeBrand();
+  }
