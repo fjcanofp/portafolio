@@ -1,12 +1,39 @@
 <header class="site-header">
   <div class="container topbar">
     <a class="brand" href="{{ '/' | relative_url }}">&gt; {{ site.title }} <span>~ $</span></a>
-    <nav class="site-nav">
-      <a href="{{ '/modulos/' | relative_url }}">Módulos</a>
-      <a href="{{ '/talleres/' | relative_url }}">Talleres</a>
-      <a href="{{ '/blog/' | relative_url }}">Blog</a>
-      <a href="{{ '/sobre-mi/' | relative_url }}">Sobre mí</a>
-      <a href="{{ '/contacto/' | relative_url }}">Contacto</a>
-    </nav>
+
+    <div class="header-right">
+      <nav class="site-nav">
+        <a href="{{ '/modules/' | relative_url }}" data-i18n="nav_teaching">Docencia</a>
+        <a href="{{ '/blog/' | relative_url }}" data-i18n="nav_blog">Blog</a>
+        <a href="{{ '/about/' | relative_url }}" data-i18n="nav_about">Sobre mí</a>
+      </nav>
+
+      <div class="header-tools">
+        <button id="theme-toggle" class="theme-toggle" type="button" aria-label="Cambiar tema" title="Cambiar tema">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M9 21h6v-1H9v1Zm3-19a5 5 0 0 0-3.2 8.85c.79.66 1.2 1.37 1.2 2.15V14h4v-1c0-.78.41-1.49 1.2-2.15A5 5 0 0 0 12 2Zm0 2a3 3 0 0 1 1.92 5.31A4.73 4.73 0 0 0 12.2 12h-.4a4.73 4.73 0 0 0-1.72-2.69A3 3 0 0 1 12 4Zm-1 13h2v1h-2v-1Z" fill="currentColor"/>
+          </svg>
+        </button>
+
+        <div class="lang-switch">
+          <button class="lang-current" type="button" aria-label="Seleccionar idioma" title="Seleccionar idioma">
+            <span class="lang-pill">ES</span>
+            <span class="lang-caret">▾</span>
+          </button>
+
+          <div class="lang-menu">
+            <button type="button" class="lang-option is-active" data-lang="es">
+              <span class="flag">🇪🇸</span>
+              <span>Español</span>
+            </button>
+            <button type="button" class="lang-option" data-lang="en">
+              <span class="flag">🇬🇧</span>
+              <span>English</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </header>
