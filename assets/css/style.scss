@@ -144,8 +144,17 @@ hr.terminal { border: 0; border-top: 1px dashed var(--line); margin: 1.25rem 0; 
   border-radius: 14px; color: var(--muted);
 }
 @media (max-width: 920px) {
-  .hero-grid, .footer-grid, .card-grid, .stat-grid, .meta-grid { grid-template-columns: 1fr; }
-  .site-nav { display:none; }
+  .hero-grid,
+  .card-grid,
+  .stat-grid,
+  .meta-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .site-nav {
+    display: none;
+  }
+
   .footer-bar {
     grid-template-columns: 1fr;
     justify-items: start;
