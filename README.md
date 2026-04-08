@@ -21,9 +21,9 @@ Este starter está pensado para un portfolio **serio, ligero y barato de mantene
 - `_posts/` → artículos del blog
 - `_templates/` → plantillas rápidas para duplicar
 
-## Licencia sugerida para tu caso
+## Licencia sugerida para tu caso 
 
 - **Contenido** del sitio: CC BY-NC-SA 4.0
-- **Código y diseño** del sitio: todos los derechos reservados, salvo que decidas abrirlo más adelante
+- **Código y diseño** del sitio: todos los derechos reservados,  salvo que decidas abrirlo más adelante
 
 Lee `DEPLOY_GUIDE.md` y `CONTENT_WORKFLOW.md`.
