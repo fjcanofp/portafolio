@@ -1,15 +1,11 @@
 <footer class="site-footer">
-  <div class="container footer-line">
-    <div class="footer-left">
+  <div class="container footer-line footer-line-simple">
+    <div class="footer-copy">
       <span>© {{ "now" | date: "%Y" }} {{ site.author }}.</span>
       <span data-i18n="footer_rights">All rights reserved.</span>
     </div>
 
-    <div class="footer-center">
-      <a href="{{ '/sobre-mi/' | relative_url }}" class="footer-about" data-i18n="nav_about">Sobre mí</a>
-    </div>
-
-    <div class="footer-right">
+    <div class="footer-license">
       <span data-i18n="footer_license_prefix">Contenidos del sitio:</span>
       <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank" rel="noopener noreferrer">CC BY-NC-SA 4.0</a>
       <span data-i18n="footer_license_suffix">salvo indicación expresa.</span>
