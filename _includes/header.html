@@ -1,6 +1,10 @@
 <header class="site-header">
   <div class="container topbar">
-    <a class="brand" href="{{ '/' | relative_url }}">&gt; {{ site.title }} <span>~ $</span></a>
+    <a class="brand" href="{{ '/' | relative_url }}">
+      <span class="brand-prefix">&gt;</span>
+      <span class="brand-typewrite" id="brand-typewrite" data-text="{{ site.title }}">fjcanogra</span>
+      <span class="brand-suffix">~ $</span>
+    </a>
 
     <div class="header-right">
       <nav class="site-nav">
