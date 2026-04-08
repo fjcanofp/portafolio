@@ -21,7 +21,7 @@ description: Portfolio docente y técnico de Fco. Javier Cano Granado.
       </p>
 
       <div class="button-row">
-        <a class="button" href="{{ '/modulos/' | relative_url }}" data-i18n="cta_teaching">Docencia</a>
+        <a class="button" href="{{ '/modules/' | relative_url }}" data-i18n="cta_teaching">Docencia</a>
         <a class="button ghost" href="{{ '/blog/' | relative_url }}" data-i18n="cta_blog">Entrar al blog</a>
       </div>
     </div>
