@@ -1,67 +1,76 @@
 ---
+layout: page
 title: Sobre mí
 permalink: /sobre-mi/
-eyebrow: about
-intro: Una presentación más sólida, útil y profesional que la típica bio de dos líneas.
+description: Sobre Fco. Javier Cano Granado.
 ---
-## Quién soy
 
-Soy **Fco. Javier Cano Granado**, profesor de Informática de Formación Profesional y creador de materiales docentes con foco práctico. Trabajo especialmente en contenidos de **programación, bases de datos, redes, sistemas y herramientas aplicadas al aula**, procurando que cada recurso sirva de verdad para aprender, practicar y evaluar.
+<section class="about-page">
+  <div class="about-hero terminal-card">
+    <div class="about-photo-wrap">
+      <img class="about-photo" src="{{ '/assets/img/profile/fjcanogra.jpg' | relative_url }}" alt="Fotografía de Fco. Javier Cano Granado">
+    </div>
 
-## Qué me diferencia
+    <div class="about-intro">
+      <div class="eyebrow">about</div>
 
-No me interesa publicar por publicar. Me interesa que un material:
+      <div class="lang-block lang-es">
+        <h1>Sobre mí</h1>
+        <p class="lead">
+          Soy <strong>Fco. Javier Cano Granado</strong>, profesor de Informática de Formación Profesional. Trabajo entre el aula, la documentación técnica y el diseño de materiales que sean claros, útiles y reutilizables.
+        </p>
+      </div>
 
-- esté bien estructurado;
-- tenga utilidad real para alumnado o profesorado;
-- conecte teoría, práctica y documentación;
-- y mantenga un estándar visual y técnico serio.
+      <div class="lang-block lang-en">
+        <h1>About me</h1>
+        <p class="lead">
+          I am <strong>Fco. Javier Cano Granado</strong>, a Vocational Education Computer Science teacher. My work sits between the classroom, technical documentation and the design of clear, useful and reusable teaching materials.
+        </p>
+      </div>
+    </div>
+  </div>
 
-## Qué vas a ver en este portfolio
+  <div class="about-content prose">
+    <div class="lang-block lang-es">
+      <h2>Qué hago</h2>
+      <p>
+        Mi foco principal está en la docencia de Informática en Formación Profesional, especialmente en programación, bases de datos, redes, sistemas y herramientas aplicadas al aula.
+      </p>
+      <p>
+        Me interesa convertir contenidos técnicos complejos en materiales bien estructurados, prácticos y visualmente cuidados, útiles tanto para el alumnado como para profesorado o formación externa.
+      </p>
 
-### 1. Módulos y experiencia docente
+      <h2>Cómo entiendo este portfolio</h2>
+      <p>
+        Esta web no pretende ser un currículum largo. Pretende mostrar con claridad cómo trabajo: qué enseño, cómo diseño materiales, qué temas desarrollo y qué tipo de criterio técnico y docente aplico en cada proyecto.
+      </p>
 
-Páginas de módulos donde se vea rápido:
+      <h2>On the web</h2>
+      <ul class="about-links">
+        <li><a href="{{ site.social.linkedin }}" target="_blank" rel="noopener noreferrer">LinkedIn</a></li>
+        <li><a href="{{ site.social.github }}" target="_blank" rel="noopener noreferrer">GitHub</a></li>
+      </ul>
+    </div>
 
-- el ciclo y nivel;
-- la modalidad;
-- las tecnologías o herramientas empleadas;
-- el enfoque que doy en clase;
-- y, cuando proceda, enlaces a recursos públicos o campus privado.
+    <div class="lang-block lang-en">
+      <h2>What I do</h2>
+      <p>
+        My main focus is teaching Computer Science in Vocational Education, especially programming, databases, networks, systems and classroom-oriented technical tools.
+      </p>
+      <p>
+        I am interested in turning complex technical content into structured, practical and visually polished materials that are useful both for students and for teachers or external training.
+      </p>
 
-### 2. Blog técnico-docente
+      <h2>How I see this portfolio</h2>
+      <p>
+        This site is not meant to be a long résumé. It is meant to show clearly how I work: what I teach, how I design materials, which topics I develop and what kind of technical and teaching criteria I apply in each project.
+      </p>
 
-Artículos breves y medianos sobre:
-
-- decisiones metodológicas;
-- problemas técnicos que aparecen en el aula;
-- apuntes sobre herramientas y buenas prácticas;
-- reflexiones sobre materiales, licencias y publicación.
-
-### 3. Talleres, cursos y formación externa
-
-Una parte más orientada a mostrar cursos, talleres o formaciones que impartes o diseñas, útil tanto para imagen profesional como para futuras colaboraciones.
-
-## Idea de presentación todavía mejor
-
-En lugar de una bio genérica, te conviene presentarte con esta estructura:
-
-> Profesor de Informática de FP especializado en convertir contenidos técnicos complejos en materiales claros, prácticos y reutilizables. Trabajo entre el aula, la documentación y el desarrollo de recursos, con especial atención a programación, bases de datos, redes y formación aplicada.
-
-Ese texto funciona mejor que una simple lista de cargos porque transmite **posición**, **criterio** y **valor**.
-
-## Qué no conviene poner aquí
-
-- textos demasiado grandilocuentes;
-- frases vacías como “apasionado de la tecnología” sin demostrar nada;
-- logotipos o métricas inventadas;
-- botones o apartados que aún no hacen nada.
-
-## En qué puede crecer esta web
-
-Más adelante podrías añadir:
-
-- un campus bajo subdominio;
-- una sección de recursos premium o privados;
-- descarga de materiales públicos;
-- una página de servicios: tutorías, revisión de prácticas o formación.
+      <h2>On the web</h2>
+      <ul class="about-links">
+        <li><a href="{{ site.social.linkedin }}" target="_blank" rel="noopener noreferrer">LinkedIn</a></li>
+        <li><a href="{{ site.social.github }}" target="_blank" rel="noopener noreferrer">GitHub</a></li>
+      </ul>
+    </div>
+  </div>
+</section>
