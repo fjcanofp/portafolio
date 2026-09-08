@@ -19,7 +19,29 @@ a los módulos y contenidos publicados.
   <strong>Grado Superior</strong>
   <span>CFGS</span>
 </summary>
+<div class="carousel" data-carousel>
 
+  <div class="carousel-controls">
+
+    <button
+      type="button"
+      class="carousel-button"
+      data-carousel-prev
+      aria-label="Ver ciclos anteriores"
+    >
+      ←
+    </button>
+
+    <button
+      type="button"
+      class="carousel-button"
+      data-carousel-next
+      aria-label="Ver más ciclos"
+    >
+      →
+    </button>
+
+  </div>
 <div class="cycle-grid">
 
 {% for cycle in cfgs %}
@@ -47,7 +69,7 @@ a los módulos y contenidos publicados.
 {% endfor %}
 
 </div>
-
+</div>
 </details>
 
 
@@ -57,6 +79,30 @@ a los módulos y contenidos publicados.
   <strong>Grado Medio</strong>
   <span>CFGM</span>
 </summary>
+
+<div class="carousel" data-carousel>
+
+  <div class="carousel-controls">
+
+    <button
+      type="button"
+      class="carousel-button"
+      data-carousel-prev
+      aria-label="Ver ciclos anteriores"
+    >
+      ←
+    </button>
+
+    <button
+      type="button"
+      class="carousel-button"
+      data-carousel-next
+      aria-label="Ver más ciclos"
+    >
+      →
+    </button>
+
+  </div>
 
 <div class="cycle-grid">
 
@@ -85,5 +131,5 @@ a los módulos y contenidos publicados.
 {% endfor %}
 
 </div>
-
+</div>
 </details>

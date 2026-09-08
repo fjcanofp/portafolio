@@ -515,3 +515,178 @@
   }
 
 }
+
+.section-tree a.is-current-section {
+  color: var(--accent);
+  font-weight: 600;
+
+  background:
+    rgba(13, 242, 70, .06);
+}
+
+.carousel {
+  position: relative;
+}
+
+.carousel-controls {
+  display: flex;
+  justify-content: flex-end;
+
+  gap: .45rem;
+
+  margin-bottom: .5rem;
+}
+
+.carousel-button {
+  width: 38px;
+  height: 38px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  border: 1px solid var(--line);
+  border-radius: 50%;
+
+  background: var(--panel);
+  color: var(--muted);
+
+  cursor: pointer;
+}
+
+.carousel-button:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.carousel-button:disabled {
+  opacity: .3;
+  cursor: default;
+}
+
+.blog-list {
+  display: grid;
+  gap: 1rem;
+}
+
+.post-card {
+  padding: 1.4rem;
+
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+
+  background: var(--panel);
+}
+
+.post-card:hover {
+  border-color:
+    rgba(88, 166, 255, .55);
+}
+
+.post-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .35rem;
+
+  color: var(--muted);
+
+  font-family:
+    "IBM Plex Mono",
+    monospace;
+
+  font-size: .8rem;
+}
+
+.post-card-title {
+  margin:
+    .75rem 0 .55rem;
+}
+
+.post-card-title a {
+  color: var(--accent-2);
+}
+
+.post-card-excerpt {
+  color: var(--text);
+}
+
+.post-tags {
+  display: flex;
+  flex-wrap: wrap;
+
+  gap: .45rem;
+
+  margin-top: .8rem;
+}
+
+.post-read-more {
+  display: inline-flex;
+
+  margin-top: 1rem;
+
+  font-weight: 600;
+}
+
+.error-page {
+  max-width: 720px;
+
+  margin:
+    6rem auto;
+
+  padding: 2rem;
+}
+
+.error-page h1 {
+  color: var(--accent);
+
+  font-family:
+    "IBM Plex Mono",
+    monospace;
+
+  font-size:
+    clamp(3rem, 10vw, 7rem);
+}
+
+.error-command {
+  color: var(--accent-2);
+
+  font-family:
+    "IBM Plex Mono",
+    monospace;
+}
+
+.callout,
+.activity {
+  margin:
+    1.25rem 0;
+
+  padding: 1rem 1.1rem;
+
+  border-radius: 12px;
+
+  border:
+    1px solid var(--line);
+
+  background:
+    rgba(255,255,255,.025);
+}
+
+.callout-note {
+  border-left:
+    4px solid var(--accent-2);
+}
+
+.callout-warning {
+  border-left:
+    4px solid #f5a623;
+}
+
+.activity-lab {
+  border-left:
+    4px solid #9b7cff;
+}
+
+.activity-practice {
+  border-left:
+    4px solid var(--accent);
+}

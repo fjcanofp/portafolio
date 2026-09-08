@@ -137,6 +137,25 @@ html[data-theme="light"] .site-header {
   color: var(--text);
 }
 
+.site-nav a.is-active {
+  color: var(--text);
+  position: relative;
+}
+
+.site-nav a.is-active::after {
+  content: "";
+
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -.45rem;
+
+  height: 2px;
+
+  background: var(--accent);
+  border-radius: 999px;
+}
+
 .header-tools {
   display: flex;
   align-items: center;
@@ -860,4 +879,75 @@ html:not([lang]) .lang-block.lang-en {
   50% {
     opacity: 0;
   }
+}
+
+
+@media print {
+
+  .site-header,
+  .site-footer,
+  .doc-sidebar,
+  .carousel-controls,
+  .copy-code-button,
+  .pagination,
+  .header-tools {
+    display: none !important;
+  }
+
+
+  body {
+    background: #fff !important;
+    color: #000 !important;
+
+    font-size: 11pt;
+  }
+
+
+  .container,
+  .container.narrow,
+  .doc-content {
+    max-width: none !important;
+
+    width: 100% !important;
+
+    margin: 0 !important;
+
+    padding: 0 !important;
+  }
+
+
+  .doc-layout {
+    display: block !important;
+  }
+
+
+  a {
+    color: #000 !important;
+
+    text-decoration:
+      underline;
+  }
+
+
+  pre,
+  code {
+    white-space:
+      pre-wrap !important;
+  }
+
+
+  h1,
+  h2,
+  h3 {
+    page-break-after:
+      avoid;
+  }
+
+
+  .callout,
+  .activity {
+    break-inside:
+      avoid;
+  }
+
 }

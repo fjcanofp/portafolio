@@ -1,4 +1,227 @@
 document.addEventListener("DOMContentLoaded", () => {
+  document.querySelectorAll("[data-carousel]").forEach((carousel) => {
+
+  const track = carousel.querySelector("[data-carousel-track]");
+  const prev = carousel.querySelector("[data-carousel-prev]");
+  const next = carousel.querySelector("[data-carousel-next]");
+
+  if (!track || !prev || !next) {
+    return;
+  }
+
+  const updateButtons = () => {
+
+    const maxScroll =
+      track.scrollWidth - track.clientWidth;
+
+    prev.disabled = track.scrollLeft <= 5;
+
+    next.disabled =
+      track.scrollLeft >= maxScroll - 5;
+  };
+
+
+  prev.addEventListener("click", () => {
+
+    track.scrollBy({
+      left: -(track.clientWidth * .85),
+      behavior: "smooth"
+    });
+
+  });
+
+
+  next.addEventListener("click", () => {
+
+    track.scrollBy({
+      left: track.clientWidth * .85,
+      behavior: "smooth"
+    });
+
+  });
+
+
+  track.addEventListener(
+    "scroll",
+    updateButtons,
+    { passive: true }
+  );
+
+
+  window.addEventListener(
+    "resize",
+    updateButtons
+  );
+
+
+  updateButtons();
+
+});
+
+document
+  .querySelectorAll("[data-scrollspy]")
+  .forEach((navigation) => {
+
+    const links =
+      [...navigation.querySelectorAll('a[href^="#"]')];
+
+    const sections = links
+      .map((link) => {
+
+        const id =
+          link.getAttribute("href").substring(1);
+
+        return document.getElementById(id);
+
+      })
+      .filter(Boolean);
+
+
+    if (!sections.length) {
+      return;
+    }
+
+
+    const activate = (id) => {
+
+      links.forEach((link) => {
+
+        const active =
+          link.getAttribute("href") === `#${id}`;
+
+        link.classList.toggle(
+          "is-current-section",
+          active
+        );
+
+      });
+
+    };
+
+
+    const observer =
+      new IntersectionObserver(
+
+        (entries) => {
+
+          const visible = entries
+            .filter(entry => entry.isIntersecting)
+            .sort(
+              (a, b) =>
+                a.boundingClientRect.top -
+                b.boundingClientRect.top
+            );
+
+          if (visible.length) {
+            activate(visible[0].target.id);
+          }
+
+        },
+
+        {
+          rootMargin:
+            "-20% 0px -65% 0px"
+        }
+
+      );
+
+
+    sections.forEach(
+      section => observer.observe(section)
+    );
+
+  });
+  const searchInput =
+  document.getElementById("site-search");
+
+const searchResults =
+  document.getElementById("search-results");
+
+
+if (searchInput && searchResults) {
+
+  let searchIndex = [];
+
+
+  fetch("/search.json")
+    .then(response => response.json())
+    .then(data => {
+
+      searchIndex = data;
+
+    });
+
+
+  const normalize = (text) =>
+
+    (text || "")
+      .toLowerCase()
+      .normalize("NFD")
+      .replace(/\p{Diacritic}/gu, "");
+
+
+  searchInput.addEventListener(
+    "input",
+    () => {
+
+      const query =
+        normalize(searchInput.value.trim());
+
+
+      if (query.length < 2) {
+
+        searchResults.innerHTML = "";
+
+        return;
+
+      }
+
+
+      const matches =
+        searchIndex
+          .filter(item => {
+
+            const haystack =
+              normalize(
+                `${item.title}
+                 ${item.description}
+                 ${item.content}`
+              );
+
+            return haystack.includes(query);
+
+          })
+          .slice(0, 20);
+
+
+      searchResults.innerHTML =
+        matches.length
+          ? matches
+              .map(item => `
+
+                <article class="search-result">
+
+                  <h2>
+                    <a href="${item.url}">
+                      ${item.title}
+                    </a>
+                  </h2>
+
+                  <p>
+                    ${item.description || ""}
+                  </p>
+
+                </article>
+
+              `)
+              .join("")
+
+          : `<p>No se encontraron resultados.</p>`;
+
+    });
+
+}
+
   const root = document.documentElement;
   const themeToggle = document.getElementById("theme-toggle");
 

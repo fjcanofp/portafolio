@@ -6,10 +6,31 @@
     </a>
 
     <div class="header-right">
-      <nav class="site-nav">
-        <a href="{{ '/docencia/' | relative_url }}" data-i18n="nav_teaching">Docencia</a>
-        <a href="{{ '/blog/' | relative_url }}" data-i18n="nav_blog">Blog</a>
-        <a href="{{ '/sobre-mi/' | relative_url }}" data-i18n="nav_about">Sobre mí</a>
+      <nav class="site-nav" aria-label="Navegación principal">
+        <a
+          href="{{ '/docencia/' | relative_url }}"
+          class="{% if page.url contains '/docencia/' %}is-active{% endif %}"
+          {% if page.url contains '/docencia/' %}aria-current="page"{% endif %}
+        >
+          Docencia
+        </a>
+
+        <a
+          href="{{ '/blog/' | relative_url }}"
+          class="{% if page.url contains '/blog/' %}is-active{% endif %}"
+          {% if page.url contains '/blog/' %}aria-current="page"{% endif %}
+        >
+          Blog
+        </a>
+
+        <a
+          href="{{ '/sobre-mi/' | relative_url }}"
+          class="{% if page.url == '/sobre-mi/' %}is-active{% endif %}"
+          {% if page.url == '/sobre-mi/' %}aria-current="page"{% endif %}
+        >
+          Sobre mí
+        </a>
+
       </nav>
 
       <div class="header-tools">
