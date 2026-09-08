@@ -1,7 +1,6 @@
 ---
 title: Docencia
 permalink: /docencia/
-eyebrow: docencia
 intro: Recursos, materiales y documentación de Formación Profesional de Informática.
 ---
 
@@ -52,7 +51,7 @@ a los módulos y contenidos publicados.
 </details>
 
 
-<details class="level-selector">
+<details class="level-selector" open>
 
 <summary>
   <strong>Grado Medio</strong>
