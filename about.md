@@ -64,7 +64,7 @@ description: Sobre Fco. Javier Cano Granado.
             <span class="sr-only">GitHub</span>
           </a>
 
-          <a class="about-social" href="mailto:fjcanofp@gmail.com" aria-label="Correo electrónico" title="Correo electrónico">
+          <a class="about-social" href="mailto:{{ site.email }}"  aria-label="Correo electrónico"  title="{{ site.email }}">
             <svg viewBox="0 0 24 24" aria-hidden="true">
               <path d="M4 6.75A2.75 2.75 0 0 1 6.75 4h10.5A2.75 2.75 0 0 1 20 6.75v10.5A2.75 2.75 0 0 1 17.25 20H6.75A2.75 2.75 0 0 1 4 17.25V6.75Zm2.2-.25 5.8 4.83 5.8-4.83H6.2Zm11.3 2.04-4.86 4.05a1 1 0 0 1-1.28 0L6.5 8.54v8.71c0 .14.11.25.25.25h10.5c.14 0 .25-.11.25-.25V8.54Z" fill="currentColor"/>
             </svg>
@@ -103,7 +103,7 @@ description: Sobre Fco. Javier Cano Granado.
             <span class="sr-only">GitHub</span>
           </a>
 
-          <a class="about-social" href="mailto:fjcanofp@gmail.com" aria-label="Email" title="Email">
+          <a  class="about-social"   href="mailto:{{ site.email }}"   aria-label="Correo electrónico"  title="{{ site.email }}">
             <svg viewBox="0 0 24 24" aria-hidden="true">
               <path d="M4 6.75A2.75 2.75 0 0 1 6.75 4h10.5A2.75 2.75 0 0 1 20 6.75v10.5A2.75 2.75 0 0 1 17.25 20H6.75A2.75 2.75 0 0 1 4 17.25V6.75Zm2.2-.25 5.8 4.83 5.8-4.83H6.2Zm11.3 2.04-4.86 4.05a1 1 0 0 1-1.28 0L6.5 8.54v8.71c0 .14.11.25.25.25h10.5c.14 0 .25-.11.25-.25V8.54Z" fill="currentColor"/>
             </svg>
