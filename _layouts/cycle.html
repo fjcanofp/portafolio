@@ -99,7 +99,7 @@ layout: default
       type="button"
       class="carousel-button"
       data-carousel-prev
-      aria-label="Ver ciclos anteriores"
+      aria-label="Ver módulos anteriores"
     >
       ←
     </button>
@@ -108,7 +108,7 @@ layout: default
       type="button"
       class="carousel-button"
       data-carousel-next
-      aria-label="Ver más ciclos"
+      aria-label="Ver más módulos"
     >
       →
     </button>
@@ -116,41 +116,40 @@ layout: default
   </div>
 
 
-  <div class="cycle-grid" data-carousel-track>
-
-    <!-- aquí conservas tu for cycle -->
-
-  </div>
-
-</div>
-  <div class="module-grid">
+  <div
+    class="module-grid"
+    data-carousel-track
+  >
 
   {% for module in cycle_modules %}
 
-  <a class="module-card"
-     href="{{ module.url | relative_url }}">
+    <a
+      class="module-card"
+      href="{{ module.url | relative_url }}"
+    >
 
-    <span class="cycle-code">
-      {{ module.short_title }}
-    </span>
+      <span class="cycle-code">
+        {{ module.short_title }}
+      </span>
 
-    <h3>
-      {{ module.title }}
-    </h3>
+      <h3>
+        {{ module.title }}
+      </h3>
 
-    <p>
-      {{ module.summary }}
-    </p>
+      <p>
+        {{ module.summary }}
+      </p>
 
-    <strong>
-      Entrar al módulo →
-    </strong>
+      <strong>
+        Entrar al módulo →
+      </strong>
 
-  </a>
+    </a>
 
   {% endfor %}
 
   </div>
+
 </div>
 </main>
 

@@ -978,3 +978,64 @@ html:not([lang]) .lang-block.lang-en {
 .hero-updates-link:hover {
   color: var(--accent);
 }
+
+.updates-list {
+  display: grid;
+
+  gap: .7rem;
+
+  margin-top: 1.5rem;
+}
+
+.update-row {
+  display: grid;
+
+  grid-template-columns:
+    110px minmax(0, 1fr) auto;
+
+  gap: 1rem;
+
+  align-items: center;
+
+  padding: .9rem 1rem;
+
+  border: 1px solid var(--line);
+  border-radius: 12px;
+
+  background: var(--panel);
+
+  color: var(--text);
+}
+
+.update-row:hover {
+  border-color: var(--accent);
+  color: var(--text);
+}
+
+.update-row time {
+  color: var(--muted);
+
+  font-family:
+    "IBM Plex Mono",
+    monospace;
+
+  font-size: .78rem;
+}
+
+.update-row small {
+  color: var(--accent-2);
+
+  font-family:
+    "IBM Plex Mono",
+    monospace;
+}
+
+@media (max-width: 650px) {
+
+  .update-row {
+    grid-template-columns: 1fr;
+
+    gap: .25rem;
+  }
+
+}

@@ -42,7 +42,7 @@ a los módulos y contenidos publicados.
     </button>
 
   </div>
-<div class="cycle-grid">
+<div class="cycle-grid" data-carousel-track>
 
 {% for cycle in cfgs %}
 
@@ -104,7 +104,7 @@ a los módulos y contenidos publicados.
 
   </div>
 
-<div class="cycle-grid">
+<div class="cycle-grid" data-carousel-track>
 
 {% for cycle in cfgm %}
 
