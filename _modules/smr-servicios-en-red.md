@@ -1,23 +1,24 @@
 ---
-title: Servicios en Red · SMR
-order: 3
+title: Servicios en Red
+short_title: SER
+
+module_key: ser
+cycle_key: smr
+
+order: 1
+
 cycle: SMR
 level: Ciclo Formativo de Grado Medio
-mode: Presencial
-status: Público parcial
-summary: Laboratorios, documentación y materiales pensados para alumnado con nivel inicial o intermedio.
+status: Publicación progresiva
+
+summary: Servicios de red mediante documentación accesible, laboratorios y resolución de incidencias.
+
 tech:
-  - Windows Server
-  - Ubuntu Server
-  - redes
-  - resolución de incidencias
+  - Linux
+  - DHCP
+  - DNS
+  - FTP
+  - SSH
+
+permalink: /docencia/smr/ser/
 ---
-## Objetivo
-
-Mostrar que dominas tanto la parte técnica como la adaptación al perfil del alumnado.
-
-## Qué tipo de muestra funciona bien
-
-- una práctica guiada breve;
-- una rúbrica o esquema de evaluación simplificado;
-- una entrada de blog explicando un error típico y cómo lo trabajas en clase.
