@@ -27,6 +27,10 @@ En una web estática, para empezar, evita montar un formulario si no tienes clar
 
 Para una primera versión, **correo + LinkedIn** es la opción más limpia y fiable.
 
-## Monetización suave desde el inicio
+## Puedes escribirme para
 
-Puedes añadir un botón tipo **Invítame a un café** sin forzar nada. Queda mejor como CTA secundario en portada, footer y quizá al final de algunos artículos, no como elemento principal de toda la web.
+- talleres o ponencias;
+- colaboraciones formativas;
+- mentoría;
+- proyectos de desarrollo;
+- revisión de materiales o proyectos técnicos.
