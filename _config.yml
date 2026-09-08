@@ -21,7 +21,8 @@ social:
   linkedin: "https://www.linkedin.com/in/fjcanogra/"
   github: "https://github.com/fjcanofp"
   buymeacoffee: "https://buymeacoffee.com/fjcanogra"
-  support_enabled: true
+
+support_enabled: false
 
 collections:
   cycles:
@@ -63,11 +64,6 @@ defaults:
       type: cycles
     values:
       layout: cycle
-  - scope:
-      path: ""
-      type: modules
-    values:
-      layout: module
   - scope:
       path: ""
       type: units
