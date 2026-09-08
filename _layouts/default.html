@@ -7,6 +7,7 @@
       {{ content }}
     </main>
     {% include footer.html %}
-    <script src="{{ '/assets/js/site.js' | relative_url }}"></script>
+    {% assign asset_version = site.time | date: "%s" %}
+    <script src="{{ '/assets/js/site.js' | relative_url }}?v={{ asset_version }}" ></script>
   </body>
 </html>
