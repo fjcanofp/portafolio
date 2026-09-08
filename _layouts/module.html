@@ -1,31 +1,182 @@
 ---
 layout: default
 ---
+
+{% assign cycle = site.cycles
+   | where: "cycle_key", page.cycle_key
+   | first %}
+
+{% assign cycle_modules = site.modules
+   | where: "cycle_key", page.cycle_key
+   | sort: "order" %}
+
+{% assign module_units = site.units
+   | where: "module_key", page.module_key
+   | sort: "order" %}
+
+
 <article class="page-shell">
-  <div class="container narrow">
-    <div class="page-heading">
-      <p class="eyebrow">módulo</p>
-      <h1>{{ page.title }}</h1>
-      <p class="lead">{{ page.summary }}</p>
-    </div>
 
-    <div class="meta-grid">
-      <div class="meta-card"><strong>Ciclo</strong><span>{{ page.cycle }}</span></div>
-      <div class="meta-card"><strong>Nivel</strong><span>{{ page.level }}</span></div>
-      <div class="meta-card"><strong>Modalidad</strong><span>{{ page.mode }}</span></div>
-      <div class="meta-card"><strong>Estado</strong><span>{{ page.status }}</span></div>
-    </div>
+<div class="container">
 
-    {% if page.tech %}
-    <div class="chip-row">
-      {% for item in page.tech %}<span class="chip">{{ item }}</span>{% endfor %}
-    </div>
-    {% endif %}
+<nav class="breadcrumbs">
 
-    <div class="content prose">
-      {{ content }}
-    </div>
+  <a href="{{ '/docencia/' | relative_url }}">
+    Docencia
+  </a>
 
-    <p><a class="button ghost" href="{{ '/modulos/' | relative_url }}">← Volver a módulos</a></p>
-  </div>
+  <span>/</span>
+
+  <a href="{{ cycle.url | relative_url }}">
+    {{ cycle.code }}
+  </a>
+
+  <span>/</span>
+
+  <span>
+    {{ page.short_title }}
+  </span>
+
+</nav>
+
+
+<div class="doc-layout">
+
+
+<aside class="doc-sidebar">
+
+<span class="sidebar-kicker">
+  {{ cycle.code }}
+</span>
+
+<h2>
+  {{ page.short_title }}
+</h2>
+
+
+<nav class="module-tree">
+
+{% for module in cycle_modules %}
+
+<a
+ href="{{ module.url | relative_url }}"
+ {% if module.module_key == page.module_key %}
+ class="active"
+ {% endif %}
+>
+
+{{ module.short_title }}
+
+</a>
+
+
+{% if module.module_key == page.module_key %}
+
+<div class="unit-tree">
+
+{% for unit in module_units %}
+
+<a href="{{ unit.url | relative_url }}">
+  {{ unit.title }}
+</a>
+
+{% endfor %}
+
+</div>
+
+{% endif %}
+
+{% endfor %}
+
+</nav>
+
+</aside>
+
+
+<main class="doc-content">
+
+<p class="eyebrow">
+  {{ cycle.code }} · módulo
+</p>
+
+<h1>
+  {{ page.title }}
+</h1>
+
+<p class="lead">
+  {{ page.summary }}
+</p>
+
+
+{% if page.tech %}
+
+<div class="chip-row">
+
+{% for item in page.tech %}
+
+<span class="chip">
+  {{ item }}
+</span>
+
+{% endfor %}
+
+</div>
+
+{% endif %}
+
+
+<div class="prose">
+
+{{ content }}
+
+</div>
+
+
+<section class="unit-index">
+
+<h2>
+  Unidades y contenidos
+</h2>
+
+
+{% for unit in module_units %}
+
+<a
+ class="unit-card"
+ href="{{ unit.url | relative_url }}"
+>
+
+<span class="unit-order">
+  {{ unit.order }}
+</span>
+
+<div>
+
+<strong>
+  {{ unit.title }}
+</strong>
+
+<small>
+  {{ unit.summary }}
+</small>
+
+</div>
+
+<span>
+  →
+</span>
+
+</a>
+
+{% endfor %}
+
+</section>
+
+
+</main>
+
+</div>
+
+</div>
+
 </article>

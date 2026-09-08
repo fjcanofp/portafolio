@@ -1,0 +1,130 @@
+---
+layout: default
+---
+
+{% assign cycle_modules = site.modules
+   | where: "cycle_key", page.cycle_key
+   | sort: "order" %}
+
+<article class="page-shell">
+
+<div class="container">
+
+<nav class="breadcrumbs">
+
+  <a href="{{ '/docencia/' | relative_url }}">
+    Docencia
+  </a>
+
+  <span>/</span>
+
+  <span>
+    {{ page.code }}
+  </span>
+
+</nav>
+
+
+<div class="doc-layout">
+
+
+<aside class="doc-sidebar">
+
+  <span class="sidebar-kicker">
+    {{ page.level_short }}
+  </span>
+
+  <h2>
+    {{ page.code }}
+  </h2>
+
+
+  <p class="sidebar-heading">
+    Módulos
+  </p>
+
+
+  <nav class="module-tree">
+
+  {% for module in cycle_modules %}
+
+    <a href="{{ module.url | relative_url }}">
+      {{ module.short_title | default: module.title }}
+    </a>
+
+  {% endfor %}
+
+  </nav>
+
+
+  <a class="sidebar-back"
+     href="{{ '/docencia/' | relative_url }}">
+
+    ← Todos los ciclos
+
+  </a>
+
+</aside>
+
+
+<main class="doc-content">
+
+  <p class="eyebrow">
+    {{ page.level_short }} · {{ page.code }}
+  </p>
+
+  <h1>
+    {{ page.title }}
+  </h1>
+
+  <p class="lead">
+    {{ page.summary }}
+  </p>
+
+
+  <div class="prose">
+    {{ content }}
+  </div>
+
+
+  <h2>
+    Módulos disponibles
+  </h2>
+
+
+  <div class="module-grid">
+
+  {% for module in cycle_modules %}
+
+  <a class="module-card"
+     href="{{ module.url | relative_url }}">
+
+    <span class="cycle-code">
+      {{ module.short_title }}
+    </span>
+
+    <h3>
+      {{ module.title }}
+    </h3>
+
+    <p>
+      {{ module.summary }}
+    </p>
+
+    <strong>
+      Entrar al módulo →
+    </strong>
+
+  </a>
+
+  {% endfor %}
+
+  </div>
+
+</main>
+
+</div>
+
+</div>
+
+</article>
