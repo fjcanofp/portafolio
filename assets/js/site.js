@@ -1,4 +1,62 @@
 document.addEventListener("DOMContentLoaded", () => {
+  document.querySelectorAll("[data-carousel]").forEach((carousel) => {
+
+  const track = carousel.querySelector("[data-carousel-track]");
+  const prev = carousel.querySelector("[data-carousel-prev]");
+  const next = carousel.querySelector("[data-carousel-next]");
+
+  if (!track || !prev || !next) {
+    return;
+  }
+
+  const updateButtons = () => {
+
+    const maxScroll =
+      track.scrollWidth - track.clientWidth;
+
+    prev.disabled = track.scrollLeft <= 5;
+
+    next.disabled =
+      track.scrollLeft >= maxScroll - 5;
+  };
+
+
+  prev.addEventListener("click", () => {
+
+    track.scrollBy({
+      left: -(track.clientWidth * .85),
+      behavior: "smooth"
+    });
+
+  });
+
+
+  next.addEventListener("click", () => {
+
+    track.scrollBy({
+      left: track.clientWidth * .85,
+      behavior: "smooth"
+    });
+
+  });
+
+
+  track.addEventListener(
+    "scroll",
+    updateButtons,
+    { passive: true }
+  );
+
+
+  window.addEventListener(
+    "resize",
+    updateButtons
+  );
+
+
+  updateButtons();
+
+});
   const root = document.documentElement;
   const themeToggle = document.getElementById("theme-toggle");
 
