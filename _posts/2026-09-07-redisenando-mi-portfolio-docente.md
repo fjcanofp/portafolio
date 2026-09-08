@@ -6,9 +6,9 @@ categories:
   - portfolio
   - desarrollo
 tags:
-  - Jekyll
-  - GitHub Pages
-  - Git
+  - jekyll
+  - github-pages
+  - git
   - arquitectura
   - docencia
 ---

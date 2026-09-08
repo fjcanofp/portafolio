@@ -399,3 +399,103 @@
   }
 
 }
+
+/* =========================================
+   PAGINACIÓN DEL BLOG
+========================================= */
+
+.pagination {
+  margin-top: 2rem;
+
+  padding-top: 1.25rem;
+
+  border-top: 1px solid var(--line);
+
+  display: grid;
+
+  grid-template-columns:
+    1fr auto 1fr;
+
+  gap: 1rem;
+
+  align-items: center;
+}
+
+
+.pagination-side {
+  display: flex;
+}
+
+
+.pagination-next {
+  justify-content: flex-end;
+}
+
+
+.pagination-pages {
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  gap: .4rem;
+}
+
+
+.pagination-link,
+.pagination-number {
+  display: inline-flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  min-width: 36px;
+  min-height: 36px;
+
+  padding: .45rem .65rem;
+
+  border: 1px solid var(--line);
+
+  border-radius: 999px;
+
+  color: var(--muted);
+}
+
+
+.pagination-link:hover,
+.pagination-number:hover {
+  border-color: var(--accent);
+
+  color: var(--accent);
+}
+
+
+.pagination-number.active {
+  border-color: var(--accent);
+
+  background:
+    rgba(13,242,70,.08);
+
+  color: var(--accent);
+
+  font-weight: 700;
+}
+
+
+@media (max-width: 650px) {
+
+  .pagination {
+    grid-template-columns: 1fr;
+
+    justify-items: center;
+  }
+
+
+  .pagination-side,
+  .pagination-next {
+    justify-content: center;
+  }
+
+}

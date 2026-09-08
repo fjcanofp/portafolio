@@ -1,6 +1,7 @@
 ---
-title: Cómo publicar material sin regalar tu trabajo
-description: Una forma sensata de combinar visibilidad, licencia y control del material público.
+layout: post
+title: "Cómo publicar material sin regalar tu trabajo"
+date: 2026-04-01
 categories:
   - licencias
   - contenidos

@@ -1,6 +1,7 @@
 ---
-title: Por qué un portfolio docente no debe ser un currículum largo
-description: Qué conviene enseñar en una web profesional docente y qué sobra en una primera versión.
+layout: post
+title: "Por qué un portfolio docente no debe ser un currículum largo"
+date: 2026-04-07
 categories:
   - portfolio
   - docencia
