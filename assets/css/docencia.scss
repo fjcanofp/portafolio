@@ -626,3 +626,67 @@
 
   font-weight: 600;
 }
+
+.error-page {
+  max-width: 720px;
+
+  margin:
+    6rem auto;
+
+  padding: 2rem;
+}
+
+.error-page h1 {
+  color: var(--accent);
+
+  font-family:
+    "IBM Plex Mono",
+    monospace;
+
+  font-size:
+    clamp(3rem, 10vw, 7rem);
+}
+
+.error-command {
+  color: var(--accent-2);
+
+  font-family:
+    "IBM Plex Mono",
+    monospace;
+}
+
+.callout,
+.activity {
+  margin:
+    1.25rem 0;
+
+  padding: 1rem 1.1rem;
+
+  border-radius: 12px;
+
+  border:
+    1px solid var(--line);
+
+  background:
+    rgba(255,255,255,.025);
+}
+
+.callout-note {
+  border-left:
+    4px solid var(--accent-2);
+}
+
+.callout-warning {
+  border-left:
+    4px solid #f5a623;
+}
+
+.activity-lab {
+  border-left:
+    4px solid #9b7cff;
+}
+
+.activity-practice {
+  border-left:
+    4px solid var(--accent);
+}

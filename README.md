@@ -3,61 +3,73 @@
 Portfolio docente y técnico de
 **Fco. Javier Cano Granado**.
 
-🌐 **Web:** https://fjcanogra.es
+🌐 https://fjcanogra.es
 
-## Sobre el proyecto
+## Objetivo
 
-Este repositorio contiene el código fuente de mi portfolio
-personal y parte de los recursos docentes de Formación
-Profesional de Informática que publico abiertamente.
+Este proyecto reúne mi portfolio profesional,
+documentación técnica y parte de los materiales docentes
+que desarrollo para Formación Profesional de Informática.
 
-El proyecto nace con tres objetivos:
+El sitio está diseñado para crecer como plataforma
+de documentación organizada por:
 
-- organizar y publicar documentación técnica y docente;
-- compartir recursos útiles para alumnado y profesionales;
-- mostrar mi trabajo como docente, desarrollador y mentor técnico.
+Nivel → Ciclo → Módulo → Unidad → Contenido
 
-## Arquitectura docente
 
-Los contenidos siguen esta estructura:
+## Áreas
+
+### Formación Profesional
+
+- ASIR
+  - Servicios de Red e Internet
+  - Implantación de Aplicaciones Web
+
+- DAW
+  - Programación
+  - Bases de Datos
+
+- SMR
+  - Servicios en Red
+
+
+## Stack
+
+- Jekyll
+- Liquid
+- Markdown
+- HTML5
+- SCSS / CSS
+- JavaScript
+- Git
+- GitHub
+- GitHub Actions
+- GitHub Pages
+- DonDominio
+- VS Code
+
+
+## Arquitectura
 
 ```text
-Nivel
-└── Ciclo
-    └── Módulo
-        └── Unidad
-            └── Contenido
-
----
-
-# Herramientas
-
-```markdown
-## Tecnologías utilizadas
-
-- **Jekyll** — generación del sitio estático.
-- **Liquid** — motor de plantillas.
-- **Markdown** — contenidos y documentación.
-- **HTML5** — estructura.
-- **SCSS / CSS** — diseño y responsive.
-- **JavaScript** — interacción.
-- **Git** — control de versiones.
-- **GitHub** — alojamiento del código.
-- **GitHub Actions** — CI/CD.
-- **GitHub Pages** — publicación web.
-- **DonDominio** — dominio y DNS.
-- **VS Code** — entorno de desarrollo.
-
+_cycles/       Ciclos formativos
+_modules/      Módulos profesionales
+_units/        Unidades
+_posts/        Blog
+_workshops/    Talleres
+_data/         Datos reutilizables
+_layouts/      Plantillas
+_includes/     Componentes
+assets/        CSS, JS e imágenes
+```
 ## Flujo de desarrollo
-
-```text
 VS Code
    ↓
-Feature branch
+feature branch
    ↓
-Commit
+commit
    ↓
-Push
+push
    ↓
 Pull Request
    ↓
@@ -69,12 +81,25 @@ GitHub Pages
    ↓
 fjcanogra.es
 
+## Seguridad
+HTTPS.
+Dominio personalizado.
+2FA en GitHub.
+Dependabot.
+Sin credenciales ni secretos en el repositorio.
+Contenido privado fuera del repositorio público.
+Control de cambios mediante Git.
+Rendimiento
+
+El sitio es estático y no necesita una base de datos
+ni un backend para servir el contenido público.
+
 ## Contacto
 
-**Fco. Javier Cano Granado**
+Fco. Javier Cano Granado
 
-Docente de FP · Desarrollador · Mentor técnico
+Docente de FP · Desarrollador · Mentor
 
-- Web: https://fjcanogra.es
-- LinkedIn: https://www.linkedin.com/in/fjcanogra/
-- GitHub: https://github.com/fjcanofp
+Web: https://fjcanogra.es
+LinkedIn: https://www.linkedin.com/in/fjcanogra/
+GitHub: https://github.com/fjcanofp

@@ -131,7 +131,97 @@ document
     );
 
   });
-  
+  const searchInput =
+  document.getElementById("site-search");
+
+const searchResults =
+  document.getElementById("search-results");
+
+
+if (searchInput && searchResults) {
+
+  let searchIndex = [];
+
+
+  fetch("/search.json")
+    .then(response => response.json())
+    .then(data => {
+
+      searchIndex = data;
+
+    });
+
+
+  const normalize = (text) =>
+
+    (text || "")
+      .toLowerCase()
+      .normalize("NFD")
+      .replace(/\p{Diacritic}/gu, "");
+
+
+  searchInput.addEventListener(
+    "input",
+    () => {
+
+      const query =
+        normalize(searchInput.value.trim());
+
+
+      if (query.length < 2) {
+
+        searchResults.innerHTML = "";
+
+        return;
+
+      }
+
+
+      const matches =
+        searchIndex
+          .filter(item => {
+
+            const haystack =
+              normalize(
+                `${item.title}
+                 ${item.description}
+                 ${item.content}`
+              );
+
+            return haystack.includes(query);
+
+          })
+          .slice(0, 20);
+
+
+      searchResults.innerHTML =
+        matches.length
+          ? matches
+              .map(item => `
+
+                <article class="search-result">
+
+                  <h2>
+                    <a href="${item.url}">
+                      ${item.title}
+                    </a>
+                  </h2>
+
+                  <p>
+                    ${item.description || ""}
+                  </p>
+
+                </article>
+
+              `)
+              .join("")
+
+          : `<p>No se encontraron resultados.</p>`;
+
+    });
+
+}
+
   const root = document.documentElement;
   const themeToggle = document.getElementById("theme-toggle");
 

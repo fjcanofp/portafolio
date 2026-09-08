@@ -28,3 +28,6 @@ description: Portfolio docente y técnico de Fco. Javier Cano Granado.
     </div>
   </div>
 </section>
+<a href="{{ '/novedades/' | relative_url }}">
+  Ver últimas actualizaciones →
+</a>
