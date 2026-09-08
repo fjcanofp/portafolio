@@ -960,3 +960,21 @@ html:not([lang]) .lang-block.lang-en {
   }
 
 }
+
+.hero-updates-link {
+  display: inline-flex;
+
+  margin-top: 1.25rem;
+
+  color: var(--muted);
+
+  font-family:
+    "IBM Plex Mono",
+    monospace;
+
+  font-size: .85rem;
+}
+
+.hero-updates-link:hover {
+  color: var(--accent);
+}
