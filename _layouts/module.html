@@ -25,13 +25,13 @@ layout: default
     Docencia
   </a>
 
-  <span>/</span>
+  <span aria-hidden="true">›</span>
 
   <a href="{{ cycle.url | relative_url }}">
     {{ cycle.code }}
   </a>
 
-  <span>/</span>
+  <span aria-hidden="true">›</span>
 
   <span>
     {{ page.short_title }}
@@ -93,7 +93,7 @@ layout: default
 </aside>
 
 
-<main class="doc-content">
+<section class="doc-content">
 
 <p class="eyebrow">
   {{ cycle.code }} · módulo
@@ -173,7 +173,7 @@ layout: default
 </section>
 
 
-</main>
+</section>
 
 </div>
 

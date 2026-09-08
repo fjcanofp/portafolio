@@ -49,14 +49,9 @@
   scrollbar-width: thin;
 }
 
-
 .cycle-card,
 .module-card {
   scroll-snap-align: start;
-}
-
-.cycle-card,
-.module-card {
   display: block;
 
   padding: 1.2rem;
