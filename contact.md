@@ -6,7 +6,7 @@ intro: Mejor una página breve y clara que un formulario roto o una promesa que 
 ---
 ## Cómo contactarme
 
-- **Email:** [contacto@tudominio.es](mailto:contacto@tudominio.es)
+- **Email:** [{{ site.email }}](mailto:{{ site.email }})
 - **LinkedIn:** [Perfil profesional]({{ site.social.linkedin }})
 - **GitHub:** [Repositorio / perfil]({{ site.social.github }})
 
