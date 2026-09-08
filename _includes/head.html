@@ -4,7 +4,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   {% seo %}
-
+  {% unless site.public_indexing %}
+    <meta name="robots" content="noindex, nofollow">
+  {% endunless %}
   <meta name="theme-color" content="#090b10">
 
 
