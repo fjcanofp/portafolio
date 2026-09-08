@@ -63,6 +63,7 @@ _includes/     Componentes
 assets/        CSS, JS e imágenes
 ```
 ## Flujo de desarrollo
+```text
 VS Code
    ↓
 feature branch
@@ -80,19 +81,19 @@ GitHub Actions
 GitHub Pages
    ↓
 fjcanogra.es
-
+```
 ## Seguridad
-HTTPS.
-Dominio personalizado.
-2FA en GitHub.
-Dependabot.
-Sin credenciales ni secretos en el repositorio.
-Contenido privado fuera del repositorio público.
-Control de cambios mediante Git.
-Rendimiento
+- HTTPS.
+- Dominio personalizado.
+- 2FA en GitHub.
+- Dependabot.
+- Sin credenciales ni secretos en el repositorio.
+- Contenido privado fuera del repositorio público.
+- Control de cambios mediante Git.
 
-El sitio es estático y no necesita una base de datos
-ni un backend para servir el contenido público.
+## Rendimiento
+
+El sitio es estático y no necesita una base de datos ni un backend para servir el contenido público.
 
 ## Contacto
 
