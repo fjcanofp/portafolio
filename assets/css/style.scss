@@ -137,6 +137,25 @@ html[data-theme="light"] .site-header {
   color: var(--text);
 }
 
+.site-nav a.is-active {
+  color: var(--text);
+  position: relative;
+}
+
+.site-nav a.is-active::after {
+  content: "";
+
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -.45rem;
+
+  height: 2px;
+
+  background: var(--accent);
+  border-radius: 999px;
+}
+
 .header-tools {
   display: flex;
   align-items: center;
