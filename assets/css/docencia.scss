@@ -263,27 +263,125 @@
   flex-wrap: wrap;
 }
 
+/* =========================================
+   FOOTER
+========================================= */
 
-.footer-main p {
-  margin: .25rem 0;
+.footer-main {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  gap: 2rem;
+
+  flex-wrap: wrap;
 }
 
 
-.footer-main small {
+.footer-identity {
+  display: grid;
+
+  gap: .25rem;
+}
+
+
+.footer-name {
+  font-size: 1rem;
+
+  color: var(--text);
+}
+
+
+.footer-role {
+  margin: 0;
+
+  color: var(--text);
+
+  font-size: .95rem;
+}
+
+
+.footer-tech {
+  margin: 0;
+
   color: var(--muted);
+
+  font-size: .8rem;
 }
 
+
+/* Redes */
 
 .footer-social {
   display: flex;
 
-  gap: 1rem;
-
-  flex-wrap: wrap;
-
   align-items: center;
+
+  gap: .65rem;
 }
 
+
+/* Botón circular */
+
+.social-icon {
+  width: 42px;
+  height: 42px;
+
+  display: inline-flex;
+
+  align-items: center;
+  justify-content: center;
+
+  border: 1px solid var(--line);
+
+  border-radius: 50%;
+
+  background:
+    rgba(255,255,255,.02);
+
+  color: var(--muted);
+
+  transition:
+    color .2s ease,
+    border-color .2s ease,
+    background .2s ease,
+    transform .2s ease;
+}
+
+
+/* SVG */
+
+.social-icon svg {
+  width: 20px;
+  height: 20px;
+
+  display: block;
+}
+
+
+/* Hover */
+
+.social-icon:hover {
+  color: var(--accent);
+
+  border-color: var(--accent);
+
+  background:
+    rgba(13,242,70,.05);
+
+  transform:
+    translateY(-2px);
+}
+
+
+/* Café */
+
+.social-support {
+  font-size: 1.1rem;
+}
+
+
+/* Zona inferior */
 
 .footer-bottom {
   margin-top: 1.5rem;
@@ -302,5 +400,42 @@
 
   color: var(--muted);
 
-  font-size: .8rem;
+  font-size: .78rem;
+}
+
+
+.footer-bottom a {
+  color: var(--muted);
+}
+
+
+.footer-bottom a:hover {
+  color: var(--accent);
+}
+
+
+/* Móvil */
+
+@media (max-width: 650px) {
+
+  .footer-main {
+    align-items: flex-start;
+
+    flex-direction: column;
+  }
+
+
+  .footer-social {
+    width: 100%;
+
+    justify-content: flex-start;
+  }
+
+
+  .footer-bottom {
+    flex-direction: column;
+
+    gap: .35rem;
+  }
+
 }

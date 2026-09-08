@@ -1,88 +1,182 @@
 <footer class="site-footer">
 
-<div class="container">
+  <div class="container">
 
-<div class="footer-main">
+    <div class="footer-main">
 
+      <div class="footer-identity">
 
-<div>
+        <strong class="footer-name">
+          {{ site.author }}
+        </strong>
 
-<strong>
-{{ site.author }}
-</strong>
+        <p class="footer-role">
+          Docente de FP · Desarrollador · Mentor
+        </p>
 
-<p>
-Docente de FP · Desarrollador · Mentor
-</p>
+        <p class="footer-tech">
+          Programación · Bases de Datos · Sistemas · IA
+        </p>
 
-<small>
-Programación · Bases de Datos · Sistemas · IA
-</small>
-
-</div>
-
-
-<div class="footer-social">
+      </div>
 
 
-<a
- href="{{ site.social.linkedin }}"
- target="_blank"
- rel="noopener noreferrer"
->
-LinkedIn
-</a>
+      <nav
+        class="footer-social"
+        aria-label="Redes sociales y contacto"
+      >
+
+        <!-- LinkedIn -->
+        <a
+          href="{{ site.social.linkedin }}"
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label="LinkedIn"
+          title="LinkedIn"
+          class="social-icon"
+        >
+
+          <svg
+            viewBox="0 0 24 24"
+            aria-hidden="true"
+          >
+            <path
+              fill="currentColor"
+              d="M6.5 8.4H3.2V19h3.3V8.4ZM4.85 3
+                 A1.92 1.92 0 1 0 4.85 6.84
+                 A1.92 1.92 0 0 0 4.85 3ZM20.8 13.05
+                 c0-3.2-1.7-4.7-4-4.7
+                 -1.83 0-2.65 1-3.1 1.72
+                 V8.4h-3.3V19h3.3v-5.25
+                 c0-1.38.26-2.72 1.98-2.72
+                 1.7 0 1.72 1.58 1.72 2.81
+                 V19h3.4v-5.95Z"
+            />
+          </svg>
+
+        </a>
 
 
-<a
- href="{{ site.social.github }}"
- target="_blank"
- rel="noopener noreferrer"
->
-GitHub
-</a>
+        <!-- GitHub -->
+        <a
+          href="{{ site.social.github }}"
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label="GitHub"
+          title="GitHub"
+          class="social-icon"
+        >
+
+          <svg
+            viewBox="0 0 24 24"
+            aria-hidden="true"
+          >
+            <path
+              fill="currentColor"
+              d="M12 2
+                 C6.48 2 2 6.58 2 12.24
+                 c0 4.53 2.87 8.37 6.84 9.73
+                 .5.1.68-.22.68-.49
+                 0-.24-.01-1.05-.01-1.9
+                 -2.78.62-3.37-1.21-3.37-1.21
+                 -.45-1.18-1.11-1.5-1.11-1.5
+                 -.91-.64.07-.62.07-.62
+                 1 .07 1.53 1.06 1.53 1.06
+                 .9 1.57 2.35 1.12 2.92.85
+                 .09-.66.35-1.12.64-1.37
+                 -2.22-.26-4.56-1.14-4.56-5.07
+                 0-1.12.39-2.03 1.03-2.75
+                 -.1-.26-.45-1.3.1-2.71
+                 0 0 .84-.28 2.75 1.05
+                 A9.3 9.3 0 0 1 12 6.97
+                 a9.3 9.3 0 0 1 2.5.34
+                 c1.91-1.33 2.75-1.05 2.75-1.05
+                 .55 1.41.2 2.45.1 2.71
+                 .64.72 1.03 1.63 1.03 2.75
+                 0 3.94-2.35 4.8-4.58 5.06
+                 .36.32.68.94.68 1.9
+                 0 1.37-.01 2.47-.01 2.8
+                 0 .27.18.59.69.49
+                 A10.16 10.16 0 0 0 22 12.24
+                 C22 6.58 17.52 2 12 2Z"
+            />
+          </svg>
+
+        </a>
 
 
-{% if site.email != "" %}
+        <!-- Correo -->
+        {% if site.email != "" %}
 
-<a href="mailto:{{ site.email }}">
-{{ site.email }}
-</a>
+        <a
+          href="mailto:{{ site.email }}"
+          aria-label="Enviar correo a {{ site.email }}"
+          title="{{ site.email }}"
+          class="social-icon"
+        >
 
-{% endif %}
+          <svg
+            viewBox="0 0 24 24"
+            aria-hidden="true"
+          >
+            <path
+              fill="currentColor"
+              d="M3 5h18
+                 a2 2 0 0 1 2 2v10
+                 a2 2 0 0 1-2 2H3
+                 a2 2 0 0 1-2-2V7
+                 a2 2 0 0 1 2-2Zm9 7
+                 8-5H4l8 5Zm0 2.35
+                 L3 8.73V17h18V8.73
+                 l-9 5.62Z"
+            />
+          </svg>
+
+        </a>
+
+        {% endif %}
 
 
-{% if site.support_enabled and site.social.buymeacoffee != "" %}
+        <!-- Apoyo: permanecerá oculto por ahora -->
 
-<a
- href="{{ site.social.buymeacoffee }}"
- target="_blank"
- rel="noopener noreferrer"
->
-☕ Invítame a un café
-</a>
+        {% if site.support_enabled
+              and site.social.buymeacoffee != "" %}
 
-{% endif %}
+        <a
+          href="{{ site.social.buymeacoffee }}"
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label="Invítame a un café"
+          title="Apoya este proyecto"
+          class="social-icon social-support"
+        >
+
+          <span aria-hidden="true">
+            ☕
+          </span>
+
+        </a>
+
+        {% endif %}
+
+      </nav>
+
+    </div>
 
 
-</div>
+    <div class="footer-bottom">
 
-</div>
+      <span>
+        © {{ "now" | date: "%Y" }}
+        {{ site.author }}
+      </span>
 
+      <a href="{{ '/aviso-legal/' | relative_url }}">
+        Aviso legal
+      </a>
 
-<div class="footer-bottom">
+    </div>
 
-<span>
-© {{ "now" | date: "%Y" }}
-{{ site.author }}
-</span>
-
-<a href="{{ '/aviso-legal/' | relative_url }}">
-Aviso legal
-</a>
-
-</div>
-
-</div>
+  </div>
 
 </footer>
