@@ -1,29 +1,80 @@
-# Portfolio docente/técnico en Jekyll para GitHub Pages
+# fjcanogra.es
 
-Este starter está pensado para un portfolio **serio, ligero y barato de mantener**:
+Portfolio docente y técnico de
+**Fco. Javier Cano Granado**.
 
-- contenido en **Markdown**;
-- despliegue en **GitHub Pages**;
-- dominio propio opcional;
-- blog con fechas, categorías y etiquetas;
-- páginas para módulos, talleres y presentación profesional.
+🌐 **Web:** https://fjcanogra.es
 
-## Idea de estructura
+## Sobre el proyecto
 
-- `index.md` → portada
-- `about.md` → presentación profesional
-- `modules.md` → listado de módulos
-- `workshops.md` → listado de talleres/cursos
-- `blog.md` → listado de artículos
-- `contact.md` → contacto
-- `_modules/` → fichas de módulos
-- `_workshops/` → fichas de cursos o talleres  
-- `_posts/` → artículos del blog
-- `_templates/` → plantillas rápidas para duplicar
+Este repositorio contiene el código fuente de mi portfolio
+personal y parte de los recursos docentes de Formación
+Profesional de Informática que publico abiertamente.
 
-## Licencia sugerida para tu caso 
+El proyecto nace con tres objetivos:
 
-- **Contenido** del sitio: CC BY-NC-SA 4.0
-- **Código y diseño** del sitio: todos los derechos reservados,  salvo que decidas abrirlo más adelante
+- organizar y publicar documentación técnica y docente;
+- compartir recursos útiles para alumnado y profesionales;
+- mostrar mi trabajo como docente, desarrollador y mentor técnico.
 
-Lee `DEPLOY_GUIDE.md` y `CONTENT_WORKFLOW.md`.
+## Arquitectura docente
+
+Los contenidos siguen esta estructura:
+
+```text
+Nivel
+└── Ciclo
+    └── Módulo
+        └── Unidad
+            └── Contenido
+
+---
+
+# Herramientas
+
+```markdown
+## Tecnologías utilizadas
+
+- **Jekyll** — generación del sitio estático.
+- **Liquid** — motor de plantillas.
+- **Markdown** — contenidos y documentación.
+- **HTML5** — estructura.
+- **SCSS / CSS** — diseño y responsive.
+- **JavaScript** — interacción.
+- **Git** — control de versiones.
+- **GitHub** — alojamiento del código.
+- **GitHub Actions** — CI/CD.
+- **GitHub Pages** — publicación web.
+- **DonDominio** — dominio y DNS.
+- **VS Code** — entorno de desarrollo.
+
+## Flujo de desarrollo
+
+```text
+VS Code
+   ↓
+Feature branch
+   ↓
+Commit
+   ↓
+Push
+   ↓
+Pull Request
+   ↓
+main
+   ↓
+GitHub Actions
+   ↓
+GitHub Pages
+   ↓
+fjcanogra.es
+
+## Contacto
+
+**Fco. Javier Cano Granado**
+
+Docente de FP · Desarrollador · Mentor técnico
+
+- Web: https://fjcanogra.es
+- LinkedIn: https://www.linkedin.com/in/fjcanogra/
+- GitHub: https://github.com/fjcanofp
