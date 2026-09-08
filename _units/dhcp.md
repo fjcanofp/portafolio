@@ -1,14 +1,18 @@
 ---
-title: Linux
+title: DHCP
+
 module_key: sri
 cycle_key: asir
 
-order: 1
+order: 2
 
-summary: Fundamentos de Linux necesarios para administrar servicios de red.
+summary: Configuración IP dinámica, arquitectura y administración del servicio DHCP.
 
-permalink: /docencia/asir/sri/linux/
+permalink: /docencia/asir/sri/dhcp/
 ---
 
-Linux será la base sobre la que desplegaremos muchos
-de los servicios del módulo.
+DHCP permite automatizar la asignación de parámetros de red
+a los equipos cliente.
+
+En esta unidad estudiaremos su funcionamiento, arquitectura,
+configuración y comprobación.

@@ -17,19 +17,43 @@
   padding: 1.2rem;
 }
 
+/* =========================================
+   CARRUSELES DE TARJETAS
+========================================= */
 
 .cycle-grid,
 .module-grid {
   display: grid;
 
-  grid-template-columns:
-    repeat(2, minmax(0, 1fr));
+  grid-auto-flow: column;
+
+  /*
+   * Se muestran aproximadamente dos tarjetas.
+   * La tercera y siguientes continúan horizontalmente.
+   */
+  grid-auto-columns:
+    minmax(300px, calc((100% - 1rem) / 2));
 
   gap: 1rem;
 
   padding: 1rem;
+
+  overflow-x: auto;
+  overflow-y: hidden;
+
+  scroll-snap-type: x mandatory;
+  scroll-behavior: smooth;
+
+  overscroll-behavior-inline: contain;
+
+  scrollbar-width: thin;
 }
 
+
+.cycle-card,
+.module-card {
+  scroll-snap-align: start;
+}
 
 .cycle-card,
 .module-card {
@@ -247,7 +271,7 @@
 
   .cycle-grid,
   .module-grid {
-    grid-template-columns: 1fr;
+    grid-auto-columns: 85%;
   }
 
 }
@@ -335,22 +359,16 @@
 /* Zona inferior */
 
 .footer-bottom {
-  margin-top: 1.5rem;
-  padding-top: 1rem;
-
-  border-top: 1px solid var(--line);
+  margin-top: .5rem;
+  padding-top: .75rem;
 
   display: grid;
-
-  grid-template-columns:
-    1fr auto 1fr;
+  grid-template-columns: 1fr auto 1fr;
 
   align-items: center;
-
   gap: 1rem;
 
   color: var(--muted);
-
   font-size: .78rem;
 }
 
@@ -408,8 +426,6 @@
   margin-top: 2rem;
 
   padding-top: 1.25rem;
-
-  border-top: 1px solid var(--line);
 
   display: grid;
 
