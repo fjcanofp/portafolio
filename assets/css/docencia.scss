@@ -515,3 +515,51 @@
   }
 
 }
+
+.section-tree a.is-current-section {
+  color: var(--accent);
+  font-weight: 600;
+
+  background:
+    rgba(13, 242, 70, .06);
+}
+
+.carousel {
+  position: relative;
+}
+
+.carousel-controls {
+  display: flex;
+  justify-content: flex-end;
+
+  gap: .45rem;
+
+  margin-bottom: .5rem;
+}
+
+.carousel-button {
+  width: 38px;
+  height: 38px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  border: 1px solid var(--line);
+  border-radius: 50%;
+
+  background: var(--panel);
+  color: var(--muted);
+
+  cursor: pointer;
+}
+
+.carousel-button:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.carousel-button:disabled {
+  opacity: .3;
+  cursor: default;
+}

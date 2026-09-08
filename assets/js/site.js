@@ -57,6 +57,81 @@ document.addEventListener("DOMContentLoaded", () => {
   updateButtons();
 
 });
+
+document
+  .querySelectorAll("[data-scrollspy]")
+  .forEach((navigation) => {
+
+    const links =
+      [...navigation.querySelectorAll('a[href^="#"]')];
+
+    const sections = links
+      .map((link) => {
+
+        const id =
+          link.getAttribute("href").substring(1);
+
+        return document.getElementById(id);
+
+      })
+      .filter(Boolean);
+
+
+    if (!sections.length) {
+      return;
+    }
+
+
+    const activate = (id) => {
+
+      links.forEach((link) => {
+
+        const active =
+          link.getAttribute("href") === `#${id}`;
+
+        link.classList.toggle(
+          "is-current-section",
+          active
+        );
+
+      });
+
+    };
+
+
+    const observer =
+      new IntersectionObserver(
+
+        (entries) => {
+
+          const visible = entries
+            .filter(entry => entry.isIntersecting)
+            .sort(
+              (a, b) =>
+                a.boundingClientRect.top -
+                b.boundingClientRect.top
+            );
+
+          if (visible.length) {
+            activate(visible[0].target.id);
+          }
+
+        },
+
+        {
+          rootMargin:
+            "-20% 0px -65% 0px"
+        }
+
+      );
+
+
+    sections.forEach(
+      section => observer.observe(section)
+    );
+
+  });
+  
   const root = document.documentElement;
   const themeToggle = document.getElementById("theme-toggle");
 
