@@ -1,0 +1,131 @@
+---
+layout: default
+---
+
+{% assign cycle = site.cycles
+   | where: "cycle_key", page.cycle_key
+   | first %}
+
+{% assign module = site.modules
+   | where: "module_key", page.module_key
+   | first %}
+
+{% assign module_units = site.units
+   | where: "module_key", page.module_key
+   | sort: "order" %}
+
+
+<article class="page-shell">
+
+<div class="container">
+
+
+<nav class="breadcrumbs">
+
+<a href="{{ '/docencia/' | relative_url }}">
+Docencia
+</a>
+
+<span>/</span>
+
+<a href="{{ cycle.url | relative_url }}">
+{{ cycle.code }}
+</a>
+
+<span>/</span>
+
+<a href="{{ module.url | relative_url }}">
+{{ module.short_title }}
+</a>
+
+<span>/</span>
+
+<span>
+{{ page.title }}
+</span>
+
+</nav>
+
+
+<div class="doc-layout">
+
+
+<aside class="doc-sidebar">
+
+<span class="sidebar-kicker">
+{{ cycle.code }}
+</span>
+
+<h2>
+{{ module.short_title }}
+</h2>
+
+
+<nav class="module-tree">
+
+{% for unit in module_units %}
+
+<a
+ href="{{ unit.url | relative_url }}"
+ {% if unit.url == page.url %}
+ class="active"
+ {% endif %}
+>
+
+{{ unit.title }}
+
+</a>
+
+
+{% if unit.url == page.url and page.toc %}
+
+<div class="unit-tree section-tree">
+
+{% for item in page.toc %}
+
+<a href="#{{ item.id }}">
+{{ item.title }}
+</a>
+
+{% endfor %}
+
+</div>
+
+{% endif %}
+
+{% endfor %}
+
+</nav>
+
+</aside>
+
+
+<main class="doc-content">
+
+<p class="eyebrow">
+{{ cycle.code }} · {{ module.short_title }}
+</p>
+
+<h1>
+{{ page.title }}
+</h1>
+
+<p class="lead">
+{{ page.summary }}
+</p>
+
+
+<div class="prose">
+
+{{ content }}
+
+</div>
+
+
+</main>
+
+</div>
+
+</div>
+
+</article>

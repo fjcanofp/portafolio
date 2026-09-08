@@ -17,11 +17,17 @@ social:
   linkedin: "https://www.linkedin.com/in/fjcanogra/"
   github: "https://github.com/fjcanogra"
   buymeacoffee: "https://buymeacoffee.com/fjcanogra"
+  support_enabled: true
 
 collections:
+  cycles:
+    output: true
+    sort_by: order
   modules:
     output: true
-    permalink: /modulos/:name/
+    sort_by: order
+  units:
+    output: true
     sort_by: order
   workshops:
     output: true
@@ -48,6 +54,21 @@ defaults:
       type: workshops
     values:
       layout: workshop
+  - scope:
+      path: ""
+      type: cycles
+    values:
+      layout: cycle
+  - scope:
+      path: ""
+      type: modules
+    values:
+      layout: module
+  - scope:
+      path: ""
+      type: units
+    values:
+      layout: unit
 
 plugins:
   - jekyll-feed

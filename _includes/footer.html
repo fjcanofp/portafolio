@@ -1,14 +1,88 @@
 <footer class="site-footer">
-  <div class="container footer-line footer-line-simple">
-    <div class="footer-copy">
-      <span>© {{ "now" | date: "%Y" }} {{ site.author }}.</span>
-      <span data-i18n="footer_rights">All rights reserved.</span>
-    </div>
 
-    <div class="footer-license">
-      <span data-i18n="footer_license_prefix">Contenidos del sitio:</span>
-      <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank" rel="noopener noreferrer">CC BY-NC-SA 4.0</a>
-      <span data-i18n="footer_license_suffix">salvo indicación expresa.</span>
-    </div>
-  </div>
+<div class="container">
+
+<div class="footer-main">
+
+
+<div>
+
+<strong>
+{{ site.author }}
+</strong>
+
+<p>
+Docente de FP · Desarrollador · Mentor
+</p>
+
+<small>
+Programación · Bases de Datos · Sistemas · IA
+</small>
+
+</div>
+
+
+<div class="footer-social">
+
+
+<a
+ href="{{ site.social.linkedin }}"
+ target="_blank"
+ rel="noopener noreferrer"
+>
+LinkedIn
+</a>
+
+
+<a
+ href="{{ site.social.github }}"
+ target="_blank"
+ rel="noopener noreferrer"
+>
+GitHub
+</a>
+
+
+{% if site.email != "" %}
+
+<a href="mailto:{{ site.email }}">
+{{ site.email }}
+</a>
+
+{% endif %}
+
+
+{% if site.support_enabled and site.social.buymeacoffee != "" %}
+
+<a
+ href="{{ site.social.buymeacoffee }}"
+ target="_blank"
+ rel="noopener noreferrer"
+>
+☕ Invítame a un café
+</a>
+
+{% endif %}
+
+
+</div>
+
+</div>
+
+
+<div class="footer-bottom">
+
+<span>
+© {{ "now" | date: "%Y" }}
+{{ site.author }}
+</span>
+
+<a href="{{ '/aviso-legal/' | relative_url }}">
+Aviso legal
+</a>
+
+</div>
+
+</div>
+
 </footer>
