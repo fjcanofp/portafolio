@@ -124,14 +124,11 @@ La **UT00 es preparatoria y transversal**. No cierra por sí sola un resultado d
 | **RA8 · Redes privadas/públicas** | rutas, interfaces, sockets, procesos y comprobación extremo a extremo |
 
 Los CE que reaparecerán durante el curso exigen, entre otras cosas, **instalar, configurar, verificar, crear usuarios/grupos, probar clientes, aplicar seguridad y demostrar el funcionamiento de los servicios**. UT00 entrena esas operaciones antes de aplicarlas a un servicio concreto.
-
-> **Importante:** que un alumno domine `chmod`, `systemctl` o `ip route` no significa que haya superado un RA de SER. Estas herramientas adquieren valor curricular cuando se utilizan para construir y verificar los servicios asociados a cada RA.
-
 ---
 
 ### Contexto profesional: trabajar como técnico, no como “usuario que prueba cosas”
 
-Imagina este ticket:
+Imagina esta situación:
 
 > “La web interna no abre desde un equipo cliente. En el servidor parece que sí funciona.”
 
