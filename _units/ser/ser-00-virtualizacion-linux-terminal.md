@@ -56,8 +56,8 @@ toc:
   - title: Laboratorio guiado
     id: laboratorio
 
-  - title: Práctica
-    id: practica
+  # - title: Práctica
+  #   id: practica
 
   - title: Ejercicios
     id: ejercicios
@@ -65,8 +65,8 @@ toc:
   - title: Chuleta
     id: chuleta
 
-  - title: Autoevaluación
-    id: autoevaluacion
+  # - title: Autoevaluación
+  #   id: autoevaluacion
 
   - title: Referencias
     id: referencias
@@ -1830,6 +1830,8 @@ síntoma → hipótesis → prueba → resultado → cambio mínimo → validaci
 
 ---
 
+{% comment %}
+
 ## PARTE VII · PRÁCTICA DE MUESTRA INDIVIDUALIZABLE {#practica}
 
 ### Mi primera Debian administrable
@@ -1864,6 +1866,8 @@ usuario técnico de laboratorio: tec07
 > La web no publica una única solución cerrada: interesa que el procedimiento pueda defenderse y reproducirse.
 
 ---
+
+{% endcomment %}
 
 ## PARTE VIII · BATERÍA DE EJERCICIOS {#ejercicios}
 
@@ -2006,6 +2010,8 @@ curl -v URL
 
 ---
 
+{% comment %}
+
 ## PARTE X · AUTOEVALUACIÓN {#autoevaluacion}
 
 <details>
@@ -2107,6 +2113,8 @@ Sin consultar la chuleta, intenta:
 Si puedes hacerlo **y explicarlo**, ya tienes la base que necesitamos para comenzar DHCP.
 
 ---
+
+{% endcomment %}
 
 ## PARTE XI · REFERENCIAS OFICIALES {#referencias}
 
