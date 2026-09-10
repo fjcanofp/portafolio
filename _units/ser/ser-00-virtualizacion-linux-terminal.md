@@ -108,22 +108,144 @@ Al finalizar esta unidad deberías poder:
 
 ---
 
+
+
 ### Relación con los RA y CE de Servicios en Red
 
-La **UT00 es preparatoria y transversal**. No cierra por sí sola un resultado de aprendizaje oficial. Construye las destrezas de sistema que necesitaremos para demostrar posteriormente los RA1–RA8 del módulo 0227.
+La **UT00 · Virtualización y fundamentos Linux** tiene un carácter principalmente **introductorio y transversal**.
 
-| RA del módulo | Lo que UT00 prepara |
+Su finalidad es proporcionar la base técnica que necesitaremos durante todo el módulo: creación y manejo de máquinas virtuales, administración básica de Debian, uso de la terminal, sistema de archivos, usuarios y grupos, permisos, procesos, servicios, registros e interfaces de red.
+
+Estos contenidos serán reutilizados posteriormente al implantar DHCP, DNS, transferencia de archivos, correo electrónico, servidores web, acceso remoto, redes inalámbricas y mecanismos de conexión entre redes.
+
+---
+
+#### RA trabajado en esta unidad
+
+**RA8. Establece el acceso desde redes locales a redes públicas, identificando posibles escenarios y aplicando software específico.**
+
+En UT00 comenzamos a trabajar este resultado de aprendizaje mediante la creación del laboratorio virtual que utilizaremos durante el curso.
+
+Cada máquina dispondrá inicialmente de dos interfaces de red:
+
+```text
+                         INTERNET
+                            │
+                     NAT de VirtualBox
+                            │
+             ┌──────────────┴──────────────┐
+             │                             │
+        ser-ser01                     ser-cli01
+        Debian 13                     Debian 13
+        NIC 1 · NAT                   NIC 1 · NAT
+        NIC 2 · SER-LAB               NIC 2 · SER-LAB
+        192.168.50.10                 192.168.50.20
+             │                             │
+             └──────── SER-LAB ────────────┘
+                    Red privada local
+```
+
+Esta arquitectura permite diferenciar desde el comienzo dos conceptos que volverán a aparecer durante el curso:
+
+- una **red privada local**, representada por `SER-LAB`;
+- el acceso hacia una **red externa**, proporcionado inicialmente mediante NAT por el hipervisor.
+
+---
+
+#### Criterio de evaluación relacionado
+
+Dentro del RA8, esta unidad permite comenzar a obtener evidencias del siguiente criterio:
+
+> **CE a)** Se ha instalado y configurado el hardware de un sistema con acceso a una red privada local y a una red pública.
+
+En nuestro laboratorio, este criterio se trabaja mediante la configuración de los adaptadores virtuales de las máquinas y la comprobación posterior desde Debian.
+
+El alumnado deberá ser capaz de:
+
+- crear una máquina virtual y asignarle los recursos necesarios;
+- configurar sus adaptadores de red;
+- diferenciar NAT, red interna, solo-anfitrión y adaptador puente;
+- conectar la máquina a la red privada `SER-LAB`;
+- disponer simultáneamente de acceso externo mediante NAT;
+- identificar las interfaces de red desde Linux;
+- consultar las direcciones asignadas;
+- interpretar las rutas utilizadas por el sistema;
+- comprobar la conectividad básica entre las máquinas del laboratorio y hacia el exterior.
+
+Comandos como:
+
+```bash
+ip -br address
+ip route
+ip route get 192.168.50.20
+ping -c 4 192.168.50.20
+```
+
+nos permitirán comprobar posteriormente que la arquitectura virtual configurada se corresponde con la diseñada.
+
+> **Importante:** el RA8 no se completa en UT00.  
+> En esta unidad únicamente se construye la infraestructura inicial y se introduce el **CE a)**.  
+> El RA8 se desarrollará en profundidad en **UT08**, donde trabajaremos encaminamiento, reenvío de paquetes, filtrado, NAT/DNAT, acceso entre redes y resolución de incidencias.
+
+---
+
+### Aprendizajes transversales de UT00
+
+Además del trabajo inicial sobre el RA8, UT00 desarrolla conocimientos que serán necesarios en prácticamente todas las unidades posteriores.
+
+| Aprendizaje de UT00 | Aplicación posterior en Servicios en Red |
 |---|---|
-| **RA1 · Configuración dinámica** | instalación de paquetes, edición de configuración, procesos, sockets, captura y verificación desde cliente |
-| **RA2 · Resolución de nombres** | manejo de archivos, permisos, servicios, logs y herramientas de consulta |
-| **RA3 · Transferencia de ficheros** | usuarios, grupos, permisos, árbol de directorios y clientes de terminal |
-| **RA4 · Correo electrónico** | cuentas, servicios, registros, puertos y comprobaciones cliente-servidor |
-| **RA5 · Servidores web** | DocumentRoot, permisos, servicio, procesos, puertos, logs y comprobación |
-| **RA6 · Acceso remoto** | consola, usuarios, claves, permisos y administración desde terminal |
-| **RA7 · Redes inalámbricas** | interfaces, herramientas de red, servicios y diagnóstico |
-| **RA8 · Redes privadas/públicas** | rutas, interfaces, sockets, procesos y comprobación extremo a extremo |
+| Virtualización | Creación de laboratorios seguros y reproducibles |
+| Manejo de la terminal Linux | Administración de los servidores del módulo |
+| Sistema de archivos y rutas | Localización y modificación de configuraciones |
+| Usuarios y grupos | FTP/SFTP, correo, web y acceso remoto |
+| Permisos | Protección de archivos, directorios y recursos |
+| Procesos y servicios | Administración de DHCP, DNS, Apache, SSH, correo, etc. |
+| Registros del sistema | Diagnóstico y resolución de incidencias |
+| Interfaces y direcciones IP | Configuración y comprobación de servicios de red |
+| Tabla de rutas | Comunicación entre equipos y redes |
+| Puertos y sockets | Comprobación del estado real de los servicios |
+| Herramientas de diagnóstico | Verificación y localización de fallos |
 
-Los CE que reaparecerán durante el curso exigen, entre otras cosas, **instalar, configurar, verificar, crear usuarios/grupos, probar clientes, aplicar seguridad y demostrar el funcionamiento de los servicios**. UT00 entrena esas operaciones antes de aplicarlas a un servicio concreto.
+Estos aprendizajes son **instrumentales**: no constituyen por sí mismos nuevos criterios de evaluación del módulo.
+
+Su objetivo es proporcionar las herramientas necesarias para que, en las siguientes unidades, el alumnado pueda demostrar correctamente los CE asociados a cada servicio.
+
+Por ejemplo:
+
+```text
+UT00
+Terminal + permisos + servicios + red
+                 │
+                 ▼
+UT01 · DHCP
+                 │
+                 ▼
+UT02 · DNS
+                 │
+                 ▼
+UT03 · Transferencia
+                 │
+                 ▼
+...
+                 │
+                 ▼
+UT08 · Acceso entre redes
+```
+
+La dificultad irá aumentando progresivamente. Al comienzo se proporcionarán ejemplos y prácticas muy guiadas; posteriormente se pedirá al alumnado mayor autonomía para configurar, comprobar y diagnosticar los servicios.
+
+---
+
+### Referencia curricular
+
+Los resultados de aprendizaje y criterios de evaluación del módulo **0227 · Servicios en Red** están establecidos en el currículo oficial del ciclo.
+
+- [Decreto 272/2009, de 28 de diciembre, por el que se establece el currículo del Ciclo Formativo de Grado Medio de Técnico en Sistemas Microinformáticos y Redes en Extremadura](https://doe.juntaex.es/pdfs/doe/2010/10o/10o.pdf)
+- [Real Decreto 1691/2007, de 14 de diciembre, por el que se establece el título de Técnico en Sistemas Microinformáticos y Redes](https://www.boe.es/eli/es/rd/2007/12/14/1691)
+
+> **Nota:** en las siguientes unidades aparecerán al comienzo el **Resultado de Aprendizaje (RA)** trabajado y los **Criterios de Evaluación (CE)** concretos asociados a esa unidad.
+
 ---
 
 ### Contexto profesional: trabajar como técnico, no como “usuario que prueba cosas”
