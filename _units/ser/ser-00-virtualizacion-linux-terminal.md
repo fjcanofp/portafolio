@@ -237,17 +237,6 @@ La dificultad irá aumentando progresivamente. Al comienzo se proporcionarán ej
 
 ---
 
-### Referencia curricular
-
-Los resultados de aprendizaje y criterios de evaluación del módulo **0227 · Servicios en Red** están establecidos en el currículo oficial del ciclo.
-
-- [Decreto 272/2009, de 28 de diciembre, por el que se establece el currículo del Ciclo Formativo de Grado Medio de Técnico en Sistemas Microinformáticos y Redes en Extremadura](https://doe.juntaex.es/pdfs/doe/2010/10o/10o.pdf)
-- [Real Decreto 1691/2007, de 14 de diciembre, por el que se establece el título de Técnico en Sistemas Microinformáticos y Redes](https://www.boe.es/eli/es/rd/2007/12/14/1691)
-
-> **Nota:** en las siguientes unidades aparecerán al comienzo el **Resultado de Aprendizaje (RA)** trabajado y los **Criterios de Evaluación (CE)** concretos asociados a esa unidad.
-
----
-
 ### Contexto profesional: trabajar como técnico, no como “usuario que prueba cosas”
 
 Imagina esta situación:
@@ -2236,6 +2225,12 @@ Si puedes hacerlo **y explicarlo**, ya tienes la base que necesitamos para comen
 {% endcomment %}
 
 ## PARTE XI · REFERENCIAS OFICIALES {#referencias}
+
+### Referencia curricular
+
+
+- [Decreto 272/2009, de 28 de diciembre, por el que se establece el currículo del Ciclo Formativo de Grado Medio de Técnico en Sistemas Microinformáticos y Redes en Extremadura](https://doe.juntaex.es/pdfs/doe/2010/10o/10o.pdf)
+- [Real Decreto 1691/2007, de 14 de diciembre, por el que se establece el título de Técnico en Sistemas Microinformáticos y Redes](https://www.boe.es/eli/es/rd/2007/12/14/1691)
 
 ### Virtualización
 
