@@ -2382,5 +2382,3 @@ diagnosticar
 ↓
 explicar
 ```
-
-Ese es el salto de **usar Linux** a **administrar Servicios en Red**.
