@@ -1,505 +1,395 @@
 ---
 title: "UT00 · Virtualización y fundamentos Linux"
-
-description: "Introducción profesional a la virtualización, creación del laboratorio SER-LAB y fundamentos de administración Linux desde terminal."
-
-summary: "Preparación del entorno de trabajo mediante VirtualBox y adquisición de una base sólida de Linux desde terminal para administrar servicios de red."
+description: "Desde cero: virtualización, VirtualBox, laboratorio SER-LAB, Debian y manejo sólido de la consola Linux para Servicios en Red."
+summary: "Creación del laboratorio virtual SER-LAB y adquisición de una base sólida de Linux desde terminal para administrar servicios de red."
 
 module_key: ser
 cycle_key: smr
-
 order: 0
 
-unit: "UT00"
+module_title: "Servicios en Red"
 module_code: "0227"
+cycle_title: "Sistemas Microinformáticos y Redes"
 course: "2.º SMR"
+unit: "UT00"
+hours: 18
 level: "iniciacion"
 
 ra:
-  - "Transversal a RA1–RA8"
+  - "RA8"
+ce:
+  - "RA8.a"
 
 tags:
   - virtualizacion
   - virtualbox
-  - linux
   - debian
+  - linux
   - terminal
-  - permisos
   - usuarios
+  - permisos
   - systemd
   - redes
   - diagnostico
 
 permalink: /docencia/smr/ser/ut00/
-
 published: true
 
 toc:
   - title: Introducción
     id: introduccion
-
   - title: Virtualización
     id: virtualizacion
-
-  - title: Consola Linux
-    id: consola
-
+  - title: Redes virtuales
+    id: redes-virtuales
+  - title: Terminal Linux
+    id: terminal
+  - title: Sistema de archivos
+    id: sistema-archivos
+  - title: Leer, buscar y combinar
+    id: leer-buscar
   - title: Usuarios y permisos
-    id: permisos
-
+    id: usuarios-permisos
   - title: Servicios y logs
-    id: servicios
-
+    id: servicios-logs
   - title: Red y diagnóstico
-    id: red
-
+    id: red-diagnostico
   - title: Laboratorio guiado
     id: laboratorio
-
-  # - title: Práctica
-  #   id: practica
-
   - title: Ejercicios
     id: ejercicios
-
   - title: Chuleta
     id: chuleta
-
-  # - title: Autoevaluación
-  #   id: autoevaluacion
-
   - title: Referencias
     id: referencias
 ---
 
 ## Introducción {#introduccion}
 
-> **Objetivo de la unidad:** empezar desde cero con dos ideas fundamentales para el resto del curso: **entender cómo funciona un laboratorio virtual** y adquirir un **manejo sólido de la consola Linux**. La meta no es memorizar comandos, sino saber qué hace cada uno, probarlo, interpretar el resultado y utilizarlo después para administrar servicios de red.
+> **Objetivo de la unidad:** construir desde cero el laboratorio que utilizaremos durante el curso y adquirir un **manejo sólido de la consola Linux**.  
+> No buscamos memorizar una lista interminable de órdenes. Buscamos que puedas responder cuatro preguntas: **qué quiero comprobar, qué comando me ayuda, qué significa su salida y qué hago después**.
 
-En **Servicios en Red** trabajaremos durante todo el curso con servicios que se ejecutan sobre un sistema operativo: DHCP, DNS, transferencia de archivos, correo, web, acceso remoto, redes inalámbricas y pasarelas. Antes de administrar esos servicios necesitamos dominar el terreno donde viven: **archivos, directorios, usuarios, grupos, permisos, procesos, sockets, servicios y logs**.
+En **Servicios en Red** instalaremos DHCP, DNS, transferencia de archivos, correo, servidores web, acceso remoto, redes inalámbricas y mecanismos de conexión entre redes. Todos esos servicios se ejecutan sobre sistemas operativos y redes reales o virtuales.
 
-Esta UT00 parte deliberadamente desde un nivel muy básico. Primero veremos **host, hipervisor, máquina virtual, ISO, CPU, RAM, disco, snapshots y redes virtuales**. Después entraremos en Debian y trabajaremos paso a paso con la terminal. El nivel de Linux busca una base sólida similar a la de una formación introductoria profesional, pero **sin scripting en esta unidad**.
-
----
-
-### Qué deberías ser capaz de hacer al terminar
-
-Al finalizar esta unidad deberías poder:
-
-- explicar qué son **host, guest, hipervisor, VM e ISO**;
-- crear una VM de laboratorio y justificar CPU, RAM y disco;
-- distinguir NAT, Red NAT, Red interna, Solo-anfitrión y Puente;
-- crear y restaurar snapshots;
-- abrir una terminal y saber **dónde estás, quién eres y con qué privilegios trabajas**;
-- moverte con soltura por el árbol de directorios de Linux;
-- crear, copiar, mover, localizar, inspeccionar y borrar archivos de forma consciente;
-- usar ayuda integrada (`man`, `--help`, `apropos`) en lugar de depender siempre de una receta;
-- entender rutas absolutas, rutas relativas, `.` y `..`;
-- trabajar con comodines, tuberías y redirecciones;
-- crear y gestionar usuarios y grupos de un laboratorio;
-- interpretar y modificar propietario, grupo y permisos;
-- comprender el significado real de `r`, `w` y `x` en **archivos y directorios**;
-- usar `sudo` aplicando el principio de mínimo privilegio;
-- instalar y consultar paquetes en Debian;
-- inspeccionar procesos, servicios, sockets y registros;
-- revisar direccionamiento y rutas de red;
-- diagnosticar un fallo siguiendo una secuencia y no mediante ensayo y error;
-- documentar qué cambiaste, cómo lo comprobaste y cómo volverías atrás.
-
----
-
-
-
-### Relación con los RA y CE de Servicios en Red
-
-La **UT00 · Virtualización y fundamentos Linux** tiene un carácter principalmente **introductorio y transversal**.
-
-Su finalidad es proporcionar la base técnica que necesitaremos durante todo el módulo: creación y manejo de máquinas virtuales, administración básica de Debian, uso de la terminal, sistema de archivos, usuarios y grupos, permisos, procesos, servicios, registros e interfaces de red.
-
-Estos contenidos serán reutilizados posteriormente al implantar DHCP, DNS, transferencia de archivos, correo electrónico, servidores web, acceso remoto, redes inalámbricas y mecanismos de conexión entre redes.
-
----
-
-#### RA trabajado en esta unidad
-
-**RA8. Establece el acceso desde redes locales a redes públicas, identificando posibles escenarios y aplicando software específico.**
-
-En UT00 comenzamos a trabajar este resultado de aprendizaje mediante la creación del laboratorio virtual que utilizaremos durante el curso.
-
-Cada máquina dispondrá inicialmente de dos interfaces de red:
+Por eso empezaremos por la base:
 
 ```text
-                         INTERNET
-                            │
-                     NAT de VirtualBox
-                            │
-             ┌──────────────┴──────────────┐
-             │                             │
-        ser-ser01                     ser-cli01
-        Debian 13                     Debian 13
-        NIC 1 · NAT                   NIC 1 · NAT
-        NIC 2 · SER-LAB               NIC 2 · SER-LAB
-        192.168.50.10                 192.168.50.20
-             │                             │
-             └──────── SER-LAB ────────────┘
-                    Red privada local
-```
-
-Esta arquitectura permite diferenciar desde el comienzo dos conceptos que volverán a aparecer durante el curso:
-
-- una **red privada local**, representada por `SER-LAB`;
-- el acceso hacia una **red externa**, proporcionado inicialmente mediante NAT por el hipervisor.
-
----
-
-#### Criterio de evaluación relacionado
-
-Dentro del RA8, esta unidad permite comenzar a obtener evidencias del siguiente criterio:
-
-> **CE a)** Se ha instalado y configurado el hardware de un sistema con acceso a una red privada local y a una red pública.
-
-En nuestro laboratorio, este criterio se trabaja mediante la configuración de los adaptadores virtuales de las máquinas y la comprobación posterior desde Debian.
-
-El alumnado deberá ser capaz de:
-
-- crear una máquina virtual y asignarle los recursos necesarios;
-- configurar sus adaptadores de red;
-- diferenciar NAT, red interna, solo-anfitrión y adaptador puente;
-- conectar la máquina a la red privada `SER-LAB`;
-- disponer simultáneamente de acceso externo mediante NAT;
-- identificar las interfaces de red desde Linux;
-- consultar las direcciones asignadas;
-- interpretar las rutas utilizadas por el sistema;
-- comprobar la conectividad básica entre las máquinas del laboratorio y hacia el exterior.
-
-Comandos como:
-
-```bash
-ip -br address
-ip route
-ip route get 192.168.50.20
-ping -c 4 192.168.50.20
-```
-
-nos permitirán comprobar posteriormente que la arquitectura virtual configurada se corresponde con la diseñada.
-
-> **Importante:** el RA8 no se completa en UT00.  
-> En esta unidad únicamente se construye la infraestructura inicial y se introduce el **CE a)**.  
-> El RA8 se desarrollará en profundidad en **UT08**, donde trabajaremos encaminamiento, reenvío de paquetes, filtrado, NAT/DNAT, acceso entre redes y resolución de incidencias.
-
----
-
-### Aprendizajes transversales de UT00
-
-Además del trabajo inicial sobre el RA8, UT00 desarrolla conocimientos que serán necesarios en prácticamente todas las unidades posteriores.
-
-| Aprendizaje de UT00 | Aplicación posterior en Servicios en Red |
-|---|---|
-| Virtualización | Creación de laboratorios seguros y reproducibles |
-| Manejo de la terminal Linux | Administración de los servidores del módulo |
-| Sistema de archivos y rutas | Localización y modificación de configuraciones |
-| Usuarios y grupos | FTP/SFTP, correo, web y acceso remoto |
-| Permisos | Protección de archivos, directorios y recursos |
-| Procesos y servicios | Administración de DHCP, DNS, Apache, SSH, correo, etc. |
-| Registros del sistema | Diagnóstico y resolución de incidencias |
-| Interfaces y direcciones IP | Configuración y comprobación de servicios de red |
-| Tabla de rutas | Comunicación entre equipos y redes |
-| Puertos y sockets | Comprobación del estado real de los servicios |
-| Herramientas de diagnóstico | Verificación y localización de fallos |
-
-Estos aprendizajes son **instrumentales**: no constituyen por sí mismos nuevos criterios de evaluación del módulo.
-
-Su objetivo es proporcionar las herramientas necesarias para que, en las siguientes unidades, el alumnado pueda demostrar correctamente los CE asociados a cada servicio.
-
-Por ejemplo:
-
-```text
-UT00
-Terminal + permisos + servicios + red
-                 │
-                 ▼
+VIRTUALIZACIÓN
+      ↓
+LABORATORIO AISLADO
+      ↓
+DEBIAN
+      ↓
+TERMINAL
+      ↓
+ARCHIVOS · USUARIOS · PERMISOS
+      ↓
+PROCESOS · SERVICIOS · LOGS
+      ↓
+IP · RUTAS · PUERTOS
+      ↓
+DIAGNÓSTICO
+      ↓
 UT01 · DHCP
-                 │
-                 ▼
-UT02 · DNS
-                 │
-                 ▼
-UT03 · Transferencia
-                 │
-                 ▼
-...
-                 │
-                 ▼
-UT08 · Acceso entre redes
 ```
 
-La dificultad irá aumentando progresivamente. Al comienzo se proporcionarán ejemplos y prácticas muy guiadas; posteriormente se pedirá al alumnado mayor autonomía para configurar, comprobar y diagnosticar los servicios.
+**En esta unidad no trabajaremos scripting ni archivos `.sh`.** Primero necesitamos que la consola deje de ser algo que se copia y pase a ser una herramienta que entendemos.
 
 ---
 
-### Contexto profesional: trabajar como técnico, no como “usuario que prueba cosas”
+### 1. Qué deberías ser capaz de hacer al terminar
 
-Imagina esta situación:
+Al finalizar UT00 deberías poder:
 
-> “La web interna no abre desde un equipo cliente. En el servidor parece que sí funciona.”
+- explicar qué son **host, guest, máquina virtual, hipervisor e ISO**;
+- distinguir **hardware virtual** de **modo de conexión de una tarjeta virtual**;
+- crear una VM razonable y justificar CPU, RAM y disco;
+- instalar Debian en una VM;
+- crear y restaurar una instantánea;
+- distinguir **NAT, Red NAT, Red interna, Solo-anfitrión y Puente**;
+- construir el laboratorio `SER-LAB` sin afectar a la red física del centro;
+- iniciar sesión en Debian y saber **quién eres, en qué máquina estás y dónde estás**;
+- moverte con seguridad por el árbol de directorios;
+- crear, copiar, mover, buscar, leer y eliminar archivos;
+- utilizar ayuda integrada (`man`, `--help`) antes de depender de una receta;
+- crear usuarios y grupos de laboratorio;
+- interpretar y modificar permisos Linux;
+- utilizar `sudo` de forma consciente;
+- consultar paquetes, procesos, servicios, puertos y registros;
+- identificar interfaces, direcciones IP y rutas;
+- diagnosticar una incidencia sencilla siguiendo una secuencia lógica.
 
-Una reacción poco profesional sería reiniciar máquinas, cambiar IP, desactivar el cortafuegos y reinstalar el servidor “a ver si así va”.
+---
 
-Un técnico intenta **reducir el problema**:
+### 2. Relación con los RA y CE de Servicios en Red
 
-1. ¿La interfaz existe y está activa?
-2. ¿Tiene la dirección esperada?
-3. ¿Existe una ruta hacia el destino?
-4. ¿El nombre resuelve?
-5. ¿El puerto es alcanzable?
-6. ¿Hay un proceso escuchando?
-7. ¿El servicio está activo?
-8. ¿Qué dicen los logs?
-9. ¿La aplicación responde correctamente?
-10. ¿El cambio realizado resolvió el problema sin romper otra cosa?
+La **UT00 tiene un carácter principalmente introductorio y transversal**. Proporciona la base técnica que necesitaremos durante todo el módulo: virtualización, administración básica de Debian, terminal, sistema de archivos, usuarios, grupos, permisos, procesos, servicios, registros e interfaces de red.
 
-Esa forma de pensar será el hilo conductor del módulo.
+No obstante, una parte concreta de esta unidad se relaciona directamente con un criterio oficial del módulo.
 
-#### Competencias profesionales que empezamos a construir
+#### RA8 · Acceso desde redes locales a redes públicas
 
-- administración Linux y Windows;
-- virtualización;
-- operación de servicios;
-- control de permisos;
-- lectura de logs;
-- diagnóstico de red;
-- documentación técnica;
-- aplicación del mínimo privilegio;
-- recuperación ante errores.
+> **RA8.** Establece el acceso desde redes locales a redes públicas identificando posibles escenarios y aplicando software específico.
+
+En UT00 comenzamos a trabajar este RA al construir una máquina con:
+
+- una interfaz orientada a nuestra **red privada de laboratorio**;
+- otra interfaz con salida hacia una **red externa** mediante NAT del hipervisor.
+
+#### CE trabajado directamente
+
+> **RA8 · CE a)** Se ha instalado y configurado el hardware de un sistema con acceso a una red privada local y a una red pública.
+
+En nuestro laboratorio utilizaremos hardware **virtualizado**, pero las decisiones técnicas que debemos comprender son las mismas: qué interfaz existe, a qué red se conecta, qué dirección utiliza y por dónde debe circular cada tráfico.
+
+> **Importante:** UT00 no completa el RA8.  
+> Aquí obtenemos una primera evidencia del **CE a)**. El resto del RA8 se desarrollará en **UT08**, cuando trabajemos pasarelas, encaminamiento, filtrado, NAT/DNAT, publicación y resolución de incidencias entre redes.
+
+#### Aprendizajes transversales
+
+| Aprendizaje de UT00 | Para qué lo reutilizaremos |
+|---|---|
+| Virtualización | laboratorios seguros y reproducibles |
+| Terminal Linux | administración de todos los servidores |
+| Archivos y rutas | configuración de servicios |
+| Usuarios y grupos | transferencia, correo, web y acceso remoto |
+| Permisos | control de acceso |
+| Procesos y servicios | DHCP, DNS, Apache, SSH, correo… |
+| Logs | diagnóstico |
+| Interfaces y rutas | DHCP, acceso remoto y conexión entre redes |
+| Puertos y sockets | comprobación real del servicio |
+
+Estos aprendizajes **no son nuevos CE inventados**. Son herramientas que permitirán demostrar los CE oficiales de las unidades posteriores.
+
+**Referencia curricular de Extremadura:**  
+[Decreto 272/2009, de 28 de diciembre · módulo 0227 · RA8 y CE](https://doe.juntaex.es/pdfs/doe/2010/10o/10o.pdf#page=69)
+
+---
+
+### 3. Por qué esto se parece al trabajo real
+
+Un técnico no debería trabajar diciendo:
+
+> «He reiniciado tres cosas y ahora parece que funciona».
+
+Trabaja reduciendo el problema.
+
+Imagina:
+
+> «Desde el cliente no abre la web interna; en el servidor dicen que sí funciona».
+
+Antes de tocar nada podemos preguntar:
+
+1. ¿la VM está arrancada?;
+2. ¿la tarjeta virtual está conectada?;
+3. ¿la interfaz aparece `UP`?;
+4. ¿tiene la IP esperada?;
+5. ¿existe una ruta hacia el destino?;
+6. ¿el puerto está escuchando?;
+7. ¿el servicio está activo?;
+8. ¿qué registran los logs?;
+9. ¿responde la aplicación?;
+10. ¿el cambio realizado ha solucionado el problema sin romper otra cosa?
+
+Ese modo de pensar será más importante durante el curso que memorizar un comando concreto.
 
 ---
 
 ## PARTE I · VIRTUALIZACIÓN DESDE CERO {#virtualizacion}
 
-### Antes de tocar VirtualBox: ¿qué estamos virtualizando?
+### 4. Qué estamos virtualizando
 
-Un ordenador físico tiene recursos reales:
-
-```text
-CPU · memoria RAM · disco · tarjetas de red · USB · pantalla
-```
-
-Sin virtualización podríamos tener:
+Un PC físico aporta:
 
 ```text
-ORDENADOR DEL AULA
-└── Windows 11
+CPU · RAM · almacenamiento · tarjetas de red · USB · pantalla…
 ```
 
-Con virtualización podemos utilizar parte de esos recursos para construir otros ordenadores **virtuales**:
+El hipervisor utiliza parte de esos recursos para presentar a cada máquina virtual un ordenador independiente.
 
-```text
-ORDENADOR DEL AULA
-│
-├── Windows 11 del host
-│
-└── HIPERVISOR
-    ├── VM 1 · Debian servidor
-    ├── VM 2 · Debian cliente
-    └── VM 3 · Windows cliente
-```
+![Capas de virtualización]({{ '/assets/ser/ut00/01_capas_virtualizacion.svg' | relative_url }})
 
-La máquina virtual no “inventa” CPU ni RAM. El hipervisor reparte recursos del ordenador real.
+*Figura 1. El host aporta los recursos; VirtualBox presenta hardware virtual a cada sistema invitado.*
 
 #### Vocabulario imprescindible
 
-| Concepto | Significado | Ejemplo del curso |
+| Concepto | Qué significa | Ejemplo del curso |
 |---|---|---|
-| **Host / anfitrión** | ordenador físico que ejecuta el hipervisor | PC Windows del aula |
-| **Guest / invitado** | SO instalado dentro de una VM | Debian 13 |
+| **Host / anfitrión** | equipo físico que ejecuta el hipervisor | PC del aula |
+| **Hipervisor** | software que crea y administra VM | VirtualBox |
 | **VM** | ordenador virtual | `ser-ser01` |
-| **Hipervisor** | software que crea/administra VM | VirtualBox |
-| **ISO** | imagen utilizada como medio de instalación | ISO Debian 13 |
+| **Guest / invitado** | SO instalado en la VM | Debian 13 |
+| **ISO** | medio de instalación en forma de imagen | ISO de Debian |
 
-#### Ejercicio resuelto 1 · host o guest
+#### Ejercicio resuelto 1
 
-**Situación:** ejecutas Windows 11 en el PC físico y dentro de VirtualBox arrancas Debian.
-
-**Solución:**
+Tenemos Windows 11 en el PC físico y Debian dentro de VirtualBox.
 
 ```text
 Windows 11 del PC → host
 VirtualBox         → hipervisor
-Debian             → guest
+Debian 13          → guest
+ser-ser01          → máquina virtual
 ```
 
 ---
 
-### ¿Por qué usamos virtualización en Servicios en Red?
+### 5. Para qué virtualizamos en SER
 
 Durante el curso vamos a:
 
-- instalar servidores;
-- cambiar direcciones IP;
+- modificar direcciones IP;
+- instalar servicios;
 - crear usuarios;
-- modificar permisos;
-- abrir puertos;
-- arrancar y detener servicios;
+- cambiar permisos;
+- abrir o cerrar puertos;
 - configurar DHCP y DNS;
-- provocar fallos para diagnosticarlos.
+- provocar fallos;
+- restaurar estados anteriores.
 
-Hacer todo eso directamente sobre la red y los equipos reales sería incómodo y, en algunos casos, peligroso.
-
-Con VM podemos:
+Una VM nos permite trabajar con una filosofía muy útil:
 
 ```text
-crear → probar → romper → diagnosticar → restaurar
+crear → comprobar → modificar → romper → diagnosticar → recuperar
 ```
 
-sin convertir cada práctica en una reinstalación completa.
-
-Esto conecta además con el contexto profesional de la unidad: administración Windows/Linux, virtualización, redes, DHCP/DNS, soporte y documentación aparecen juntos en perfiles de sistemas porque forman parte de una misma infraestructura.
+sin utilizar la red física como campo de pruebas.
 
 ---
 
-### VirtualBox, VMware e Hyper-V
+### 6. VirtualBox, VMware e Hyper-V
 
-#### Oracle VirtualBox
+#### VirtualBox
 
-Será la herramienta principal del aula. Nos permite crear VM, discos virtuales, redes virtuales, snapshots y clones mediante una interfaz suficientemente accesible para empezar.
+Será nuestro hipervisor principal porque permite trabajar con VM, discos, snapshots y redes virtuales de forma cómoda en el aula.
 
 #### VMware Workstation
 
-Es otra plataforma de virtualización de escritorio. Cambian los menús, pero no las ideas esenciales: crear hardware virtual, instalar un SO, conectar redes y gestionar estados. A fecha del curso, Broadcom distribuye VMware Workstation Pro a través de su portal de soporte.
+Utiliza los mismos conceptos fundamentales. Cambiarán los nombres de algunos menús, pero seguiremos hablando de CPU virtual, memoria, disco, NIC, snapshot y redes.
 
-#### Microsoft Hyper-V
+#### Hyper-V
 
-Es el hipervisor de Microsoft integrado como característica opcional en ediciones compatibles de Windows. Microsoft exige, entre otros requisitos, CPU de 64 bits con SLAT, virtualización habilitada y suficiente memoria; Hyper-V completo no está disponible como rol en Windows Home.
+Es la solución de virtualización de Microsoft disponible en ediciones compatibles de Windows y Windows Server.
 
-#### Lo que queremos aprender de verdad
-
-No queremos recordar solo “qué botón pulsar”. Queremos poder cambiar mañana de VirtualBox a VMware o Hyper-V y seguir entendiendo:
+#### Lo que realmente queremos aprender
 
 ```text
-VM → CPU → RAM → disco → ISO → NIC → red virtual → snapshot
+crear VM
+   ↓
+asignar recursos
+   ↓
+conectar ISO
+   ↓
+instalar SO
+   ↓
+crear tarjetas virtuales
+   ↓
+elegir a qué redes se conectan
+   ↓
+crear un punto de recuperación
 ```
 
-#### Ejercicio resuelto 2 · cambia la herramienta
-
-**Pregunta:** si mañana una empresa utiliza VMware, ¿deja de servir lo aprendido con VirtualBox?
-
-**Solución:** no. La ubicación de las opciones cambia, pero conceptos como vCPU, RAM virtual, disco, snapshot y NIC virtual siguen existiendo.
+Si entiendes ese recorrido, cambiar de hipervisor resulta mucho más sencillo.
 
 ---
 
-### Recursos del host: no podemos asignarlo todo
+### 7. Descargas oficiales
 
-Supongamos un PC con:
-
-```text
-16 GB RAM
-8 procesadores lógicos
-```
-
-Queremos ejecutar dos Debian.
-
-Un punto de partida razonable puede ser:
-
-```text
-ser-ser01  → 2 vCPU · 2 GB RAM
-ser-cli01  → 2 vCPU · 2 GB RAM
-```
-
-El host conserva recursos para Windows, VirtualBox, navegador y resto de aplicaciones.
-
-#### Ejercicio resuelto 3 · reparto de RAM
-
-**Propuesta:** 8 GB para la primera VM + 8 GB para la segunda en un host de 16 GB.
-
-**¿Buena idea?** No como configuración inicial. Dejaría prácticamente sin margen al sistema anfitrión.
-
-**Principio:** asignar más recursos no siempre mejora el laboratorio.
-
----
-
-### ¿Qué es una ISO?
-
-La ISO es el medio de instalación.
-
-En un PC físico podríamos arrancar desde un USB. En una VM podemos conectar virtualmente la ISO:
-
-```text
-ISO Debian
-    │
-    v
-lector virtual
-    │
-    v
-ser-ser01
-```
-
-Para nuestro servidor utilizaremos Debian 13 y, cuando una práctica lo justifique, Windows 11 como cliente.
-
-#### Descargas oficiales
+Usa siempre fuentes oficiales.
 
 - [Oracle VirtualBox · Downloads](https://www.virtualbox.org/wiki/Downloads)
-- [Debian · instalación netinst](https://www.debian.org/distrib/netinst)
+- [Debian · instalación por red (netinst)](https://www.debian.org/distrib/netinst)
+- [Debian 13 “trixie”](https://www.debian.org/releases/trixie/)
 - [Microsoft · Descargar Windows 11](https://www.microsoft.com/es-es/software-download/windows11)
-- [Broadcom · VMware / descargas](https://support.broadcom.com/)
+- [Broadcom Support · VMware](https://support.broadcom.com/)
 - [Microsoft Learn · Instalar Hyper-V](https://learn.microsoft.com/es-es/windows-server/virtualization/hyper-v/get-started/Install-Hyper-V)
 
-Para los equipos Intel/AMD habituales utilizaremos normalmente la arquitectura Debian `amd64`.
+En los PC Intel/AMD habituales utilizaremos normalmente Debian `amd64`.
+
+> **Buena práctica:** conserva la ISO original y anota versión y procedencia. No descargues imágenes «repack» de páginas desconocidas para ahorrar unos minutos.
 
 ---
 
-### Crear `ser-ser01` paso a paso
+### 8. Crear la primera VM: `ser-ser01`
 
-#### Paso 1 · Nueva máquina
-
-En VirtualBox selecciona **Nueva**.
-
-Nombre:
+#### 8.1. Nombre
 
 ```text
 ser-ser01
 ```
 
-Evita nombres ambiguos como `debian nuevo`, `prueba2` o `maquina definitiva`.
+El nombre tiene significado:
 
-#### Paso 2 · ISO
+```text
+ser    → Servicios en Red
+ser01  → servidor principal
+```
 
-Selecciona la ISO de Debian descargada desde la web oficial.
+Evita nombres ambiguos como `debian nuevo`, `prueba2` o `maquina definitiva final`.
 
-#### Paso 3 · CPU
+#### 8.2. Recursos iniciales
 
-Punto de partida:
+Para una Debian de servidor sin escritorio, un punto de partida razonable en un PC de aula puede ser:
 
 ```text
 2 vCPU
+2 GB RAM
+25 GB de disco dinámico
 ```
 
-#### Paso 4 · RAM
+No es una ley. Es una **decisión inicial que podemos revisar**.
 
-Punto de partida para Debian servidor sin escritorio:
+#### Ejercicio resuelto 2 · RAM
+
+Host:
 
 ```text
-2048 MB
+16 GB RAM
 ```
 
-#### Paso 5 · Disco
-
-Ejemplo de aula:
+Propuesta:
 
 ```text
-25 GB · asignación dinámica
+VM1 → 8 GB
+VM2 → 8 GB
 ```
 
-Un disco dinámico crece en el host según se utiliza, hasta el máximo configurado.
+**Problema:** hemos consumido prácticamente toda la RAM disponible y olvidado al host.
 
-#### Ejercicio resuelto 4 · ¿25 GB significa ocupar 25 GB inmediatamente?
+Una propuesta inicial más prudente:
 
-No necesariamente si el disco es dinámico. El sistema invitado puede ver un disco virtual de 25 GB mientras el fichero del host ocupa menos inicialmente.
+```text
+VM1 → 2 GB
+VM2 → 2 GB
+```
+
+y dejamos margen al sistema anfitrión.
+
+#### 8.3. Disco dinámico
+
+Si creamos un disco virtual con máximo de 25 GB y crecimiento dinámico, el invitado puede ver un disco de 25 GB sin que el archivo del host ocupe necesariamente 25 GB desde el primer minuto.
 
 ---
 
-### Instalación inicial de Debian
+### 9. La ISO y el proceso de instalación
 
-Utilizaremos valores de laboratorio. Como ejemplo didáctico:
+Conceptualmente:
+
+```text
+ISO Debian
+    ↓
+lector virtual
+    ↓
+arranque de la VM
+    ↓
+instalador Debian
+    ↓
+disco virtual
+```
+
+Durante la instalación utilizaremos valores de laboratorio.
+
+Ejemplo:
 
 ```text
 Nombre completo: Fran Cano
@@ -507,59 +397,65 @@ Usuario:         francano
 Hostname:        ser-ser01
 ```
 
-Para las contraseñas se emplearán **contraseñas exclusivas de laboratorio**, nunca una contraseña personal. Un ejemplo ficticio para entender el formato podría ser:
+Para contraseñas usa una contraseña **exclusiva de laboratorio**.
+
+Ejemplo didáctico:
 
 ```text
 SerLab-2026-Prueba
 ```
 
-No reutilices esa contraseña fuera del laboratorio.
+No reutilices una contraseña personal.
 
-#### ¿Servidor con o sin escritorio?
+#### Servidor sin escritorio
 
-Nuestro servidor de referencia se trabajará preferentemente **sin escritorio gráfico**. Así aprenderemos a administrarlo con la terminal, que es precisamente la competencia que necesitaremos durante el módulo.
+El servidor se trabajará preferentemente sin entorno gráfico.
 
-#### Apagado correcto
+Eso no significa que «le falte algo». Significa que aprenderemos a administrarlo con herramientas reutilizables en servidores reales y remotos.
+
+#### Apagar correctamente
 
 ```bash
 sudo poweroff
 ```
 
-Cerrar la ventana “a lo bruto” no debe ser el procedimiento normal de apagado.
+No conviertas cerrar bruscamente la ventana de VirtualBox en tu forma habitual de apagar Debian.
 
 ---
 
-### Snapshot: nuestro punto de vuelta atrás
+### 10. Snapshots e instantáneas
 
-Una instantánea guarda un estado de referencia de la VM.
-
-Después de instalar y comprobar Debian crearemos:
+Después de instalar, actualizar y comprobar Debian:
 
 ```text
 00_BASE_LIMPIA
 ```
 
-Más adelante podremos tener:
+Más adelante:
 
 ```text
 00_BASE_LIMPIA
-   └── 01_RED_OK
-        └── 02_DHCP_OK
+      ↓
+01_RED_OK
+      ↓
+02_DHCP_OK
 ```
 
-#### Ejercicio resuelto 5 · antes de DHCP
+#### Ejercicio resuelto 3
 
-**Situación:** Debian funciona y mañana empezaremos a tocar la red.
+Mañana vamos a comenzar DHCP y hoy todo funciona.
 
-**Solución:** crear una instantánea antes del cambio. Si la práctica destruye la configuración podremos regresar a un estado conocido.
+**¿Cuándo es buen momento para crear snapshot?**
 
-> Un snapshot es muy útil, pero **no sustituye una copia de seguridad independiente**.
+Ahora, antes de realizar cambios.
+
+> Un snapshot facilita volver atrás en el laboratorio, pero **no sustituye una copia de seguridad independiente**.
 
 ---
 
-### Clonar una VM
+### 11. Clonar una máquina
 
-Después de preparar una Debian base podemos reutilizarla:
+Podemos preparar una Debian base y clonarla:
 
 ```text
 Debian base
@@ -567,878 +463,1059 @@ Debian base
 └── ser-cli01
 ```
 
-Después de clonar hay que revisar identidad y configuración: hostname, NIC, MAC cuando proceda e IP. Dos clones con la misma identidad pueden provocar problemas.
+Después del clon revisa:
+
+- hostname;
+- función de la máquina;
+- adaptadores;
+- direcciones MAC cuando proceda;
+- IP.
+
+**Clonar no significa que dos máquinas deban conservar la misma identidad.**
 
 ---
 
-### Redes virtuales: la parte que más confunde al principio
+## PARTE II · TARJETAS Y REDES VIRTUALES {#redes-virtuales}
 
-Una VM puede tener varias tarjetas de red virtuales, aunque tu PC solo tenga Wi-Fi y Ethernet físicos.
+### 12. Tarjeta virtual y modo de red no son lo mismo
 
-Dentro de Debian podrías ver nombres como:
+Esta diferencia evita muchos errores.
+
+![vNIC frente a modo de conexión]({{ '/assets/ser/ut00/02_vnic_vs_modo.svg' | relative_url }})
+
+*Figura 2. Debian ve una tarjeta virtual; VirtualBox decide a qué tipo de red está conectada.*
+
+Una **vNIC** es el adaptador que ve el sistema invitado. VirtualBox puede presentarle una o varias.
+
+Después elegimos dónde se conecta cada una:
+
+```text
+NAT
+Red NAT
+Red interna
+Solo-anfitrión
+Puente
+```
+
+Dentro de Debian pueden aparecer nombres como:
 
 ```text
 enp0s3
 enp0s8
 ```
 
-No memorices esos nombres: **comprueba siempre los de tu VM**.
+No memorices que «enp0s3 siempre es NAT». **Compruébalo en tu VM.**
+
+#### Ejercicio resuelto 4
+
+Dos VM tienen:
+
+```text
+192.168.50.10/24
+192.168.50.20/24
+```
+
+pero una está conectada a `SER-LAB` y otra a `SER_LAB`.
+
+¿Arreglarías el problema cambiando otra vez las IP?
+
+**No.** El problema está en el hipervisor: las vNIC están conectadas a redes virtuales distintas.
 
 ---
 
-### NAT
+### 13. NAT
 
-Es el modo cómodo para dar salida a Internet a una VM.
+![Red NAT individual]({{ '/assets/ser/ut00/03_red_nat.svg' | relative_url }})
 
-```text
-VM → NAT de VirtualBox → host → Internet
-```
+*Figura 3. NAT permite que una VM salga a Internet sin aparecer directamente como otro equipo de la LAN física.*
 
 Uso típico:
 
 ```text
-actualizar Debian
+apt update
 instalar paquetes
 consultar repositorios
 ```
 
-#### Ejercicio resuelto 6 · actualizar sin exponer la VM
+En VirtualBox, NAT da salida de forma sencilla. La VM no queda publicada automáticamente hacia la red exterior; si necesitáramos entrada hacia un servicio concreto habría que configurar una redirección.
 
-Necesitamos Internet para `apt update`, pero no queremos colocar al servidor directamente en la red física del centro.
+#### Ejercicio resuelto 5
 
-**Elección inicial:** NAT.
+Necesitamos descargar actualizaciones, pero no queremos que el servidor sea visible directamente en la red física.
+
+**Elección:** NAT.
 
 ---
 
-### Red interna
+### 14. Red interna
 
-Conecta VM entre sí dentro de un segmento virtual:
+![Red interna]({{ '/assets/ser/ut00/04_red_interna.svg' | relative_url }})
+
+*Figura 4. En una Red interna se comunican las VM que utilizan el mismo nombre de red, sin depender del host ni de la LAN física.*
+
+Es nuestra opción principal para servicios de laboratorio.
+
+Ejemplo:
 
 ```text
-ser-ser01 ←→ SER-LAB ←→ ser-cli01
+SER-LAB
 ```
 
-No proporciona Internet por sí misma y el host no participa normalmente.
+Es especialmente útil para DHCP: evita que las ofertas de nuestro servidor de prácticas lleguen a equipos reales del centro.
 
-Es ideal para servicios como DHCP porque podemos experimentar sin enviar sus respuestas a la red física.
+#### Ejercicio resuelto 6
 
-#### Ejercicio resuelto 7 · laboratorio DHCP
+Vamos a arrancar un DHCP creado por un alumno.
 
-**Pregunta:** ¿qué red elegirías para que un DHCP de prácticas no atienda ordenadores reales?
+¿Puente o Red interna?
 
-**Solución:** una **Red interna**, por ejemplo `SER-LAB`.
+**Red interna.** En puente el tráfico podría alcanzar la red real.
 
 ---
 
-### Solo-anfitrión
+### 15. Solo-anfitrión
 
-Permite comunicar el host y las VM en una red virtual:
+![Red solo-anfitrión]({{ '/assets/ser/ut00/05_red_hostonly.svg' | relative_url }})
 
-```text
-HOST ←→ red host-only ←→ VM1 / VM2
-```
+*Figura 5. Solo-anfitrión crea una red privada en la que participan el host y las VM.*
 
-Es útil cuando queremos administrar una VM desde el equipo físico sin colocarla directamente en la LAN real.
+Resulta útil cuando queremos acceder a una VM desde herramientas instaladas en el host.
 
----
-
-### Red NAT
-
-Una Red NAT permite que varias VM compartan una red virtual y tengan salida a Internet:
-
-```text
-VM1 ─┐
-     ├─ Red NAT ─→ Internet
-VM2 ─┘
-```
-
-La diferencia con NAT individual será más clara cuando midamos los flujos en el laboratorio.
+> **Atención para futuras prácticas DHCP:** una red host-only puede tener un servidor DHCP de VirtualBox. Si vamos a estudiar nuestro propio DHCP, debemos saber exactamente qué otros servidores pueden responder.
 
 ---
 
-### Adaptador puente
+### 16. Red NAT
 
-En puente, la VM se aproxima a comportarse como otro equipo conectado a la LAN física:
+![Red NAT compartida]({{ '/assets/ser/ut00/06_red_natnetwork.svg' | relative_url }})
 
-```text
-LAN REAL
-├── host
-├── otros equipos
-└── VM
-```
+*Figura 6. Una Red NAT ofrece un segmento compartido entre varias VM y salida al exterior.*
 
-Es útil profesionalmente, pero también puede exponer servicios o interferir con la red real.
+La utilizaremos solo cuando el escenario lo justifique.
 
-> **Norma de aula:** puente solo por indicación del profesor y con un objetivo concreto.
+Es cómoda, pero puede introducir elementos automáticos —por ejemplo DHCP— que debemos conocer antes de estudiar nuestros propios servicios.
 
 ---
 
-### Comparativa de modos
+### 17. Adaptador puente
 
-| Modo | Internet | VM ↔ VM | Host ↔ VM | Uso inicial |
+![Adaptador puente]({{ '/assets/ser/ut00/07_red_puente.svg' | relative_url }})
+
+*Figura 7. En modo puente la VM se comporta de forma mucho más parecida a otro equipo conectado a la LAN física.*
+
+Profesionalmente es útil.
+
+En el aula también puede ser peligroso:
+
+- un DHCP de prácticas puede interferir con clientes reales;
+- un servidor puede quedar accesible desde otros equipos;
+- una mala configuración puede afectar a terceros.
+
+> **Norma de aula:** no utilizaremos Puente salvo indicación expresa del profesor.
+
+---
+
+### 18. Comparativa de modos de VirtualBox
+
+| Modo | VM → Internet/LAN | VM ↔ VM | Host → VM | Uso en SER |
 |---|---:|---:|---:|---|
-| NAT | Sí | no directo por defecto | limitado | actualizar una VM |
-| Red NAT | Sí | Sí | según configuración | varias VM con salida |
-| Red interna | No | Sí | No | laboratorio aislado |
-| Solo-anfitrión | No por defecto | Sí | Sí | gestión desde el host |
-| Puente | según LAN | Sí | Sí | VM en red física |
+| **NAT** | Sí | No directamente por defecto | mediante redirección si se necesita | actualizar una VM |
+| **Red NAT** | Sí | Sí | mediante reglas cuando proceda | varias VM con salida compartida |
+| **Red interna** | No | Sí, mismo nombre | No | **laboratorio de servicios** |
+| **Solo-anfitrión** | No por defecto | Sí | Sí | administración desde el host |
+| **Puente** | Sí, según LAN | Sí | Sí | solo con autorización |
+
+[Oracle VirtualBox 7.2 · Virtual Networking](https://docs.oracle.com/en/virtualization/virtualbox/7.2/user/networkingdetails.html)
 
 ---
 
-### Arquitectura SER-LAB
+### 19. Topología base de SER-LAB
 
-Cada máquina tendrá inicialmente:
-
-```text
-Adaptador 1 → NAT
-Adaptador 2 → Red interna SER-LAB
-```
+Nuestro patrón será:
 
 ```text
-                         INTERNET
-                            |
-                     NAT VirtualBox
-                            |
-          +-----------------+-----------------+
-          |                                   |
-      ser-ser01                           ser-cli01
-      Debian 13                           Debian 13
-      NAT                                 NAT
-      SER-LAB .10                         SER-LAB .20
-          |                                   |
-          +-------- 192.168.50.0/24 ----------+
-
-          opcional: ser-win01 · 192.168.50.30/24
+NIC 1 → NAT
+NIC 2 → Red interna SER-LAB
 ```
 
-La interfaz de SER-LAB **no tendrá gateway** en este escenario. La ruta por defecto pertenece a NAT.
+![Topología SER-LAB]({{ '/assets/ser/ut00/08_topologia_ser_lab.svg' | relative_url }})
 
-#### Ejercicio resuelto 8 · dos adaptadores
+*Figura 8. Cada VM separa el acceso exterior de la red de servicios.*
 
-**Pregunta:** ¿por qué no dejamos solo NAT?
+Direcciones iniciales:
 
-**Solución:** porque queremos separar claramente dos funciones: salida a Internet para mantenimiento y una red aislada para los servicios de clase.
+```text
+ser-ser01 → 192.168.50.10/24
+ser-cli01 → 192.168.50.20/24
+ser-win01 → 192.168.50.30/24   (cuando lo necesitemos)
+```
+
+#### Idea crítica
+
+```text
+NAT      → mantenimiento / Internet
+SER-LAB  → tráfico de las prácticas
+```
+
+La interfaz de `SER-LAB` **no necesita gateway** en este escenario. La ruta por defecto debe continuar asociada a la salida NAT.
 
 ---
 
-### Configurar SER-LAB en VirtualBox
+### 20. Configurar los dos adaptadores
 
-Con la VM apagada:
+Con la VM **apagada**:
 
-1. abre **Configuración → Red**;
-2. Adaptador 1 → **NAT**;
-3. habilita Adaptador 2;
-4. selecciona **Red interna**;
-5. escribe exactamente:
+#### Adaptador 1
 
 ```text
-SER-LAB
+Habilitado
+Conectado a: NAT
+Cable conectado: sí
 ```
 
-Haz lo mismo en las dos VM.
-
-Estos nombres no deben considerarse iguales:
+#### Adaptador 2
 
 ```text
-SER-LAB
-SER_LAB
-SERLAB
+Habilitado
+Conectado a: Red interna
+Nombre: SER-LAB
+Cable conectado: sí
 ```
 
-#### Mini comprobación
+Repite en `ser-ser01` y `ser-cli01`.
 
-Antes de entrar en Linux debes poder explicar:
+#### Ejercicio resuelto 7
 
-- qué VM es servidor y cuál cliente;
-- por qué existen dos NIC;
-- para qué sirve NAT;
-- para qué sirve SER-LAB;
-- cómo volver a `00_BASE_LIMPIA`.
+Servidor:
+
+```text
+Red interna: SER-LAB
+```
+
+Cliente:
+
+```text
+Red interna: SER-LAB2
+```
+
+Las IP parecen correctas pero no se comunican.
+
+**Primera corrección:** no toques las IP todavía. Conecta ambas vNIC al mismo segmento virtual.
 
 ---
 
-### Antes de escribir comandos: terminal, consola y shell
+## PARTE III · ENTRAR EN DEBIAN Y ENTENDER LA TERMINAL {#terminal}
 
-Estos conceptos suelen mezclarse:
+### 21. El primer login
 
-- **terminal**: interfaz desde la que escribimos y vemos texto;
-- **shell**: programa que interpreta las órdenes;
-- **Bash**: una shell muy habitual en GNU/Linux;
-- **prompt**: texto que aparece antes de escribir una orden;
-- **comando**: instrucción que ejecuta la shell.
+Podemos encontrar:
 
-Un prompt puede verse así:
+```text
+Debian GNU/Linux 13 ser-ser01 tty1
+
+ser-ser01 login:
+```
+
+Iniciamos sesión:
+
+```text
+login: francano
+password: ********
+```
+
+La contraseña no aparece en pantalla mientras la escribes. Es normal.
+
+Después:
 
 ```text
 francano@ser-ser01:~$
 ```
 
-Lee sus partes:
+Lo podemos leer así:
 
 ```text
-francano   usuario
-ser-ser01  máquina
-~          home actual
-$          sesión de usuario normal
+francano  → usuario
+ser-ser01 → máquina
+~         → home
+$         → usuario normal
 ```
 
-Comprueba identidad:
+---
+
+### 22. Cuatro preguntas antes de trabajar
+
+#### ¿Quién soy?
 
 ```bash
 whoami
-id
-groups
+```
+
+#### ¿En qué máquina estoy?
+
+```bash
 hostname
 ```
 
-#### Ejercicio resuelto 9 · ¿en qué máquina estoy?
+#### ¿Dónde estoy?
 
-Salida:
+```bash
+pwd
+```
+
+#### ¿Qué hay aquí?
+
+```bash
+ls
+```
+
+#### Ejercicio resuelto 8
 
 ```text
 $ whoami
 francano
 $ hostname
 ser-ser01
+$ pwd
+/home/francano
 ```
 
-**Conclusión:** trabajamos como `francano` dentro de `ser-ser01`.
+Interpretación:
 
-#### Regla de oro
+> Estoy conectado como `francano` al servidor `ser-ser01` y estoy situado en mi directorio personal.
 
-Antes de copiar un comando con `sudo`, pregúntate:
-
-1. ¿qué modifica?;
-2. ¿qué ruta afecta?;
-3. ¿necesita realmente privilegios?;
-4. ¿cómo comprobaré el resultado?;
-5. ¿cómo volveré atrás?
+Eso es más útil que pegar una captura sin explicar nada.
 
 ---
 
-## PARTE II · DOMINIO DE LA CONSOLA {#consola}
+### 23. Pedir ayuda
 
-### Pedir ayuda sin salir del sistema
-
-Un buen administrador no memoriza todas las opciones. Sabe encontrarlas.
+No memorices todas las opciones.
 
 ```bash
 man ls
-man chmod
 ls --help
+man chmod
 chmod --help
-apropos permissions
-whatis passwd
 ```
 
-Dentro de `man`:
+En `man`:
 
 ```text
-/ palabra    buscar
-n            siguiente coincidencia
-N            coincidencia anterior
-q            salir
+/ texto   buscar
+n         siguiente resultado
+q         salir
 ```
 
-Para averiguar qué ejecutará la shell:
+#### Ejercicio guiado
+
+Abre:
 
 ```bash
-type cd
-type ls
-type printf
-command -v bash
-command -v systemctl
+man ls
 ```
+
+Busca:
+
+```text
+human-readable
+```
+
+y localiza la opción que muestra tamaños en formato más legible.
+
+**Resultado esperado:** descubrir `-h` utilizando la ayuda del propio sistema.
 
 ---
 
-### Saber dónde estás
+## PARTE IV · SISTEMA DE ARCHIVOS Y MOVIMIENTO {#sistema-archivos}
 
-#### Ejemplo guiado
+### 24. Un único árbol que empieza en `/`
 
-```bash
-whoami
-hostname
-pwd
-ls -la
-```
+![Árbol Linux]({{ '/assets/ser/ut00/09_arbol_linux.svg' | relative_url }})
 
-No ejecutes los cuatro como una “receta”. Relaciona cada salida con una pregunta: **quién soy, en qué máquina estoy, dónde estoy y qué hay aquí**.
+*Figura 9. Linux organiza archivos y directorios bajo una única raíz `/`.*
 
+Rutas importantes:
 
-```bash
-pwd
-ls
-ls -l
-ls -la
-ls -lh
-```
-
-`pwd` muestra el directorio actual. `ls -l` añade información fundamental:
-
-```text
--rwxr-x--- 1 ana operadores 1240 sep 10 09:30 configuracion.conf
-│└───────┘   │      │
-│ permisos   dueño  grupo
-└ tipo
-```
-
-El primer carácter indica el tipo:
-
-- `-` archivo regular;
-- `d` directorio;
-- `l` enlace simbólico.
-
----
-
-### Rutas absolutas y relativas
-
-#### Mini ejercicio resuelto
-
-Si estás en `/home/francano` y quieres entrar en `/home/francano/practicas`, funcionan ambas:
-
-```bash
-cd practicas
-cd /home/francano/practicas
-```
-
-La primera es relativa; la segunda, absoluta.
-
-
-Una **ruta absoluta** comienza en `/`:
-
-```text
-/etc/ssh/sshd_config
-/var/log
-/home/ana
-```
-
-Una **ruta relativa** parte del directorio actual:
-
-```text
-documentos/informe.txt
-../copias
-./documentos/informe.txt
-```
-
-Símbolos fundamentales:
-
-| Símbolo | Significado |
+| Ruta | Idea inicial |
 |---|---|
-| `/` | raíz del sistema |
-| `.` | directorio actual |
-| `..` | directorio padre |
-| `~` | home del usuario actual |
-| `-` | directorio anterior en `cd -` |
+| `/home` | directorios personales |
+| `/etc` | configuración |
+| `/var` | datos variables y registros |
+| `/srv` | datos asociados a servicios |
+| `/tmp` | temporales |
+| `/root` | home de root |
+| `/usr` | programas y recursos del sistema |
 
-Ejemplos:
+No hay que memorizar toda la jerarquía en una tarde.
+
+Hay que aprender a **moverse y reconocer para qué sirven las zonas que vamos utilizando**.
+
+---
+
+### 25. `cd`: cambiar de directorio
+
+Ir a una ruta absoluta:
 
 ```bash
 cd /etc
-cd ..
+```
+
+Volver al home:
+
+```bash
 cd ~
+```
+
+Subir al padre:
+
+```bash
+cd ..
+```
+
+Volver al directorio anterior:
+
+```bash
 cd -
 ```
 
-#### Ejercicio mental
+#### Ejercicio resuelto 9
 
-Si estás en `/srv/serlab/scripts`:
+Estamos en:
+
+```text
+/home/francano/practicas
+```
+
+Queremos ir a:
+
+```text
+/home/francano
+```
+
+Solución:
 
 ```bash
 cd ..
 ```
 
-te lleva a `/srv/serlab`.
+#### Ejercicio resuelto 10
+
+Estamos en cualquier lugar y queremos llegar directamente a `/var/log`.
 
 ```bash
-cd ../..
+cd /var/log
 ```
-
-te lleva a `/srv`.
 
 ---
 
-### Crear, copiar, mover y eliminar
+### 26. Rutas absolutas y relativas
 
-#### Ejercicio guiado completo
+Absoluta:
+
+```text
+/etc/hosts
+```
+
+Relativa:
+
+```text
+practicas/uno.txt
+```
+
+Si estamos en `/home/francano`:
 
 ```bash
-mkdir -p ~/ser/ut00
-cd ~/ser/ut00
-touch notas.txt
-cp notas.txt notas.bak
-mv notas.txt apuntes.txt
+cd practicas
+```
+
+y:
+
+```bash
+cd /home/francano/practicas
+```
+
+pueden llevar al mismo lugar.
+
+#### Símbolos fundamentales
+
+| Símbolo | Significado |
+|---|---|
+| `/` | raíz |
+| `.` | directorio actual |
+| `..` | padre |
+| `~` | home |
+| `-` | directorio anterior con `cd -` |
+
+#### Mini ejercicio resuelto
+
+Si estás en:
+
+```text
+/srv/serlab/evidencias
+```
+
+`cd ..` te lleva a:
+
+```text
+/srv/serlab
+```
+
+`cd ../..` te lleva a:
+
+```text
+/srv
+```
+
+---
+
+### 27. `ls`: mirar antes de tocar
+
+```bash
+ls
 ls -l
-rm -i notas.bak
+ls -a
+ls -h
+ls -lah
 ```
 
-**Resultado:** has creado una carpeta, un archivo, una copia, un renombrado y una eliminación consciente. Repite después cambiando nombres sin mirar el ejemplo.
+Una salida de `ls -l` puede contener:
 
-
-#### Crear directorios y archivos
-
-```bash
-mkdir laboratorio
-mkdir -p laboratorio/config laboratorio/logs laboratorio/scripts
-touch laboratorio/README.txt
+```text
+-rw-r----- 1 francano serops 1240 sep 11 09:20 notas.txt
 ```
 
-#### Copiar
+Todavía no hace falta entenderla entera.
 
-```bash
-cp origen.txt copia.txt
-cp origen.txt laboratorio/
-cp -r directorio copia_directorio
+Por ahora identifica:
+
+```text
+tipo
+permisos
+propietario
+grupo
+tamaño
+fecha
+nombre
 ```
 
-#### Mover o renombrar
+#### Ejercicio resuelto 11
 
-```bash
-mv viejo.txt nuevo.txt
-mv nuevo.txt laboratorio/
+Existe:
+
+```text
+.config
 ```
 
-#### Eliminar
+pero `ls` no lo muestra.
+
+Solución:
 
 ```bash
-rm archivo.txt
-rmdir directorio_vacio
+ls -a
+```
+
+En Linux, un nombre que comienza por `.` se trata como oculto en el listado normal.
+
+---
+
+### 28. Crear directorios y archivos
+
+Crear un directorio:
+
+```bash
+mkdir practicas
+```
+
+Crear una estructura:
+
+```bash
+mkdir -p ~/ser/ut00/evidencias
+```
+
+Crear un archivo vacío:
+
+```bash
+touch notas.txt
+```
+
+#### Ejercicio guiado
+
+Construye:
+
+```text
+~/ser/
+└── ut00/
+    ├── apuntes/
+    ├── practicas/
+    └── evidencias/
+```
+
+Solución sencilla:
+
+```bash
+mkdir -p ~/ser/ut00/apuntes
+mkdir -p ~/ser/ut00/practicas
+mkdir -p ~/ser/ut00/evidencias
+```
+
+Una forma compacta, cuando ya entiendas lo anterior:
+
+```bash
+mkdir -p ~/ser/ut00/{apuntes,practicas,evidencias}
+```
+
+Lo importante es entender el resultado, no escribir menos caracteres.
+
+---
+
+### 29. Copiar, mover y renombrar
+
+Copiar:
+
+```bash
+cp notas.txt copia.txt
+```
+
+Mover:
+
+```bash
+mv copia.txt evidencias/
+```
+
+Renombrar:
+
+```bash
+mv notas.txt apuntes.txt
+```
+
+#### Ejercicio resuelto 12
+
+Queremos conservar una copia antes de editar:
+
+```bash
+cp configuracion.conf configuracion.conf.bak
+```
+
+Después comprobamos:
+
+```bash
+ls -l configuracion.conf*
+```
+
+#### Ejercicio resuelto 13
+
+Existe:
+
+```text
+practia.txt
+```
+
+y queremos corregir el nombre:
+
+```bash
+mv practia.txt practica.txt
+```
+
+---
+
+### 30. Eliminar con cabeza
+
+Archivo:
+
+```bash
+rm fichero.txt
+```
+
+Con confirmación:
+
+```bash
+rm -i fichero.txt
+```
+
+Directorio vacío:
+
+```bash
+rmdir directorio
+```
+
+Directorio con contenido:
+
+```bash
 rm -r directorio
 ```
 
-> **Precaución:** `rm` no funciona como una papelera tradicional. Antes de usar `rm -r`, comprueba con `pwd` y `ls` dónde estás y qué vas a borrar.
-
-Una estrategia útil durante el aprendizaje:
+Antes de un borrado importante:
 
 ```bash
-rm -i archivo.txt
-cp -i origen destino
-mv -i origen destino
+pwd
+ls -la
 ```
 
-La opción `-i` solicita confirmación en situaciones básicas.
+> **No utilizaremos `rm -rf` como gesto automático.**  
+> Primero debemos saber exactamente qué ruta estamos afectando.
+
+#### Ejercicio resuelto 14
+
+Quieres eliminar `prueba.txt` pero deseas confirmación.
+
+```bash
+rm -i prueba.txt
+```
 
 ---
 
-### Leer archivos sin abrir un editor
+## PARTE V · LEER, BUSCAR Y COMBINAR {#leer-buscar}
 
-#### Ejercicio resuelto
+### 31. Leer archivos
 
-Un log tiene miles de líneas y solo quieres las 20 últimas:
+Archivo corto:
+
+```bash
+cat /etc/hostname
+```
+
+Archivo largo:
+
+```bash
+less /etc/services
+```
+
+Primeras líneas:
+
+```bash
+head -n 5 /etc/passwd
+```
+
+Últimas:
+
+```bash
+tail -n 5 /etc/passwd
+```
+
+#### Ejercicio resuelto 15
+
+Un log tiene 5.000 líneas y quieres las 20 últimas.
 
 ```bash
 tail -n 20 archivo.log
 ```
 
-`cat archivo.log` funcionaría, pero sería una herramienta peor elegida para esa pregunta.
+`cat archivo.log` también mostraría información, pero no sería la herramienta mejor elegida para esa pregunta.
 
+---
+
+### 32. Buscar texto con `grep`
 
 ```bash
-cat archivo.txt
-less archivo.txt
-head archivo.txt
-head -n 20 archivo.txt
-tail archivo.txt
-tail -n 30 archivo.txt
-tail -f /var/log/syslog
+grep "root" /etc/passwd
 ```
 
-`cat` es cómodo para archivos pequeños. `less` es preferible cuando el archivo crece.
-
-Para conocer el tipo:
+Ignorar mayúsculas/minúsculas:
 
 ```bash
-file archivo.txt
-stat archivo.txt
+grep -i "error" archivo.log
+```
+
+Mostrar número de línea:
+
+```bash
+grep -n "error" archivo.log
+```
+
+#### Ejercicio resuelto 16
+
+Queremos localizar `francano`:
+
+```bash
+grep "francano" /etc/passwd
 ```
 
 ---
 
-### Buscar archivos y buscar dentro de archivos
-
-#### Ejercicio resuelto
-
-Quieres localizar archivos `.conf` bajo `/etc`:
+### 33. Buscar archivos con `find`
 
 ```bash
 find /etc -type f -name "*.conf" 2>/dev/null
 ```
 
-Después quieres buscar la palabra `listen` dentro de configuraciones:
+En el directorio actual:
 
 ```bash
-grep -Rni "listen" /etc 2>/dev/null
-```
-
-
-#### Buscar nombres
-
-```bash
-find /etc -name "*.conf" 2>/dev/null
 find . -type f -name "*.log"
-find /var/log -type f -mtime -1 2>/dev/null
 ```
 
-#### Buscar contenido
+#### Ejercicio resuelto 17
+
+Necesitas encontrar archivos de configuración bajo `/etc`.
+
+Una solución:
 
 ```bash
-grep "error" aplicacion.log
-grep -i "failed" aplicacion.log
-grep -n "Listen" /etc/apache2/ports.conf
-grep -R "192.168.50.10" /etc 2>/dev/null
+find /etc -type f -name "*.conf" 2>/dev/null
 ```
 
-#### Una combinación profesional
-
-```bash
-find /etc -type f -name "*.conf" 2>/dev/null | head
-```
-
-Aquí aparece nuestro siguiente concepto.
+`2>/dev/null` oculta en este ejemplo los mensajes de error de permisos. Más adelante veremos con detalle la redirección de errores.
 
 ---
 
-### Tuberías: convertir comandos pequeños en herramientas potentes
+### 34. Tuberías `|`
 
-#### Ejercicio resuelto
-
-Queremos observar procesos y quedarnos con líneas relacionadas con SSH:
+La tubería envía la salida de un comando al siguiente.
 
 ```bash
 ps aux | grep ssh
 ```
 
-Primero `ps aux` produce información; después `grep` la filtra.
+Piensa:
 
+```text
+ps aux
+  ↓ produce muchas líneas
+grep ssh
+  ↓ conserva las relacionadas con ssh
+```
 
-La tubería `|` envía la salida de un comando a la entrada del siguiente.
+Otro ejemplo:
 
 ```bash
 ip address | less
+```
+
+#### Ejercicio resuelto 18
+
+Queremos ver procesos relacionados con Apache:
+
+```bash
 ps aux | grep apache
-ss -lntup | grep ':80'
-journalctl -b | grep -i error
 ```
 
-No memorices la tubería como “un símbolo”. Piensa:
-
-```text
-COMANDO A  --> produce datos -->  COMANDO B los filtra/procesa
-```
-
-Otros comandos útiles para procesar texto:
-
-```bash
-sort
-uniq
-wc
-cut
-tr
-sed
-```
-
-Ejemplos:
-
-```bash
-cut -d: -f1 /etc/passwd
-cut -d: -f1 /etc/passwd | sort
-printf "uno\ndos\ntres\n" | wc -l
-```
+Más adelante conoceremos alternativas más específicas como `pgrep`.
 
 ---
 
-### Redirecciones: stdout y stderr
+### 35. Redirecciones básicas
 
-#### Ejercicio resuelto
-
-Crear un pequeño inventario manual:
+Crear o sustituir:
 
 ```bash
-hostname > datos-equipo.txt
-date >> datos-equipo.txt
-ip -br address >> datos-equipo.txt
-cat datos-equipo.txt
+hostname > equipo.txt
 ```
 
-Observa que solo el primer `>` crea/sustituye; los siguientes `>>` añaden.
-
-
-Un proceso suele trabajar con:
-
-- entrada estándar: `stdin`;
-- salida estándar: `stdout`;
-- salida de error: `stderr`.
-
-Guardar salida:
+Añadir:
 
 ```bash
-ip -br address > inventario_red.txt
+date >> equipo.txt
 ```
 
-Añadir sin sobrescribir:
+Comprobar:
 
 ```bash
-date >> inventario_red.txt
+cat equipo.txt
 ```
 
-Guardar errores:
+#### Ejercicio resuelto 19
+
+Queremos guardar hostname y fecha en el mismo fichero:
+
+```bash
+hostname > datos.txt
+date >> datos.txt
+```
+
+**Clave:**
+
+```text
+>   sustituye
+>>  añade
+```
+
+<details>
+<summary><strong>Ampliación: salida normal y errores</strong></summary>
+
+También existe una salida específica para errores.
+
+Ejemplo:
 
 ```bash
 find /root -type f 2> errores.txt
 ```
 
-Guardar salida y errores:
+Y podemos guardar salida normal y errores:
 
 ```bash
 comando > salida.txt 2>&1
 ```
 
-En Bash moderno también puedes encontrar:
-
-```bash
-comando &> salida_completa.txt
-```
-
-#### Diferencia crítica
-
-```bash
-echo "A" > archivo.txt
-```
-
-**reemplaza** el contenido.
-
-```bash
-echo "B" >> archivo.txt
-```
-
-**añade** al final.
+No es necesario dominarlo el primer día.
+</details>
 
 ---
 
-### Comodines y expansión
+## PARTE VI · USUARIOS, GRUPOS Y PERMISOS {#usuarios-permisos}
 
-```bash
-ls *.conf
-ls informe?.txt
-cp *.log copias/
-```
-
-- `*` coincide con cero o más caracteres;
-- `?` coincide con un carácter;
-- `[abc]` coincide con uno de los caracteres indicados.
-
-Comprueba siempre la expansión antes de una operación destructiva:
-
-```bash
-printf '%s\n' *.log
-```
-
-y solo después:
-
-```bash
-rm -- *.log
-```
-
----
-
-### Comillas: una pequeña diferencia que evita muchos bugs
-
-```bash
-nombre="Servidor principal"
-echo "$nombre"
-echo '$nombre'
-```
-
-Resultado conceptual:
-
-```text
-"..."   expande variables
-'...'   conserva el texto literalmente
-```
-
-Siempre que una variable pueda contener espacios, cita la expansión:
-
-```bash
-cp "$origen" "$destino"
-```
-
-No:
-
-```bash
-cp $origen $destino
-```
-
----
-
-## PARTE III · USUARIOS, GRUPOS Y PERMISOS {#permisos}
-
-### Usuarios y grupos
-
-Linux identifica usuarios y grupos internamente mediante números:
-
-- UID: identificador de usuario;
-- GID: identificador de grupo.
-
-Consulta:
-
-```bash
-id
-id root
-getent passwd
-getent group
-```
-
-No es necesario leer `/etc/passwd` entero cada vez:
-
-```bash
-getent passwd "$USER"
-```
-
-Campos habituales de `/etc/passwd`:
-
-```text
-usuario:x:UID:GID:comentario:home:shell
-```
-
----
-
-### Crear usuarios y grupos en Debian
-
-#### Ejercicio resuelto
-
-Queremos un grupo `serops` y un usuario de laboratorio `tecnico01`:
-
-```bash
-sudo addgroup serops
-sudo adduser tecnico01
-sudo usermod -aG serops tecnico01
-id tecnico01
-```
-
-La última orden no modifica nada: **verifica**.
-
-
-En un laboratorio:
-
-```bash
-sudo addgroup operadores
-sudo adduser tecnico01
-sudo usermod -aG operadores tecnico01
-```
-
-Verifica:
-
-```bash
-id tecnico01
-getent group operadores
-```
-
-#### Cuidado con `usermod -G`
-
-Para **añadir** grupos suplementarios suele utilizarse:
-
-```bash
-sudo usermod -aG grupo usuario
-```
-
-Olvidar `-a` al utilizar `-G` puede sustituir la lista de grupos suplementarios existente.
-
-Después de modificar la pertenencia a grupos, una sesión ya abierta puede no reflejar inmediatamente el nuevo estado. Cierra y abre sesión o crea una nueva sesión para comprobarlo.
-
----
-
-### `sudo`, root y mínimo privilegio
-
-`root` puede realizar prácticamente cualquier operación administrativa. No es una invitación a trabajar siempre como root.
-
-Comprueba:
+### 36. Saber quién eres de verdad
 
 ```bash
 whoami
-sudo -l
+id
+groups
 ```
 
-Ejecuta una operación administrativa puntual:
-
-```bash
-sudo systemctl status ssh
-```
-
-Abre una shell de root solo cuando tenga sentido y ciérrala al terminar:
-
-```bash
-sudo -i
-exit
-```
-
-#### Patrón recomendado
+Ejemplo de `id`:
 
 ```text
-usuario normal
-      |
-      +--> inspección sin privilegios
-      |
-      +--> sudo SOLO para el cambio administrativo
-      |
-      +--> validación
+uid=1000(francano) gid=1000(francano) groups=1000(francano),27(sudo)
 ```
+
+Esto nos permite distinguir:
+
+- usuario;
+- UID;
+- grupo principal;
+- grupos suplementarios.
 
 ---
 
-### Permisos: `r`, `w`, `x`
+### 37. Crear usuarios y grupos
 
-Linux separa permisos para:
+Crear usuario:
 
-```text
-u = owner / propietario
-g = group / grupo
-o = others / resto
+```bash
+sudo adduser tecnico01
 ```
+
+Comprobar:
+
+```bash
+id tecnico01
+```
+
+Crear grupo:
+
+```bash
+sudo addgroup serops
+```
+
+Comprobar:
+
+```bash
+getent group serops
+```
+
+Añadir usuario:
+
+```bash
+sudo usermod -aG serops tecnico01
+```
+
+Verificar:
+
+```bash
+id tecnico01
+```
+
+#### Ejercicio resuelto 20
+
+Queremos añadir `francano` a `serops` sin perder otros grupos.
+
+```bash
+sudo usermod -aG serops francano
+```
+
+Después:
+
+```bash
+id francano
+```
+
+> Tras cambiar grupos, una sesión que ya estaba abierta puede necesitar cerrarse y volver a abrirse para reflejar la nueva pertenencia.
+
+---
+
+### 38. `sudo` y mínimo privilegio
+
+`sudo` no significa:
+
+> «si da error, pon sudo».
+
+Significa:
+
+> «ejecuta esta operación concreta con privilegios administrativos».
+
+Ejemplo:
+
+```bash
+sudo adduser tecnico02
+```
+
+No necesitas `sudo` para:
+
+```bash
+pwd
+ls
+cat ~/notas.txt
+```
+
+#### Ejercicio resuelto 21
+
+Quieres comprobar tu directorio actual.
+
+¿Usarías?
+
+```bash
+sudo pwd
+```
+
+No es necesario.
+
+```bash
+pwd
+```
+
+responde a la pregunta sin elevar privilegios.
+
+---
+
+### 39. Leer permisos
+
+![Permisos Linux]({{ '/assets/ser/ut00/10_permisos_linux.svg' | relative_url }})
+
+*Figura 10. Los permisos se dividen entre propietario, grupo y otros.*
 
 Ejemplo:
 
 ```text
--rwxr-x---
+-rw-r-----
 ```
 
-Se divide así:
+Separación:
 
 ```text
-rwx | r-x | ---
+rw- | r-- | ---
  u      g      o
 ```
 
-#### En un archivo
+#### En archivos
 
-- `r`: leer;
-- `w`: modificar;
-- `x`: ejecutar.
+```text
+r → leer
+w → modificar
+x → ejecutar
+```
 
-#### En un directorio
+#### En directorios
 
-- `r`: listar nombres;
-- `w`: crear/eliminar entradas;
-- `x`: atravesar el directorio y acceder a sus elementos.
+```text
+r → listar nombres
+w → crear/eliminar entradas
+x → atravesar la ruta
+```
 
-El significado de `x` en un directorio es especialmente importante para servidores web, FTP/SFTP y servicios que necesitan recorrer una ruta.
+La `x` en directorios será muy importante cuando trabajemos con servidores.
 
 ---
 
-### Permisos numéricos
-
-#### Ejercicios resueltos rápidos
-
-```text
-640 → rw- r-- ---
-600 → rw- --- ---
-750 → rwx r-x ---
-755 → rwx r-x r-x
-```
-
-Pregunta clave: en un directorio, `x` significa poder **atravesarlo**, no “ejecutar la carpeta”.
-
-
-Cada permiso tiene un valor:
+### 40. Permisos numéricos
 
 ```text
 r = 4
@@ -1458,597 +1535,662 @@ Por tanto:
 
 Ejemplos:
 
-```bash
-chmod 640 configuracion.conf
-chmod 750 directorio_privado
-chmod 755 directorio_publico
+```text
+600 → rw- --- ---
+640 → rw- r-- ---
+750 → rwx r-x ---
+755 → rwx r-x r-x
 ```
 
-Interpretación de `640`:
+Aplicar:
+
+```bash
+chmod 640 notas.txt
+```
+
+#### Ejercicio resuelto 22
+
+¿Qué significa `750` en un directorio?
 
 ```text
-6  -> rw-  propietario
-4  -> r--  grupo
-0  -> ---  resto
+propietario → rwx
+grupo       → r-x
+otros       → ---
+```
+
+El grupo puede listar y atravesar, pero no crear entradas.
+
+---
+
+### 41. Cambiar permisos, propietario y grupo
+
+Añadir ejecución al dueño:
+
+```bash
+chmod u+x fichero
+```
+
+Quitar escritura al grupo:
+
+```bash
+chmod g-w fichero
+```
+
+Cambiar propietario y grupo:
+
+```bash
+sudo chown francano:serops documento.txt
+```
+
+Comprobar:
+
+```bash
+ls -l documento.txt
+```
+
+#### Ejercicio resuelto 23
+
+Queremos que un archivo solo pueda ser leído y modificado por su propietario:
+
+```bash
+chmod 600 archivo.txt
 ```
 
 ---
 
-### Permisos simbólicos
+<details>
+<summary><strong>Ampliación: umask</strong></summary>
 
-También podemos expresar cambios sin calcular números:
-
-```bash
-chmod u+x directorio_privado
-chmod g+w compartido
-chmod o-r secreto.txt
-chmod u=rw,g=r,o= archivo.conf
-```
-
-Suele ser más legible cuando se modifica una única capacidad.
-
----
-
-### Propietario y grupo
-
-```bash
-ls -l
-chown usuario archivo
-chgrp grupo archivo
-chown usuario:grupo archivo
-```
-
-Normalmente un cambio de propiedad administrativo requiere privilegios:
-
-```bash
-sudo chown root:operadores /srv/serlab
-```
-
-Verificación:
-
-```bash
-stat /srv/serlab
-ls -ld /srv/serlab
-```
-
----
-
-### `umask`: permisos iniciales
-
-`umask` limita los permisos que se asignan inicialmente a nuevos archivos y directorios.
-
-Consulta:
+`umask` participa en los permisos iniciales de nuevos archivos y directorios.
 
 ```bash
 umask
 umask -S
 ```
 
-Ejemplo conceptual habitual:
+Por ejemplo, con una máscara habitual `0022`, un archivo solicitado como `666` termina normalmente en `644`.
 
-```text
-umask 0022
-archivo solicitado 666  -> 644
-directorio solicitado 777 -> 755
-```
-
-No pienses que `umask` “pone permisos”. Actúa como una máscara que restringe los permisos solicitados al crear el objeto.
+No es necesario dominarlo para superar la parte básica de UT00.
+</details>
 
 ---
 
-### Un mini laboratorio de permisos
+## PARTE VII · PAQUETES, PROCESOS, SERVICIOS Y LOGS {#servicios-logs}
 
-```bash
-mkdir -p ~/perm-lab/publico ~/perm-lab/privado
-cd ~/perm-lab
-touch publico/aviso.txt privado/datos.txt
-chmod 755 publico
-chmod 700 privado
-chmod 644 publico/aviso.txt
-chmod 600 privado/datos.txt
-ls -ld publico privado
-ls -l publico privado
-```
+### 42. Paquetes en Debian
 
-#### Ejercicio resuelto
-
-`privado` tiene modo `700`:
-
-```text
-rwx --- ---
-```
-
-Solo el propietario puede listar, crear elementos y atravesar el directorio. Así podemos practicar el significado de `x` en directorios sin introducir todavía programas propios.
-
-Prueba después a cambiar únicamente el permiso del grupo:
-
-```bash
-chmod 750 privado
-ls -ld privado
-```
-
-Ahora el grupo puede leer la lista y atravesar el directorio, pero no escribir en él.
-
----
-
-## PARTE IV · PAQUETES, PROCESOS, SERVICIOS Y LOGS {#servicios}
-
-### Paquetes en Debian
-
-Consultar:
-
-```bash
-apt policy nginx
-dpkg -l | less
-dpkg -l | grep openssh
-```
-
-Actualizar el índice de paquetes:
+Actualizar información de repositorios:
 
 ```bash
 sudo apt update
 ```
 
-Instalar un paquete de laboratorio:
+Buscar:
 
 ```bash
-sudo apt install nombre-paquete
+apt search nginx
 ```
 
-La instalación es solo una capa. Un servicio puede estar instalado y no estar activo.
+Consultar:
+
+```bash
+apt policy nginx
+```
+
+Instalar:
+
+```bash
+sudo apt install nginx
+```
+
+#### Idea importante
+
+```text
+paquete instalado
+≠
+servicio activo
+≠
+puerto escuchando
+≠
+cliente funcionando
+```
 
 ---
 
-### Procesos
+### 43. Procesos
 
 ```bash
 ps
 ps aux
-ps aux | less
-pgrep -a ssh
-top
 ```
 
-Finalizar un proceso propio:
+Filtrar:
 
 ```bash
-kill PID
+ps aux | grep ssh
 ```
 
-Evita convertir `kill -9` en la primera opción. Una señal forzada impide al proceso realizar su cierre normal.
+Consulta más directa:
+
+```bash
+pgrep -a ssh
+```
+
+#### Ejercicio resuelto 24
+
+La pregunta es:
+
+> «¿Existe algún proceso relacionado con SSH?»
+
+Una primera comprobación puede ser:
+
+```bash
+pgrep -a ssh
+```
 
 ---
 
-### Servicios con systemd
+### 44. Servicios con `systemctl`
 
-#### Ejercicio resuelto
-
-“Apache está instalado” no demuestra que una web esté funcionando. Una secuencia mejor:
-
-```bash
-systemctl status apache2
-sudo ss -lntp | grep ':80'
-```
-
-Más adelante añadiremos una petición desde cliente. Cada orden responde a una pregunta diferente.
-
+Estado:
 
 ```bash
 systemctl status ssh
-systemctl is-active ssh
-systemctl is-enabled ssh
 ```
 
-Operaciones administrativas:
+¿Está activo?
+
+```bash
+systemctl is-active ssh
+```
+
+Arrancar:
 
 ```bash
 sudo systemctl start ssh
-sudo systemctl stop ssh
-sudo systemctl restart ssh
-sudo systemctl reload ssh
-sudo systemctl enable ssh
 ```
 
-No todos los servicios admiten `reload`. Consulta su unidad y documentación.
+Detener:
 
-Una secuencia segura para cambiar un servicio:
+```bash
+sudo systemctl stop ssh
+```
 
-```text
-1. inspeccionar
-2. guardar configuración anterior
-3. editar
-4. validar sintaxis con la herramienta propia
-5. recargar/reiniciar
-6. revisar estado
-7. revisar socket
-8. probar desde cliente
-9. leer logs
-10. ejecutar prueba de regresión
+Reiniciar:
+
+```bash
+sudo systemctl restart ssh
+```
+
+#### Ejercicio resuelto 25
+
+Alguien afirma:
+
+> «SSH está instalado, por tanto funciona».
+
+No podemos concluirlo.
+
+Podemos comprobar:
+
+```bash
+systemctl status ssh
+```
+
+y después, si buscamos una escucha:
+
+```bash
+sudo ss -lntp
 ```
 
 ---
 
-### Logs con `journalctl`
+### 45. Logs con `journalctl`
+
+Arranque actual:
 
 ```bash
 journalctl -b
-journalctl -p warning
+```
+
+Un servicio:
+
+```bash
 journalctl -u ssh
-journalctl -u ssh -b
-journalctl -u ssh -b -n 50 --no-pager
 ```
 
-Seguir eventos:
+Últimas 30 líneas:
 
 ```bash
-sudo journalctl -u ssh -f
+journalctl -u ssh -b -n 30 --no-pager
 ```
 
-Filtrar después:
+#### Ejercicio resuelto 26
+
+SSH no inicia.
+
+Antes de reiniciarlo cinco veces:
 
 ```bash
-journalctl -b | grep -i failed
+systemctl status ssh
+journalctl -u ssh -b -n 30 --no-pager
 ```
 
-> El log no es “algo que miramos si todo sale mal”. Forma parte de la evidencia normal de operación.
+El estado nos dice qué ocurre ahora; el log puede explicar qué ocurrió.
 
 ---
 
-### Puertos y sockets
+### 46. Puertos y sockets
+
+TCP en escucha:
 
 ```bash
 ss -lnt
-ss -lnu
+```
+
+TCP y UDP:
+
+```bash
+ss -lntu
+```
+
+Con procesos:
+
+```bash
 sudo ss -lntup
 ```
 
-Lectura de opciones frecuentes:
+Opciones:
 
 ```text
--l  listening
--n  no resolver nombres
--t  TCP
--u  UDP
--p  proceso asociado (cuando hay permisos)
+-l → listening
+-n → valores numéricos
+-t → TCP
+-u → UDP
+-p → proceso
 ```
 
-Ejemplo:
+#### Ejercicio resuelto 27
+
+Queremos comprobar si existe una escucha TCP en el puerto 22:
 
 ```bash
 sudo ss -lntp | grep ':22'
 ```
 
-Un proceso activo no demuestra automáticamente que escuche en la interfaz o puerto esperado.
-
 ---
 
-## PARTE V · RED Y DIAGNÓSTICO MÍNIMO {#red}
+## PARTE VIII · RED Y DIAGNÓSTICO {#red-diagnostico}
 
-### Identificar interfaces, IP y rutas
-
-#### Ejercicio resuelto
-
-Si observas:
-
-```text
-enp0s3  UP  10.0.2.15/24
-enp0s8  UP  192.168.50.10/24
-```
-
-y SER-LAB es `192.168.50.0/24`, la interfaz interna será previsiblemente `enp0s8`. **Compruébalo con las rutas; no lo deduzcas solo por el nombre de interfaz.**
-
+### 47. Interfaces y direcciones
 
 ```bash
 ip -br address
-ip link
-ip route
-ip route get 192.168.50.10
-ip neigh
 ```
-
-`ip -br address` ofrece una vista rápida. `ip route get DESTINO` es especialmente útil porque muestra qué decisión tomaría el kernel para un destino concreto.
 
 Ejemplo:
 
+```text
+lo       UNKNOWN  127.0.0.1/8
+enp0s3   UP       10.0.2.15/24
+enp0s8   UP       192.168.50.10/24
+```
+
+Si `SER-LAB` es `192.168.50.0/24`, la segunda interfaz parece corresponder a la red interna.
+
+**No lo deduzcas solo por el nombre:** confirma con rutas y configuración del hipervisor.
+
+---
+
+### 48. Rutas
+
 ```bash
-ip route get 192.168.50.10
+ip route
+```
+
+Ejemplo conceptual:
+
+```text
+default via 10.0.2.2 dev enp0s3
+192.168.50.0/24 dev enp0s8
+```
+
+Interpretación:
+
+```text
+destinos externos → NAT
+SER-LAB           → enp0s8 directamente
+```
+
+Preguntar una ruta concreta:
+
+```bash
+ip route get 192.168.50.20
 ip route get 1.1.1.1
 ```
 
-En nuestro laboratorio deberían utilizar interfaces distintas si la arquitectura tiene NAT + SER-LAB.
+#### Ejercicio resuelto 28
+
+Para `192.168.50.20` esperamos usar la interfaz de `SER-LAB`.
+
+Para `1.1.1.1` esperamos la interfaz NAT.
+
+Si ambos destinos salen por la misma interfaz, tenemos algo que investigar.
 
 ---
 
-### Probar conectividad y transporte
+### 49. `ping`, `ss`, `nc` y `curl` no demuestran lo mismo
 
-#### Ejercicio resuelto
-
-```text
-ping servidor → responde
-curl web       → falla
-```
-
-No hay contradicción. Ping aporta evidencia ICMP; HTTP necesita además TCP, una escucha y una aplicación funcionando.
-
+Conectividad ICMP:
 
 ```bash
-ping -c 4 192.168.50.10
+ping -c 4 192.168.50.20
 ```
 
-Para TCP:
+Intento TCP:
 
 ```bash
 nc -vz 192.168.50.10 22
-curl -v --connect-timeout 3 http://192.168.50.10/
 ```
 
-Cada herramienta demuestra algo diferente:
+Petición HTTP:
 
-| Prueba | Demuestra principalmente |
+```bash
+curl -v http://192.168.50.10/
+```
+
+| Herramienta | Pregunta principal |
 |---|---|
-| `ip -br a` | configuración local de interfaces |
-| `ip route get` | decisión de encaminamiento |
-| `ping` | intercambio ICMP si no está filtrado |
-| `nc -vz host puerto` | intento de conexión de transporte |
-| `ss -lntup` | sockets locales |
-| `curl` | conversación de aplicación HTTP |
-| `journalctl` | eventos registrados por sistema/servicio |
+| `ip -br a` | ¿qué interfaces e IP tengo? |
+| `ip route` | ¿qué rutas conoce mi equipo? |
+| `ping` | ¿hay intercambio ICMP si está permitido? |
+| `ss` | ¿qué sockets existen en este equipo? |
+| `nc` | ¿puedo establecer transporte hacia un puerto? |
+| `curl` | ¿responde una aplicación HTTP? |
+| `journalctl` | ¿qué ha registrado sistema/servicio? |
 
----
-
-### La escalera de diagnóstico
-
-Cuando algo no funciona, recorre capas:
+#### Ejercicio resuelto 29
 
 ```text
-[1] enlace
-      |
-[2] dirección IP
-      |
-[3] vecino / red local
-      |
-[4] ruta
-      |
-[5] resolución de nombre
-      |
-[6] transporte / puerto
-      |
-[7] proceso / servicio
-      |
-[8] aplicación
-      |
-[9] seguridad / permisos
-      |
-[10] logs y regresión
+ping servidor → correcto
+curl web      → connection refused
 ```
 
-No avances a la capa 8 si la 2 ya es incorrecta.
+No es contradictorio.
+
+El host responde a ICMP, pero probablemente no hay un proceso aceptando conexiones en el puerto HTTP esperado.
 
 ---
 
-## PARTE VI · LABORATORIO PÚBLICO GUIADO {#laboratorio}
+### 50. Escalera de diagnóstico
 
-### Construir una estación Linux administrable
+![Escalera de diagnóstico]({{ '/assets/ser/ut00/11_escalera_diagnostico.svg' | relative_url }})
 
-El objetivo no es terminar rápido, sino poder explicar cada paso.
+*Figura 11. Diagnosticar significa comprobar una capa antes de saltar a la siguiente.*
 
-#### Fase A · Crear las VM
+Regla:
 
-Servidor:
+> **No reinicies un servicio para arreglar una IP incorrecta.**
+
+Una secuencia útil:
 
 ```text
-Nombre:      ser-ser01
+VM
+↓
+adaptador
+↓
+interfaz/IP
+↓
+red local
+↓
+ruta
+↓
+nombre
+↓
+puerto
+↓
+servicio
+↓
+aplicación
+↓
+permisos/logs
+```
+
+---
+## PARTE IX · LABORATORIO GUIADO {#laboratorio}
+
+### 51. Construir SER-LAB desde cero
+
+#### Servidor
+
+```text
+VM:          ser-ser01
 SO:          Debian 13
 RAM:         2 GB
 CPU:         2 vCPU
 Disco:       25 GB dinámico
 NIC 1:       NAT
 NIC 2:       Red interna SER-LAB
+IP SER-LAB:  192.168.50.10/24
 Usuario:     francano
 ```
 
-Cliente:
+#### Cliente
 
 ```text
-Nombre:      ser-cli01
+VM:          ser-cli01
 SO:          Debian 13
 NIC 1:       NAT
 NIC 2:       Red interna SER-LAB
+IP SER-LAB:  192.168.50.20/24
 ```
 
-Crea `00_BASE_LIMPIA` cuando el sistema esté instalado y comprobado.
+#### Fase A · virtualización
 
-#### Fase B · Reconocimiento manual
+1. crea las VM;
+2. instala Debian;
+3. comprueba que ambas arrancan;
+4. configura dos adaptadores;
+5. crea `00_BASE_LIMPIA`.
+
+#### Fase B · reconocimiento
+
+En ambas VM:
 
 ```bash
 whoami
 hostname
 pwd
-ls -la
-cat /etc/os-release
 ip -br address
 ip route
 ```
 
-Para cada orden escribe una frase:
+Para cada comando escribe:
 
 ```text
-comando → dato que busco → salida relevante → interpretación
+qué busco → salida relevante → qué significa
 ```
 
-#### Fase C · Árbol de trabajo
+#### Fase C · terminal
 
 Crea:
 
 ```text
-~/ser-lab/
+~/ser/ut00/
 ├── apuntes/
-├── evidencias/
 ├── practicas/
+├── evidencias/
 └── copias/
 ```
 
-Practica conscientemente:
+Después practica:
 
 ```bash
-mkdir
 touch
 cp
 mv
 rm -i
+cat
+less
+grep
 ```
 
-#### Fase D · Usuarios y permisos
+#### Fase D · usuarios y permisos
 
-En un laboratorio autorizado:
+Crea:
 
 ```text
 grupo:   serops
 usuario: tecnico01
 ```
 
-Crea un directorio compartido y utiliza `ls -ld`, `id` y `stat` para explicar qué acceso tiene cada identidad.
+Comprueba pertenencias y aplica distintos permisos a archivos de prueba.
 
-#### Fase E · Sistema y red
+#### Fase E · red
 
-Obtén e interpreta:
-
-```bash
-systemctl --type=service --state=running
-journalctl -b -n 20 --no-pager
-ss -lnt
-ip -br address
-ip route
-```
-
-#### Fase F · Incidencia sencilla
-
-El profesor o el propio alumno puede provocar **un único fallo reversible** dentro del laboratorio, por ejemplo:
-
-- una NIC virtual desconectada;
-- un nombre de Red interna distinto;
-- un servicio de prueba detenido;
-- permisos insuficientes en un archivo de práctica.
-
-Documenta:
+Comprueba que:
 
 ```text
-síntoma → hipótesis → prueba → resultado → cambio mínimo → validación → rollback
+ser-ser01 ↔ ser-cli01 por SER-LAB
+```
+
+y que la salida exterior utiliza NAT.
+
+#### Checklist técnico antes de pasar a DHCP
+
+Debes poder demostrar y explicar:
+
+```text
+[ ] distingo host, hipervisor, VM y guest
+[ ] sé por qué tengo dos vNIC
+[ ] sé qué tráfico debe ir por NAT
+[ ] sé qué tráfico debe ir por SER-LAB
+[ ] sé volver a 00_BASE_LIMPIA
+[ ] puedo moverme por Linux sin interfaz gráfica
+[ ] puedo crear/copiar/mover/eliminar archivos
+[ ] entiendo usuarios, grupos y permisos básicos
+[ ] sé consultar servicios, puertos, IP y rutas
 ```
 
 ---
 
 {% comment %}
 
-## PARTE VII · PRÁCTICA DE MUESTRA INDIVIDUALIZABLE {#practica}
+## PARTE X · PRÁCTICA DE MUESTRA {#practica}
 
-### Mi primera Debian administrable
+### 52. Mi primera Debian administrable
 
-La variante usa únicamente el número de puesto `P`.
+> Este bloque se mantiene visible durante la revisión de la unidad. Puede ocultarse posteriormente sin afectar a la teoría.
 
-Ejemplo para puesto 7:
+La variante se basa únicamente en el número de puesto `P`.
+
+Ejemplo puesto 7:
 
 ```text
 hostname: ser-p07
-usuario técnico de laboratorio: tec07
+usuario:  tec07
 ```
 
-#### Reto
+#### Tareas
 
 1. crea una VM Debian y justifica CPU, RAM y disco;
 2. configura NAT + Red interna `SER-LAB`;
 3. instala Debian;
-4. crea snapshot `00_BASE_LIMPIA`;
+4. crea `00_BASE_LIMPIA`;
 5. demuestra `whoami`, `hostname`, `pwd` y `ls -la`;
 6. crea `~/ser/{apuntes,evidencias,practicas}`;
 7. crea, copia, mueve y elimina archivos de prueba;
-8. crea el usuario técnico correspondiente a tu puesto;
-9. crea el grupo `serops` y añade el usuario sin borrar otros grupos;
-10. aplica permisos `600`, `640` y `750` a objetos de prueba y explica cada uno;
-11. localiza tu interfaz SER-LAB;
-12. identifica la ruta por defecto;
-13. consulta un servicio activo;
-14. consulta sockets TCP en escucha;
-15. explica cómo volverías al snapshot base.
+8. crea tu usuario técnico;
+9. crea `serops`;
+10. añade el usuario al grupo;
+11. aplica y explica `600`, `640` y `750`;
+12. identifica la interfaz de SER-LAB;
+13. identifica la ruta por defecto;
+14. consulta un servicio activo;
+15. lista sockets TCP en escucha;
+16. explica cómo regresarías al snapshot base.
 
-> La web no publica una única solución cerrada: interesa que el procedimiento pueda defenderse y reproducirse.
+No se busca una colección de capturas. Se busca demostrar que sabes:
 
----
+```text
+hacer → comprobar → explicar
+```
 
 {% endcomment %}
 
-## PARTE VIII · BATERÍA DE EJERCICIOS {#ejercicios}
+---
 
-### Nivel 1 · Orientación
+## PARTE XI · BATERÍA DE EJERCICIOS {#ejercicios}
+
+### 53. Nivel 1 · Orientación
 
 1. Muestra tu usuario actual.
 2. Muestra el hostname.
-3. Indica tu directorio actual.
+3. Indica el directorio actual.
 4. Ve a `/etc`.
-5. Regresa al home.
+5. Regresa a tu home.
 6. Ve a `/var/log`.
 7. Sube un nivel.
 8. Regresa al directorio anterior.
 9. Lista archivos ocultos.
-10. Explica la diferencia entre `/home/francano` y `home/francano`.
+10. Explica `/home/francano` frente a `home/francano`.
 
-### Nivel 2 · Archivos y directorios
+### 54. Nivel 2 · Archivos
 
 11. Crea `~/ser/ut00`.
-12. Crea de una vez `practicas`, `copias` y `logs`.
+12. Crea `practicas`, `copias` y `logs`.
 13. Crea `practicas/uno.txt`.
 14. Cópialo a `copias/uno.bak`.
-15. Renombra `uno.txt` como `original.txt`.
-16. Comprueba los resultados con `ls -l`.
-17. Elimina la copia solicitando confirmación.
-18. Crea un archivo oculto y demuestra la diferencia entre `ls` y `ls -a`.
+15. Renombra `uno.txt`.
+16. Comprueba el resultado.
+17. Elimina la copia con confirmación.
+18. Crea un archivo oculto y compáralo con `ls` y `ls -a`.
 
-### Nivel 3 · Leer y buscar
+### 55. Nivel 3 · Lectura y búsqueda
 
 19. Muestra `/etc/hostname`.
-20. Muestra las primeras cinco líneas de `/etc/passwd`.
-21. Muestra las últimas cinco.
-22. Busca `root` dentro de `/etc/passwd`.
+20. Muestra cinco primeras líneas de `/etc/passwd`.
+21. Muestra cinco últimas.
+22. Busca `root`.
 23. Busca tu usuario.
-24. Abre `/etc/services` con `less` y busca `http`.
-25. Guarda el hostname en `equipo.txt`.
-26. Añade la fecha sin borrar lo anterior.
+24. Abre `/etc/services` con `less`.
+25. Guarda el hostname en un archivo.
+26. Añade la fecha sin borrar el hostname.
 
-### Nivel 4 · Usuarios y permisos
+### 56. Nivel 4 · Usuarios y permisos
 
 27. Interpreta `644`.
 28. Interpreta `600`.
-29. Interpreta `750` aplicado a un directorio.
-30. Explica `r`, `w` y `x` para archivo.
-31. Explica `r`, `w` y `x` para directorio.
-32. Crea un archivo y aplícale `600`.
+29. Interpreta `750` para un directorio.
+30. Explica `r`, `w`, `x` en archivo.
+31. Explica `r`, `w`, `x` en directorio.
+32. Crea un archivo `600`.
 33. Cámbialo a `640`.
-34. Crea un grupo de laboratorio.
-35. Crea un usuario de laboratorio.
-36. Añádelo al grupo sin sustituir otras membresías.
+34. Crea un grupo.
+35. Crea un usuario.
+36. Añádelo al grupo.
 37. Comprueba el resultado.
-38. Explica por qué `777` no debe ser tu primera respuesta a un problema.
+38. Explica por qué `777` no es la respuesta profesional a todo.
 
-### Nivel 5 · Servicios y red
+### 57. Nivel 5 · Servicios y red
 
-39. Lista interfaces en formato breve.
-40. Identifica qué interfaz pertenece a SER-LAB.
-41. Muestra la tabla de rutas.
+39. Lista interfaces.
+40. Identifica SER-LAB.
+41. Muestra rutas.
 42. Identifica la ruta por defecto.
-43. Pregunta al kernel qué ruta usaría hacia el servidor.
-44. Prueba conectividad al servidor.
-45. Lista sockets TCP en escucha.
-46. Selecciona un servicio activo y consulta su estado.
+43. Pregunta qué ruta usaría el kernel hacia el cliente.
+44. Prueba conectividad.
+45. Lista sockets TCP.
+46. Consulta un servicio activo.
 47. Consulta sus últimas líneas de log.
-48. Explica diferencia entre proceso, servicio y socket.
-49. Explica por qué ping correcto no demuestra HTTP correcto.
-50. Describe qué revisarías tras un `Connection refused`.
+48. Diferencia proceso, servicio y socket.
+49. Explica por qué `ping` correcto no demuestra HTTP correcto.
+50. Explica qué investigarías ante `connection refused`.
 
 ---
 
-## PARTE IX · CHULETA OPERATIVA {#chuleta}
+## PARTE XII · CHULETA OPERATIVA {#chuleta}
 
-### Identidad y orientación
+### 58. Identidad y navegación
 
 ```bash
 whoami
@@ -2063,7 +2205,7 @@ cd ~
 cd -
 ```
 
-### Archivos y texto
+### 59. Archivos
 
 ```bash
 mkdir -p ruta
@@ -2079,7 +2221,7 @@ grep -n "texto" fichero
 find . -type f -name "*.conf"
 ```
 
-### Usuarios y permisos
+### 60. Usuarios y permisos
 
 ```bash
 sudo adduser usuario
@@ -2087,197 +2229,149 @@ sudo addgroup grupo
 sudo usermod -aG grupo usuario
 id usuario
 ls -l
-stat fichero
 chmod 600 fichero
 chmod 640 fichero
 chmod 750 directorio
 sudo chown usuario:grupo fichero
 ```
 
-### Sistema y servicios
+### 61. Sistema y red
 
 ```bash
 cat /etc/os-release
 ps aux
 systemctl status SERVICIO
-systemctl is-active SERVICIO
 journalctl -u SERVICIO -b -n 30 --no-pager
 sudo ss -lntup
-```
-
-### Red
-
-```bash
 ip -br address
 ip route
 ip route get DESTINO
-ip neigh
 ping -c 4 DESTINO
-curl -v URL
 ```
 
 ---
 
 {% comment %}
 
-## PARTE X · AUTOEVALUACIÓN {#autoevaluacion}
+## PARTE XIII · AUTOEVALUACIÓN {#autoevaluacion}
+
+> Este bloque se mantiene visible durante la revisión. Puede ocultarse posteriormente de forma independiente.
 
 <details>
-<summary><strong>1. ¿Qué diferencia hay entre host, hipervisor y guest?</strong></summary>
+<summary><strong>1. ¿Qué diferencia existe entre host, hipervisor, VM y guest?</strong></summary>
 
-El host es el equipo físico; el hipervisor administra las VM; el guest es el sistema operativo instalado dentro de una VM.
+El host es el equipo físico; el hipervisor administra la virtualización; la VM es el hardware virtual; el guest es el sistema operativo instalado dentro de esa VM.
 </details>
 
 <details>
-<summary><strong>2. ¿Para qué utilizamos NAT?</strong></summary>
+<summary><strong>2. ¿Una vNIC y NAT son lo mismo?</strong></summary>
 
-Para dar una salida sencilla a Internet a una VM sin convertirla directamente en otro equipo de la LAN física.
+No. La vNIC es la tarjeta virtual que ve el guest. NAT es uno de los modos mediante los que VirtualBox puede conectar esa tarjeta.
 </details>
 
 <details>
-<summary><strong>3. ¿Por qué SER-LAB utiliza Red interna?</strong></summary>
+<summary><strong>3. ¿Por qué utilizamos Red interna en SER-LAB?</strong></summary>
 
-Porque queremos un segmento donde las VM puedan experimentar con servicios sin interferir directamente con la red física.
+Porque permite comunicar nuestras VM en un segmento aislado sin enviar el tráfico de laboratorio directamente a la red física.
 </details>
 
 <details>
-<summary><strong>4. ¿Snapshot es lo mismo que backup?</strong></summary>
+<summary><strong>4. ¿Por qué Puente requiere especial cuidado?</strong></summary>
 
-No. Es un estado recuperable muy útil del entorno virtual, pero no sustituye una copia independiente.
+Porque la VM pasa a participar directamente en la LAN física y un servicio mal configurado puede afectar o quedar expuesto a otros equipos.
 </details>
 
 <details>
-<summary><strong>5. ¿Qué diferencia hay entre una ruta absoluta y una relativa?</strong></summary>
+<summary><strong>5. ¿Snapshot y backup son equivalentes?</strong></summary>
 
-Una absoluta comienza desde `/`; una relativa se interpreta desde el directorio actual.
+No. El snapshot es excelente para volver a un estado de la VM, pero no sustituye una copia independiente.
 </details>
 
 <details>
-<summary><strong>6. ¿Qué diferencia existe entre <code>&gt;</code> y <code>&gt;&gt;</code>?</strong></summary>
+<summary><strong>6. ¿Qué diferencia existe entre ruta absoluta y relativa?</strong></summary>
 
-`>` reemplaza el contenido del destino; `>>` añade al final.
+La absoluta comienza en `/`; la relativa se interpreta desde el directorio actual.
 </details>
 
 <details>
-<summary><strong>7. ¿Qué significa <code>chmod 640 fichero</code>?</strong></summary>
+<summary><strong>7. ¿Qué significa `chmod 640 archivo`?</strong></summary>
 
-Propietario lectura/escritura; grupo lectura; otros sin permisos.
+Propietario `rw-`, grupo `r--`, otros `---`.
 </details>
 
 <details>
-<summary><strong>8. ¿Significa lo mismo <code>x</code> en archivo y directorio?</strong></summary>
+<summary><strong>8. ¿Qué significa `x` en un directorio?</strong></summary>
 
-No. En archivo permite ejecución; en directorio permite atravesarlo/acceder a sus entradas si el resto de condiciones lo permiten.
+Permite atravesar la ruta y acceder a entradas cuando el resto de permisos lo permiten.
 </details>
 
 <details>
-<summary><strong>9. ¿Por qué se utiliza <code>usermod -aG</code> para añadir un grupo?</strong></summary>
+<summary><strong>9. ¿Un paquete instalado implica un servicio funcionando?</strong></summary>
 
-`-a` añade. Sin esa opción, `-G` puede sustituir la lista de grupos suplementarios.
+No. Hay que distinguir software instalado, proceso/servicio activo, socket disponible y prueba real desde cliente.
 </details>
 
 <details>
-<summary><strong>10. ¿Un paquete instalado implica un servicio funcionando?</strong></summary>
+<summary><strong>10. ¿Por qué un ping correcto no demuestra que una web funciona?</strong></summary>
 
-No. Hay que distinguir paquete, proceso, servicio, socket y prueba real desde cliente.
+Porque `ping` prueba ICMP. HTTP necesita además TCP, un puerto de escucha, un servidor y una respuesta de aplicación.
 </details>
-
-<details>
-<summary><strong>11. ¿Qué aporta <code>ss -lnt</code>?</strong></summary>
-
-Muestra sockets TCP en escucha; ayuda a comprobar si existe realmente una escucha de transporte.
-</details>
-
-<details>
-<summary><strong>12. ¿Por qué ping correcto no demuestra que una web funcione?</strong></summary>
-
-Ping usa ICMP. HTTP necesita además TCP, un servidor escuchando, configuración válida y respuesta de aplicación.
-</details>
-
----
-
-### Reto de salida
-
-Sin consultar la chuleta, intenta:
-
-```text
-1. explicar host / guest / hipervisor / ISO;
-2. crear una VM razonable;
-3. explicar NAT y Red interna;
-4. crear un snapshot;
-5. iniciar sesión en Debian;
-6. mostrar usuario, hostname y ruta actual;
-7. moverte por /etc, /var/log y tu home;
-8. crear, copiar, mover y borrar archivos;
-9. localizar información con grep;
-10. crear usuario y grupo de laboratorio;
-11. interpretar 600, 640 y 750;
-12. consultar un servicio y sus logs;
-13. localizar IP y rutas;
-14. listar sockets;
-15. explicar una secuencia de diagnóstico.
-```
-
-Si puedes hacerlo **y explicarlo**, ya tienes la base que necesitamos para comenzar DHCP.
-
----
 
 {% endcomment %}
 
-## PARTE XI · REFERENCIAS OFICIALES {#referencias}
+---
 
-### Referencia curricular
+## PARTE XIV · REFERENCIAS OFICIALES {#referencias}
 
+### 62. Currículo
 
-- [Decreto 272/2009, de 28 de diciembre, por el que se establece el currículo del Ciclo Formativo de Grado Medio de Técnico en Sistemas Microinformáticos y Redes en Extremadura](https://doe.juntaex.es/pdfs/doe/2010/10o/10o.pdf)
-- [Real Decreto 1691/2007, de 14 de diciembre, por el que se establece el título de Técnico en Sistemas Microinformáticos y Redes](https://www.boe.es/eli/es/rd/2007/12/14/1691)
+- [Decreto 272/2009, de 28 de diciembre · currículo SMR en Extremadura](https://doe.juntaex.es/pdfs/doe/2010/10o/10o.pdf)
+- [Real Decreto 1691/2007 · título de Técnico en SMR](https://www.boe.es/buscar/doc.php?id=BOE-A-2008-819)
 
-### Virtualización
+### 63. Virtualización
 
-- [Oracle VirtualBox · Descargas](https://www.virtualbox.org/wiki/Downloads)
-- [Oracle VirtualBox · Networking](https://docs.oracle.com/en/virtualization/virtualbox/7.2/user/networkingdetails.html)
+- [Oracle VirtualBox · Downloads](https://www.virtualbox.org/wiki/Downloads)
+- [Oracle VirtualBox 7.2 · Virtual Networking](https://docs.oracle.com/en/virtualization/virtualbox/7.2/user/networkingdetails.html)
+- [Oracle VirtualBox · Security Guide](https://docs.oracle.com/en/virtualization/virtualbox/7.2/user/Security.html)
 - [Broadcom Support · VMware](https://support.broadcom.com/)
-- [Microsoft Learn · Instalar Hyper-V](https://learn.microsoft.com/es-es/windows-server/virtualization/hyper-v/get-started/Install-Hyper-V)
-- [Microsoft Learn · Requisitos de Hyper-V](https://learn.microsoft.com/es-es/windows-server/virtualization/hyper-v/host-hardware-requirements)
+- [Microsoft Learn · Hyper-V](https://learn.microsoft.com/es-es/windows-server/virtualization/hyper-v/get-started/Install-Hyper-V)
 
-### Sistemas operativos
+### 64. Sistemas operativos y Linux
 
-- [Debian · Descargar mediante netinst](https://www.debian.org/distrib/netinst)
+- [Debian · netinst](https://www.debian.org/distrib/netinst)
 - [Debian 13 “trixie”](https://www.debian.org/releases/trixie/)
-- [Microsoft · Descargar Windows 11](https://www.microsoft.com/es-es/software-download/windows11)
-
-### Linux
-
 - [Debian Reference](https://www.debian.org/doc/manuals/debian-reference/index.es.html)
-- [Debian Reference · introducción a GNU/Linux](https://www.debian.org/doc/manuals/debian-reference/ch01.es.html)
 - [GNU Coreutils Manual](https://www.gnu.org/software/coreutils/manual/coreutils.html)
-
-### Currículo
-
-- [BOE · Técnico en Sistemas Microinformáticos y Redes](https://www.boe.es/buscar/doc.php?id=BOE-A-2008-819)
+- [Microsoft · Descargar Windows 11](https://www.microsoft.com/es-es/software-download/windows11)
 
 ---
 
-### Qué viene después
+### 65. Qué viene después
+
+Cuando esta base sea cómoda, comenzaremos:
 
 ```text
-VIRTUALIZACIÓN
-      ↓
-SER-LAB
-      ↓
-DEBIAN
-      ↓
-TERMINAL
-      ↓
-ARCHIVOS / USUARIOS / PERMISOS
-      ↓
-SERVICIOS / LOGS
-      ↓
-RED / RUTAS / SOCKETS
-      ↓
-DIAGNÓSTICO
-      ↓
 UT01 · DHCP
 ```
 
-En UT01 dejaremos de practicar estos comandos de forma aislada y los utilizaremos para desplegar y comprobar un servicio real.
+A partir de ese momento los comandos dejarán de aparecer como ejercicios aislados.
+
+Los utilizaremos para:
+
+```text
+instalar
+↓
+configurar
+↓
+arrancar
+↓
+comprobar
+↓
+probar desde cliente
+↓
+diagnosticar
+↓
+explicar
+```
+
+Ese es el salto de **usar Linux** a **administrar Servicios en Red**.
