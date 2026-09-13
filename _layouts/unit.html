@@ -14,8 +14,27 @@ layout: default
    | where: "module_key", page.module_key
    | sort: "order" %}
 
+{% assign previous_unit = nil %}
+{% assign next_unit = nil %}
+{% assign previous_candidate = nil %}
+{% assign current_found = false %}
 
-<article class="page-shell">
+{% for candidate in module_units %}
+
+  {% if current_found and next_unit == nil %}
+    {% assign next_unit = candidate %}
+  {% endif %}
+
+  {% if candidate.url == page.url %}
+    {% assign previous_unit = previous_candidate %}
+    {% assign current_found = true %}
+  {% endif %}
+
+  {% assign previous_candidate = candidate %}
+
+{% endfor %}
+
+<article class="page-shell" id="unit-top">
 
 <div class="container">
 
@@ -157,13 +176,6 @@ Docencia
       class="unit-pager__module"
     >
       {{ module.short_title }}
-    </a>
-
-    <a
-      href="#unit-top"
-      class="unit-pager__top"
-    >
-      ↑ Arriba
     </a>
 
   </div>
