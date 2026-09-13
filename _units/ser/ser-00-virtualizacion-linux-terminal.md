@@ -14,6 +14,17 @@ course: "2.º SMR"
 unit: "UT00"
 hours: 18
 level: "iniciacion"
+authors:
+  - fjcano
+
+reviewers:
+  - fjcano
+
+rights: all-rights-reserved
+version: "1.0"
+last_reviewed: 2026-09-13
+
+visibility: public
 
 ra:
   - "RA8"
@@ -56,8 +67,8 @@ toc:
     id: red-diagnostico
   - title: Laboratorio guiado
     id: laboratorio
-  - title: Ejercicios
-    id: ejercicios
+  #- title: Ejercicios
+  #  id: ejercicios
   - title: Chuleta
     id: chuleta
   - title: Referencias
@@ -610,8 +621,6 @@ En el aula también puede ser peligroso:
 - un DHCP de prácticas puede interferir con clientes reales;
 - un servidor puede quedar accesible desde otros equipos;
 - una mala configuración puede afectar a terceros.
-
-> **Norma de aula:** no utilizaremos Puente salvo indicación expresa del profesor.
 
 ---
 
@@ -2118,7 +2127,7 @@ hacer → comprobar → explicar
 {% endcomment %}
 
 ---
-
+{% comment %}
 ## PARTE XI · BATERÍA DE EJERCICIOS {#ejercicios}
 
 ### 53. Nivel 1 · Orientación
@@ -2187,7 +2196,7 @@ hacer → comprobar → explicar
 50. Explica qué investigarías ante `connection refused`.
 
 ---
-
+{% endcomment %}
 ## PARTE XII · CHULETA OPERATIVA {#chuleta}
 
 ### 58. Identidad y navegación
