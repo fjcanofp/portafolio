@@ -1,4 +1,32 @@
 document.addEventListener("DOMContentLoaded", () => {
+const backToTop =
+  document.querySelector(
+    "[data-back-to-top]"
+  );
+
+
+if (backToTop) {
+
+  const updateBackToTop = () => {
+
+    backToTop.classList.toggle(
+      "is-visible",
+      window.scrollY > 700
+    );
+
+  };
+
+
+  window.addEventListener(
+    "scroll",
+    updateBackToTop,
+    { passive: true }
+  );
+
+
+  updateBackToTop();
+
+}  
   document.querySelectorAll("[data-carousel]").forEach((carousel) => {
 
   const track = carousel.querySelector("[data-carousel-track]");

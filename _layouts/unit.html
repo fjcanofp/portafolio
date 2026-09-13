@@ -121,11 +121,96 @@ Docencia
 
 </div>
 
+<nav
+  class="unit-pager"
+  aria-label="Navegación entre unidades"
+>
 
+  <div class="unit-pager__previous">
+
+    {% if previous_unit %}
+
+      <a
+        class="unit-pager__link"
+        href="{{ previous_unit.url | relative_url }}"
+      >
+
+        <span class="unit-pager__label">
+          ← Unidad anterior
+        </span>
+
+        <strong>
+          {{ previous_unit.title }}
+        </strong>
+
+      </a>
+
+    {% endif %}
+
+  </div>
+
+
+  <div class="unit-pager__center">
+
+    <a
+      href="{{ module.url | relative_url }}"
+      class="unit-pager__module"
+    >
+      {{ module.short_title }}
+    </a>
+
+    <a
+      href="#unit-top"
+      class="unit-pager__top"
+    >
+      ↑ Arriba
+    </a>
+
+  </div>
+
+
+  <div class="unit-pager__next">
+
+    {% if next_unit %}
+
+      <a
+        class="unit-pager__link unit-pager__link--next"
+        href="{{ next_unit.url | relative_url }}"
+      >
+
+        <span class="unit-pager__label">
+          Siguiente unidad →
+        </span>
+
+        <strong>
+          {{ next_unit.title }}
+        </strong>
+
+      </a>
+
+    {% else %}
+
+      <span class="unit-pager__disabled">
+        Siguiente unidad · Próximamente
+      </span>
+
+    {% endif %}
+
+  </div>
+
+</nav>
 </section>
 
 </div>
 
 </div>
-
+<a
+  class="back-to-top"
+  href="#unit-top"
+  data-back-to-top
+  aria-label="Volver al inicio de la unidad"
+  title="Volver arriba"
+>
+  ↑
+</a>
 </article>
