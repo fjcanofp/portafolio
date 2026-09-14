@@ -9,6 +9,7 @@ order: 3
 summary: Resolución de nombres, FQDN, BIND9, zonas, registros y diagnóstico.
 
 permalink: /docencia/asir/sri/dns/
+published: false
 
 toc:
 

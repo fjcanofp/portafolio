@@ -8,6 +8,7 @@ order: 1
 summary: Fundamentos de Linux necesarios para administrar servicios de red.
 
 permalink: /docencia/asir/sri/linux/
+published: false
 ---
 
 Linux será la base sobre la que desplegaremos muchos
