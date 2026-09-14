@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="675" viewBox="0 0 1200 675" role="img" aria-label="Configuración manual frente a DHCP">
+<rect width="1200" height="675" rx="24" fill="#F6F8FC"/>
+<style>
+.t{font-family:Arial,Helvetica,sans-serif;fill:#263238}
+.h{font-size:34px;font-weight:700;fill:#17365D}
+.s{font-size:23px;font-weight:700}
+.b{font-size:19px}
+.sm{font-size:16px;fill:#6B7785}
+.line{stroke:#17365D;stroke-width:5;fill:none}
+.dash{stroke:#6B7785;stroke-width:4;stroke-dasharray:10 8;fill:none}
+</style><text x="60" y="58" class="t h" text-anchor="start">¿Qué problema resuelve DHCP?</text><rect x="70" y="130" width="470" height="390" rx="18" fill="#FFF4E5" stroke="#E58A2B" stroke-width="3"/><text x="305.0" y="169" class="t s" text-anchor="middle">CONFIGURACIÓN MANUAL</text><text x="305.0" y="198" class="t sm" text-anchor="middle">cada equipo se configura por separado</text><text x="120" y="230" class="t b" text-anchor="start">• IP: repetir y documentar</text><text x="120" y="282" class="t b" text-anchor="start">• máscara: repetir y documentar</text><text x="120" y="334" class="t b" text-anchor="start">• gateway: repetir y documentar</text><text x="120" y="386" class="t b" text-anchor="start">• DNS: repetir y documentar</text><text x="120" y="438" class="t b" text-anchor="start">• cambios: repetir y documentar</text><rect x="660" y="130" width="470" height="390" rx="18" fill="#EAF6EE" stroke="#4E9F6E" stroke-width="3"/><text x="895.0" y="169" class="t s" text-anchor="middle">DHCP</text><text x="895.0" y="198" class="t sm" text-anchor="middle">política central</text><text x="710" y="230" class="t b" text-anchor="start">• pool: servidor central</text><text x="710" y="282" class="t b" text-anchor="start">• reservas: servidor central</text><text x="710" y="334" class="t b" text-anchor="start">• opciones: servidor central</text><text x="710" y="386" class="t b" text-anchor="start">• tiempos: servidor central</text><text x="710" y="438" class="t b" text-anchor="start">• leases: servidor central</text><text x="600" y="590" class="t b" text-anchor="middle">DHCP no «da Internet»: entrega parámetros. Cada servicio anunciado debe existir y funcionar.</text></svg>

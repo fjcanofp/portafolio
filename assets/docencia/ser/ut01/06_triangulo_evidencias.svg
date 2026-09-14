@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="675" viewBox="0 0 1200 675" role="img" aria-label="Evidencias DHCP">
+<rect width="1200" height="675" rx="24" fill="#F6F8FC"/>
+<style>
+.t{font-family:Arial,Helvetica,sans-serif;fill:#263238}
+.h{font-size:34px;font-weight:700;fill:#17365D}
+.s{font-size:23px;font-weight:700}
+.b{font-size:19px}
+.sm{font-size:16px;fill:#6B7785}
+.line{stroke:#17365D;stroke-width:5;fill:none}
+.dash{stroke:#6B7785;stroke-width:4;stroke-dasharray:10 8;fill:none}
+</style><text x="60" y="58" class="t h" text-anchor="start">Una concesión fuerte se demuestra desde tres sitios</text><rect x="100" y="210" width="280" height="140" rx="18" fill="#FFFFFF" stroke="#2F5597" stroke-width="3"/><text x="240.0" y="249" class="t s" text-anchor="middle">PCAP</text><text x="240.0" y="278" class="t sm" text-anchor="middle">qué se habló</text><rect x="820" y="210" width="280" height="140" rx="18" fill="#FFFFFF" stroke="#4E9F6E" stroke-width="3"/><text x="960.0" y="249" class="t s" text-anchor="middle">LEASES</text><text x="960.0" y="278" class="t sm" text-anchor="middle">qué registró Kea</text><rect x="455" y="430" width="290" height="140" rx="18" fill="#FFFFFF" stroke="#E58A2B" stroke-width="3"/><text x="600.0" y="469" class="t s" text-anchor="middle">CLIENTE</text><text x="600.0" y="498" class="t sm" text-anchor="middle">qué aplicó el SO</text><path d="M380,280 L820,280" class="line" stroke="#17365D"/><polygon points="820,280 805,271 805,289" fill="#17365D"/><path d="M930,350 L690,430" class="line" stroke="#17365D"/><polygon points="690,430 675,421 675,439" fill="#17365D"/><path d="M510,430 L270,350" class="line" stroke="#17365D"/><polygon points="270,350 255,341 255,359" fill="#17365D"/><text x="600" y="620" class="t b" text-anchor="middle">ACK, lease y estado del cliente deben contar la misma historia.</text></svg>
