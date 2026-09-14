@@ -9,7 +9,7 @@ order: 2
 
 cycle: ASIR
 level: Ciclo Formativo de Grado Superior
-status: En preparación
+status: Publicación progresiva
 
 summary: Arquitecturas web, servidores, despliegue, CMS, seguridad y administración de aplicaciones.
 

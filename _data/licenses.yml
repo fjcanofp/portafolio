@@ -1,0 +1,16 @@
+all-rights-reserved:
+  name: "Todos los derechos reservados"
+  short_name: "Todos los derechos reservados"
+  description: >-
+    No se concede autorización general para copiar, redistribuir,
+    transformar o reutilizar este material, salvo autorización expresa
+    de su autor o lo permitido legalmente.
+  url: "/aviso-legal/"
+
+cc-by-nc-sa-4.0:
+  name: "Creative Commons BY-NC-SA 4.0"
+  short_name: "CC BY-NC-SA 4.0"
+  description: >-
+    Se permite compartir y adaptar el material con atribución,
+    para usos no comerciales y manteniendo la misma licencia.
+  url: "https://creativecommons.org/licenses/by-nc-sa/4.0/"

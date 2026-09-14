@@ -1,20 +1,37 @@
-# Aviso de licencias del proyecto
+# Derechos y licencias
 
-## Contenido del sitio
+## Contenidos docentes y editoriales
 
-Salvo indicación expresa en una página concreta, los contenidos editoriales del sitio (textos, artículos, descripciones, explicaciones y documentación publicada como contenido web) se ofrecen bajo la licencia:
+Salvo que un recurso indique expresamente otra licencia,
+los contenidos originales publicados en fjcanogra.es
+se encuentran protegidos por derechos de autor.
 
-**Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International**
+No se concede autorización general para copiar,
+redistribuir, transformar o reutilizar estos contenidos
+fuera de los usos permitidos legalmente o sin autorización
+expresa de su autor.
 
-- URL canónica: https://creativecommons.org/licenses/by-nc-sa/4.0/
+Cada recurso puede indicar condiciones particulares de uso
+mediante sus metadatos o su propia licencia.
 
-## Código, diseño y personalizaciones del sitio
+## Contenidos de colaboradores
 
-Salvo indicación expresa en archivos concretos, el código fuente del sitio, su estructura, diseño, hojas de estilo y personalizaciones quedan bajo **todos los derechos reservados**.
+Los materiales aportados por colaboradores permanecen
+atribuidos a sus respectivos autores.
 
-No se concede permiso general para copiar, redistribuir o reutilizar este código o diseño como plantilla de terceros.
+Su publicación en fjcanogra.es no implica una cesión general
+de sus derechos a terceros.
 
-## Resumen práctico
+## Recursos con licencia abierta
 
-- Puedes compartir/adaptar el **contenido** si respetas atribución, no uso comercial y misma licencia.
-- No tienes permiso general para reutilizar el **código o diseño** del sitio.
+Determinados materiales podrán publicarse expresamente
+bajo licencias Creative Commons u otras licencias.
+
+En esos casos prevalecerá la licencia indicada específicamente
+en el recurso.
+
+## Código y diseño
+
+Salvo indicación expresa, el código, diseño,
+estructura y personalizaciones de fjcanogra.es
+quedan bajo todos los derechos reservados.
