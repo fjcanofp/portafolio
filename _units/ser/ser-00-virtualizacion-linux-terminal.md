@@ -218,7 +218,7 @@ CPU · RAM · almacenamiento · tarjetas de red · USB · pantalla…
 
 El hipervisor utiliza parte de esos recursos para presentar a cada máquina virtual un ordenador independiente.
 
-![Capas de virtualización]({{ '/assets/ser/ut00/01_capas_virtualizacion.svg' | relative_url }})
+![Capas de virtualización]({{ '/assets/docencia/ser/ut00/01_capas_virtualizacion.svg' | relative_url }})
 
 *Figura 1. El host aporta los recursos; VirtualBox presenta hardware virtual a cada sistema invitado.*
 
@@ -492,7 +492,7 @@ Después del clon revisa:
 
 Esta diferencia evita muchos errores.
 
-![vNIC frente a modo de conexión]({{ '/assets/ser/ut00/02_vnic_vs_modo.svg' | relative_url }})
+![vNIC frente a modo de conexión]({{ '/assets/docencia/ser/ut00/02_vnic_vs_modo.svg' | relative_url }})
 
 *Figura 2. Debian ve una tarjeta virtual; VirtualBox decide a qué tipo de red está conectada.*
 
@@ -536,7 +536,7 @@ pero una está conectada a `SER-LAB` y otra a `SER_LAB`.
 
 ### 13. NAT
 
-![Red NAT individual]({{ '/assets/ser/ut00/03_red_nat.svg' | relative_url }})
+![Red NAT individual]({{ '/assets/docencia/ser/ut00/03_red_nat.svg' | relative_url }})
 
 *Figura 3. NAT permite que una VM salga a Internet sin aparecer directamente como otro equipo de la LAN física.*
 
@@ -560,7 +560,7 @@ Necesitamos descargar actualizaciones, pero no queremos que el servidor sea visi
 
 ### 14. Red interna
 
-![Red interna]({{ '/assets/ser/ut00/04_red_interna.svg' | relative_url }})
+![Red interna]({{ '/assets/docencia/ser/ut00/04_red_interna.svg' | relative_url }})
 
 *Figura 4. En una Red interna se comunican las VM que utilizan el mismo nombre de red, sin depender del host ni de la LAN física.*
 
@@ -586,7 +586,7 @@ Vamos a arrancar un DHCP creado por un alumno.
 
 ### 15. Solo-anfitrión
 
-![Red solo-anfitrión]({{ '/assets/ser/ut00/05_red_hostonly.svg' | relative_url }})
+![Red solo-anfitrión]({{ '/assets/docencia/ser/ut00/05_red_hostonly.svg' | relative_url }})
 
 *Figura 5. Solo-anfitrión crea una red privada en la que participan el host y las VM.*
 
@@ -598,7 +598,7 @@ Resulta útil cuando queremos acceder a una VM desde herramientas instaladas en 
 
 ### 16. Red NAT
 
-![Red NAT compartida]({{ '/assets/ser/ut00/06_red_natnetwork.svg' | relative_url }})
+![Red NAT compartida]({{ '/assets/docencia/ser/ut00/06_red_natnetwork.svg' | relative_url }})
 
 *Figura 6. Una Red NAT ofrece un segmento compartido entre varias VM y salida al exterior.*
 
@@ -610,7 +610,7 @@ Es cómoda, pero puede introducir elementos automáticos —por ejemplo DHCP— 
 
 ### 17. Adaptador puente
 
-![Adaptador puente]({{ '/assets/ser/ut00/07_red_puente.svg' | relative_url }})
+![Adaptador puente]({{ '/assets/docencia/ser/ut00/07_red_puente.svg' | relative_url }})
 
 *Figura 7. En modo puente la VM se comporta de forma mucho más parecida a otro equipo conectado a la LAN física.*
 
@@ -647,7 +647,7 @@ NIC 1 → NAT
 NIC 2 → Red interna SER-LAB
 ```
 
-![Topología SER-LAB]({{ '/assets/ser/ut00/08_topologia_ser_lab.svg' | relative_url }})
+![Topología SER-LAB]({{ '/assets/docencia/ser/ut00/08_topologia_ser_lab.svg' | relative_url }})
 
 *Figura 8. Cada VM separa el acceso exterior de la red de servicios.*
 
@@ -839,7 +839,7 @@ y localiza la opción que muestra tamaños en formato más legible.
 
 ### 24. Un único árbol que empieza en `/`
 
-![Árbol Linux]({{ '/assets/ser/ut00/09_arbol_linux.svg' | relative_url }})
+![Árbol Linux]({{ '/assets/docencia/ser/ut00/09_arbol_linux.svg' | relative_url }})
 
 *Figura 9. Linux organiza archivos y directorios bajo una única raíz `/`.*
 
@@ -1487,7 +1487,7 @@ responde a la pregunta sin elevar privilegios.
 
 ### 39. Leer permisos
 
-![Permisos Linux]({{ '/assets/ser/ut00/10_permisos_linux.svg' | relative_url }})
+![Permisos Linux]({{ '/assets/docencia/ser/ut00/10_permisos_linux.svg' | relative_url }})
 
 *Figura 10. Los permisos se dividen entre propietario, grupo y otros.*
 
@@ -1932,7 +1932,7 @@ El host responde a ICMP, pero probablemente no hay un proceso aceptando conexion
 
 ### 50. Escalera de diagnóstico
 
-![Escalera de diagnóstico]({{ '/assets/ser/ut00/11_escalera_diagnostico.svg' | relative_url }})
+![Escalera de diagnóstico]({{ '/assets/docencia/ser/ut00/11_escalera_diagnostico.svg' | relative_url }})
 
 *Figura 11. Diagnosticar significa comprobar una capa antes de saltar a la siguiente.*
 
