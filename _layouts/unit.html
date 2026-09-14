@@ -45,7 +45,7 @@ layout: default
 Docencia
 </a>
 
-<span>/</span>
+<span aria-hidden="true">›</span>
 
 <a href="{{ cycle.url | relative_url }}">
 {{ cycle.code }}
@@ -59,8 +59,8 @@ Docencia
 
 <span>/</span>
 
-<span>
-{{ page.title }}
+<span aria-current="page">
+  {{ page.title }}
 </span>
 
 </nav>
