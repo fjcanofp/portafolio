@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 650" role="img" aria-labelledby="title desc">
+  <title id="title">Diseño de pool dinámico y reserva DHCP</title>
+  <desc id="desc">Diseño de pool dinámico y reserva DHCP</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#0f172a"/>
+      <stop offset="100%" stop-color="#111827"/>
+    </linearGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="8" stdDeviation="8" flood-opacity=".22"/>
+    </filter>
+    <marker id="arrow" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto">
+      <path d="M0,0 L12,6 L0,12 Z" fill="#60a5fa"/>
+    </marker>
+  </defs>
+  <rect width="100%" height="100%" rx="30" fill="url(#bg)"/>
+  <text x="600" y="55" text-anchor="middle" font-family="Inter,Arial,sans-serif" font-size="30" font-weight="700" fill="#f8fafc">Pool dinámico y reserva</text>
+<rect x="90" y="135" width="1020" height="150" rx="22" fill="#1f2937" stroke="#60a5fa" stroke-width="3" filter="url(#shadow)"/>
+<text x="600.0" y="177" text-anchor="middle" font-family="Inter,Arial,sans-serif" font-size="25" font-weight="700" fill="#f8fafc">10.37.P.0/24</text>
+<text x="600.0" y="213" text-anchor="middle" font-family="Inter,Arial,sans-serif" font-size="20" fill="#cbd5e1">red individual del alumno</text>
+<rect x="120" y="350" width="260" height="130" rx="22" fill="#1f2937" stroke="#34d399" stroke-width="3" filter="url(#shadow)"/>
+<text x="250.0" y="392" text-anchor="middle" font-family="Inter,Arial,sans-serif" font-size="25" font-weight="700" fill="#f8fafc">Servidor Kea</text>
+<text x="250.0" y="428" text-anchor="middle" font-family="Inter,Arial,sans-serif" font-size="20" fill="#cbd5e1">10.37.P.(20+L)</text>
+<rect x="470" y="350" width="300" height="130" rx="22" fill="#1f2937" stroke="#f59e0b" stroke-width="3" filter="url(#shadow)"/>
+<text x="620.0" y="392" text-anchor="middle" font-family="Inter,Arial,sans-serif" font-size="25" font-weight="700" fill="#f8fafc">Pool dinámico</text>
+<text x="620.0" y="428" text-anchor="middle" font-family="Inter,Arial,sans-serif" font-size="20" fill="#cbd5e1">10.37.P.(100+P)</text>
+<text x="620.0" y="458" text-anchor="middle" font-family="Inter,Arial,sans-serif" font-size="20" fill="#cbd5e1">→ 10.37.P.(129+P)</text>
+<rect x="860" y="350" width="220" height="130" rx="22" fill="#1f2937" stroke="#a78bfa" stroke-width="3" filter="url(#shadow)"/>
+<text x="970.0" y="392" text-anchor="middle" font-family="Inter,Arial,sans-serif" font-size="25" font-weight="700" fill="#f8fafc">Reserva</text>
+<text x="970.0" y="428" text-anchor="middle" font-family="Inter,Arial,sans-serif" font-size="20" fill="#cbd5e1">10.37.P.(180+L)</text>
+<text x="600" y="560" text-anchor="middle" font-family="Inter,Arial,sans-serif" font-size="22" font-weight="400" fill="#cbd5e1">Servidor, pool y reserva no deben solaparse</text>
+</svg>

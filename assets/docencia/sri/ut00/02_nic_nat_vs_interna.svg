@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 650" role="img" aria-labelledby="title desc">
+  <title id="title">Diferencia entre NIC NAT y NIC de red interna</title>
+  <desc id="desc">Diferencia entre NIC NAT y NIC de red interna</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#0f172a"/>
+      <stop offset="100%" stop-color="#111827"/>
+    </linearGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="8" stdDeviation="8" flood-opacity=".22"/>
+    </filter>
+    <marker id="arrow" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto">
+      <path d="M0,0 L12,6 L0,12 Z" fill="#60a5fa"/>
+    </marker>
+  </defs>
+  <rect width="100%" height="100%" rx="30" fill="url(#bg)"/>
+  <text x="600" y="55" text-anchor="middle" font-family="Inter,Arial,sans-serif" font-size="30" font-weight="700" fill="#f8fafc">Dos NIC, dos funciones distintas</text>
+<rect x="90" y="130" width="430" height="320" rx="22" fill="#1f2937" stroke="#a78bfa" stroke-width="3" filter="url(#shadow)"/>
+<text x="305.0" y="172" text-anchor="middle" font-family="Inter,Arial,sans-serif" font-size="25" font-weight="700" fill="#f8fafc">NIC 1 · NAT</text>
+<text x="305.0" y="208" text-anchor="middle" font-family="Inter,Arial,sans-serif" font-size="20" fill="#cbd5e1">Salida controlada a Internet</text>
+<text x="305.0" y="238" text-anchor="middle" font-family="Inter,Arial,sans-serif" font-size="20" fill="#cbd5e1">apt update / instalar paquetes</text>
+<text x="305.0" y="268" text-anchor="middle" font-family="Inter,Arial,sans-serif" font-size="20" fill="#cbd5e1"></text>
+<text x="305.0" y="298" text-anchor="middle" font-family="Inter,Arial,sans-serif" font-size="20" fill="#cbd5e1">NO define la LAN de prácticas</text>
+<rect x="680" y="130" width="430" height="320" rx="22" fill="#1f2937" stroke="#34d399" stroke-width="3" filter="url(#shadow)"/>
+<text x="895.0" y="172" text-anchor="middle" font-family="Inter,Arial,sans-serif" font-size="25" font-weight="700" fill="#f8fafc">NIC 2 · SRI-Pxx</text>
+<text x="895.0" y="208" text-anchor="middle" font-family="Inter,Arial,sans-serif" font-size="20" fill="#cbd5e1">Red interna del laboratorio</text>
+<text x="895.0" y="238" text-anchor="middle" font-family="Inter,Arial,sans-serif" font-size="20" fill="#cbd5e1">IP estática del servidor</text>
+<text x="895.0" y="268" text-anchor="middle" font-family="Inter,Arial,sans-serif" font-size="20" fill="#cbd5e1"></text>
+<text x="895.0" y="298" text-anchor="middle" font-family="Inter,Arial,sans-serif" font-size="20" fill="#cbd5e1">SIN gateway por defecto</text>
+<text x="600" y="525" text-anchor="middle" font-family="Inter,Arial,sans-serif" font-size="23" font-weight="400" fill="#cbd5e1">Regla: la ruta por defecto pertenece a NAT; la red interna sirve para los servicios</text>
+</svg>
