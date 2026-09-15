@@ -12,6 +12,7 @@ layout: default
 
 {% assign module_units = site.units
    | where: "module_key", page.module_key
+   | where_exp: "unit", "unit.published != false"
    | sort: "order" %}
 
 {% assign rights = site.data.licenses[page.rights] %}

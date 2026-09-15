@@ -4,9 +4,13 @@ permalink: /search.json
 ---
 
 [
+{% assign searchable_units = site.units
+   | where_exp: "unit", "unit.published != false"
+%}
+
 {% assign searchable =
    site.posts
-   | concat: site.units
+   | concat: searchable_units
    | concat: site.modules
    | concat: site.cycles
 %}

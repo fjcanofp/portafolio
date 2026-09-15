@@ -11,23 +11,25 @@ cycle: ASIR
 level: Ciclo Formativo de Grado Superior
 status: Publicación progresiva
 
-summary: Arquitecturas web, servidores, despliegue, CMS, seguridad y administración de aplicaciones.
+summary: Infraestructura web, PHP, persistencia, CMS, seguridad y operación de aplicaciones.
 
 topics:
   - label: Linux
-    url: /docencia/asir/iaw/ut00/
-
-  - label: Apache
-    url: /docencia/asir/iaw/ut01/
-
-  - label: Nginx
-    url:
-
+    unit_order: 0
+  - label: Infraestructura
+    unit_order: 1
+  - label: PHP
+    unit_order: 2
+  - label: Persistencia
+    unit_order: 3
   - label: CMS
-    url:
-
-  - label: TLS
-    url:
+    unit_order: 4
+  - label: Operación CMS
+    unit_order: 5
+  - label: Nextcloud
+    unit_order: 6
+  - label: Extensiones
+    unit_order: 7
 
 permalink: /docencia/asir/iaw/
 ---

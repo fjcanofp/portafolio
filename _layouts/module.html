@@ -8,6 +8,7 @@ layout: default
 
 {% assign module_units = site.units
    | where: "module_key", page.module_key
+   | where_exp: "unit", "unit.published != false"
    | sort: "order" %}
 
 
@@ -156,11 +157,25 @@ layout: default
 
             {% for topic in page.topics %}
 
-              {% if topic.url %}
+              {% assign topic_url = topic.url %}
+
+              {% if topic.unit_order != nil %}
+                {% assign topic_unit = module_units
+                   | where: "order", topic.unit_order
+                   | first %}
+
+                {% if topic_unit %}
+                  {% assign topic_url = topic_unit.url %}
+                {% else %}
+                  {% assign topic_url = nil %}
+                {% endif %}
+              {% endif %}
+
+              {% if topic_url %}
 
                 <a
                   class="chip chip--link"
-                  href="{{ topic.url | relative_url }}"
+                  href="{{ topic_url | relative_url }}"
                 >
                   {{ topic.label }}
                 </a>

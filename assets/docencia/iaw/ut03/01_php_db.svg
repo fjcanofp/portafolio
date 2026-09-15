@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="420" viewBox="0 0 1200 420">
+<rect width="100%" height="100%" fill="#ffffff"/>
+<text x="40" y="55" font-family="Arial" font-size="30" font-weight="700" fill="#1f2937">Cadena PHP - MariaDB</text>
+<rect x="40.0" y="120" rx="16" ry="16" width="190" height="145" fill="#f3f4f6" stroke="#374151" stroke-width="2"/>
+<text x="135.0" y="170" text-anchor="middle" font-family="Arial" font-size="22" font-weight="700" fill="#111827">CLIENTE</text>
+<text x="135.0" y="206" text-anchor="middle" font-family="Arial" font-size="17" fill="#374151">HTTP</text>
+<rect x="272.5" y="120" rx="16" ry="16" width="190" height="145" fill="#f3f4f6" stroke="#374151" stroke-width="2"/>
+<text x="367.5" y="170" text-anchor="middle" font-family="Arial" font-size="22" font-weight="700" fill="#111827">PHP</text>
+<text x="367.5" y="206" text-anchor="middle" font-family="Arial" font-size="17" fill="#374151">FPM</text>
+<rect x="505.0" y="120" rx="16" ry="16" width="190" height="145" fill="#f3f4f6" stroke="#374151" stroke-width="2"/>
+<text x="600.0" y="170" text-anchor="middle" font-family="Arial" font-size="22" font-weight="700" fill="#111827">PDO</text>
+<text x="600.0" y="206" text-anchor="middle" font-family="Arial" font-size="17" fill="#374151">driver</text>
+<rect x="737.5" y="120" rx="16" ry="16" width="190" height="145" fill="#f3f4f6" stroke="#374151" stroke-width="2"/>
+<text x="832.5" y="170" text-anchor="middle" font-family="Arial" font-size="22" font-weight="700" fill="#111827">RED</text>
+<text x="832.5" y="206" text-anchor="middle" font-family="Arial" font-size="17" fill="#374151">3306</text>
+<rect x="970.0" y="120" rx="16" ry="16" width="190" height="145" fill="#f3f4f6" stroke="#374151" stroke-width="2"/>
+<text x="1065.0" y="170" text-anchor="middle" font-family="Arial" font-size="22" font-weight="700" fill="#111827">MARIADB</text>
+<text x="1065.0" y="206" text-anchor="middle" font-family="Arial" font-size="17" fill="#374151">datos</text>
+<line x1="238.0" y1="192" x2="260.5" y2="192" stroke="#6b7280" stroke-width="3"/>
+<polygon points="260.5,184 260.5,200 272.5,192" fill="#6b7280"/>
+<line x1="470.5" y1="192" x2="493.0" y2="192" stroke="#6b7280" stroke-width="3"/>
+<polygon points="493.0,184 493.0,200 505.0,192" fill="#6b7280"/>
+<line x1="703.0" y1="192" x2="725.5" y2="192" stroke="#6b7280" stroke-width="3"/>
+<polygon points="725.5,184 725.5,200 737.5,192" fill="#6b7280"/>
+<line x1="935.5" y1="192" x2="958.0" y2="192" stroke="#6b7280" stroke-width="3"/>
+<polygon points="958.0,184 958.0,200 970.0,192" fill="#6b7280"/>
+<text x="40" y="380" font-family="Arial" font-size="16" fill="#6b7280">IAW · 2.º ASIR · 2026/2027</text>
+</svg>
