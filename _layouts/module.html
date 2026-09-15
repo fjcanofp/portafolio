@@ -6,10 +6,6 @@ layout: default
    | where: "cycle_key", page.cycle_key
    | first %}
 
-{% assign cycle_modules = site.modules
-   | where: "cycle_key", page.cycle_key
-   | sort: "order" %}
-
 {% assign module_units = site.units
    | where: "module_key", page.module_key
    | sort: "order" %}
@@ -17,166 +13,257 @@ layout: default
 
 <article class="page-shell">
 
-<div class="container">
+  <div class="container">
 
-<nav class="breadcrumbs" aria-label="Ruta de navegación">
+    <!-- =========================
+         BREADCRUMBS
+    ========================== -->
 
-  <a href="{{ '/docencia/' | relative_url }}">
-    Docencia
-  </a>
+    <nav
+      class="breadcrumbs"
+      aria-label="Ruta de navegación"
+    >
 
-  <span aria-hidden="true">›</span>
+      <a href="{{ '/docencia/' | relative_url }}">
+        Docencia
+      </a>
 
-  <a href="{{ cycle.url | relative_url }}">
-    {{ cycle.code }}
-  </a>
+      <span aria-hidden="true">›</span>
 
-  <span aria-hidden="true">›</span>
+      <a href="{{ cycle.url | relative_url }}">
+        {{ cycle.code }}
+      </a>
 
-  <span>
-    {{ page.short_title }}
-  </span>
+      <span aria-hidden="true">›</span>
 
-</nav>
+      <span aria-current="page">
+        {{ page.short_title }}
+      </span>
 
+    </nav>
 
-<div class="doc-layout">
 
+    <div class="doc-layout">
 
-<aside class="doc-sidebar">
 
-<span class="sidebar-kicker">
-  {{ cycle.code }}
-</span>
+      <!-- =========================
+           SIDEBAR
+      ========================== -->
 
-<h2>
-  {{ page.short_title }}
-</h2>
+      <aside class="doc-sidebar">
 
+        <h2>
+          {{ page.short_title }}
+        </h2>
 
-<nav class="module-tree">
 
-{% for module in cycle_modules %}
+        {% if module_units.size > 0 %}
 
-<a
- href="{{ module.url | relative_url }}"
- {% if module.module_key == page.module_key %}
- class="active"
- {% endif %}
->
+          <nav
+            class="unit-tree"
+            aria-label="Unidades de {{ page.title }}"
+          >
 
-{{ module.short_title }}
+            {% for unit in module_units %}
 
-</a>
+              <a href="{{ unit.url | relative_url }}">
+                {{ unit.title }}
+              </a>
 
+            {% endfor %}
 
-{% if module.module_key == page.module_key %}
+          </nav>
 
-<div class="unit-tree">
+        {% else %}
 
-{% for unit in module_units %}
+          <p class="sidebar-empty">
+            No hay unidades publicadas todavía.
+          </p>
 
-<a href="{{ unit.url | relative_url }}">
-  {{ unit.title }}
-</a>
+        {% endif %}
 
-{% endfor %}
+      </aside>
 
-</div>
 
-{% endif %}
+      <!-- =========================
+           CONTENIDO PRINCIPAL
+      ========================== -->
 
-{% endfor %}
+      <section class="doc-content">
 
-</nav>
+        <h1>
+          {{ page.title }}
+        </h1>
 
-</aside>
+        {% if page.summary %}
 
+          <p class="lead">
+            {{ page.summary }}
+          </p>
 
-<section class="doc-content">
+        {% endif %}
 
-<p class="eyebrow">
-  {{ cycle.code }} · módulo
-</p>
 
-<h1>
-  {{ page.title }}
-</h1>
+        <!-- =========================
+             AULA VIRTUAL
+        ========================== -->
 
-<p class="lead">
-  {{ page.summary }}
-</p>
+        {% if page.virtual_classroom %}
 
+          <aside class="module-classroom">
 
-{% if page.tech %}
+            <div>
 
-<div class="chip-row">
+              <strong>
+                {{ page.virtual_classroom.label }}
+              </strong>
 
-{% for item in page.tech %}
+              {% if page.virtual_classroom.description %}
 
-<span class="chip">
-  {{ item }}
-</span>
+                <p>
+                  {{ page.virtual_classroom.description }}
+                </p>
 
-{% endfor %}
+              {% endif %}
 
-</div>
+            </div>
 
-{% endif %}
 
+            <a
+              class="button module-classroom__button"
+              href="{{ page.virtual_classroom.url }}"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Acceder al aula ↗
+            </a>
 
-<div class="prose">
+          </aside>
 
-{{ content }}
+        {% endif %}
 
-</div>
 
+        <!-- =========================
+             TEMAS DEL MÓDULO
+        ========================== -->
 
-<section class="unit-index">
+        {% if page.topics %}
 
-<h2>
-  Unidades y contenidos
-</h2>
+          <div
+            class="chip-row"
+            aria-label="Temas del módulo"
+          >
 
+            {% for topic in page.topics %}
 
-{% for unit in module_units %}
+              {% if topic.url %}
 
-<a
- class="unit-card"
- href="{{ unit.url | relative_url }}"
->
+                <a
+                  class="chip chip--link"
+                  href="{{ topic.url | relative_url }}"
+                >
+                  {{ topic.label }}
+                </a>
 
-<span class="unit-order">
-  {{ unit.order }}
-</span>
+              {% else %}
 
-<div>
+                <span
+                  class="chip chip--disabled"
+                  title="Contenido próximamente"
+                >
+                  {{ topic.label }}
+                </span>
 
-<strong>
-  {{ unit.title }}
-</strong>
+              {% endif %}
 
-<small>
-  {{ unit.summary }}
-</small>
+            {% endfor %}
 
-</div>
+          </div>
 
-<span>
-  →
-</span>
 
-</a>
+        {% elsif page.tech %}
 
-{% endfor %}
+          <!-- Compatibilidad temporal con módulos antiguos -->
 
-</section>
+          <div class="chip-row">
 
+            {% for item in page.tech %}
 
-</section>
+              <span class="chip">
+                {{ item }}
+              </span>
 
-</div>
+            {% endfor %}
 
-</div>
+          </div>
+
+        {% endif %}
+
+
+        <!-- =========================
+             CONTENIDO DEL .MD
+        ========================== -->
+
+        <div class="prose">
+
+          {{ content }}
+
+        </div>
+
+
+        <!-- =========================
+             LISTADO DE UNIDADES
+        ========================== -->
+
+        <section class="unit-index">
+
+          <h2>
+            Unidades y contenidos
+          </h2>
+
+
+          {% for unit in module_units %}
+
+            <a
+              class="unit-card"
+              href="{{ unit.url | relative_url }}"
+            >
+
+              <span class="unit-order">
+                {{ unit.order }}
+              </span>
+
+              <div>
+
+                <strong>
+                  {{ unit.title }}
+                </strong>
+
+                {% if unit.summary %}
+
+                  <small>
+                    {{ unit.summary }}
+                  </small>
+
+                {% endif %}
+
+              </div>
+
+              <span aria-hidden="true">
+                →
+              </span>
+
+            </a>
+
+          {% endfor %}
+
+        </section>
+
+
+      </section>
+
+    </div>
+
+  </div>
 
 </article>
