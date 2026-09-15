@@ -1507,3 +1507,46 @@ html:not([lang]) .lang-block.lang-en {
   border-color:
     var(--accent-2);
 }
+
+/* =========================================
+   BUSCADOR · TIPO DE RESULTADO
+========================================= */
+
+.search-result__type {
+  display: inline-block;
+
+  margin-bottom: .35rem;
+
+  color: var(--accent);
+
+  font-family:
+    "IBM Plex Mono",
+    monospace;
+
+  font-size: .72rem;
+  font-weight: 700;
+
+  letter-spacing: .04em;
+  text-transform: uppercase;
+}
+
+
+.search-result h2 {
+  margin:
+    0 0 .35rem;
+
+  font-size:
+    1.05rem;
+}
+
+
+.search-result p {
+  margin: 0;
+
+  color: var(--muted);
+}
+
+
+.search-empty {
+  color: var(--muted);
+}

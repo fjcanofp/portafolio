@@ -14,12 +14,21 @@ status: Publicación progresiva
 
 summary: Redes, servicios y administración de sistemas mediante documentación, laboratorios y resolución de incidencias.
 
-tech:
-  - Linux
-  - DNS
-  - DHCP
-  - servicios de red
-  - virtualización
+topics:
+  - label: Linux
+    url: /docencia/asir/sri/ut00/
+
+  - label: Virtualización
+    url: /docencia/asir/sri/ut00/
+
+  - label: DHCP
+    url:
+
+  - label: DNS
+    url:
+
+  - label: Servicios de red
+    url:
 
 permalink: /docencia/asir/sri/
 ---

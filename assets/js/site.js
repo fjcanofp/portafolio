@@ -1,5 +1,10 @@
 document.addEventListener("DOMContentLoaded", () => {
 
+const prefersReducedMotion =
+  window.matchMedia &&
+  window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+
 /* =========================================
    COPIAR BLOQUES DE CÓDIGO
 ========================================= */
@@ -153,7 +158,7 @@ if (backToTop) {
 
     track.scrollBy({
       left: -(track.clientWidth * .85),
-      behavior: "smooth"
+      behavior: prefersReducedMotion ? "auto" : "smooth"
     });
 
   });
@@ -163,7 +168,7 @@ if (backToTop) {
 
     track.scrollBy({
       left: track.clientWidth * .85,
-      behavior: "smooth"
+      behavior: prefersReducedMotion ? "auto" : "smooth"
     });
 
   });
@@ -260,95 +265,157 @@ document
 
   });
   const searchInput =
-  document.getElementById("site-search");
+    document.getElementById("site-search");
 
-const searchResults =
-  document.getElementById("search-results");
+  const searchResults =
+    document.getElementById("search-results");
 
-
-if (searchInput && searchResults) {
-
-  let searchIndex = [];
+  const searchStatus =
+    document.getElementById("search-status");
 
 
-  fetch("/search.json")
-    .then(response => response.json())
-    .then(data => {
+  if (searchInput && searchResults) {
 
-      searchIndex = data;
-
-    });
+    let searchIndex = [];
 
 
-  const normalize = (text) =>
-
-    (text || "")
-      .toLowerCase()
-      .normalize("NFD")
-      .replace(/\p{Diacritic}/gu, "");
-
-
-  searchInput.addEventListener(
-    "input",
-    () => {
-
-      const query =
-        normalize(searchInput.value.trim());
+    const typeLabels = {
+      posts: "Artículo",
+      units: "Unidad",
+      modules: "Módulo",
+      cycles: "Ciclo"
+    };
 
 
-      if (query.length < 2) {
-
-        searchResults.innerHTML = "";
-
-        return;
-
-      }
-
-
-      const matches =
-        searchIndex
-          .filter(item => {
-
-            const haystack =
-              normalize(
-                `${item.title}
-                 ${item.description}
-                 ${item.content}`
-              );
-
-            return haystack.includes(query);
-
-          })
-          .slice(0, 20);
+    const escapeHtml = (value) =>
+      String(value || "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
 
 
-      searchResults.innerHTML =
-        matches.length
-          ? matches
-              .map(item => `
+    fetch("/search.json")
+      .then((response) => {
 
-                <article class="search-result">
+        if (!response.ok) {
+          throw new Error("No se pudo cargar el índice de búsqueda.");
+        }
 
-                  <h2>
-                    <a href="${item.url}">
-                      ${item.title}
-                    </a>
-                  </h2>
+        return response.json();
 
-                  <p>
-                    ${item.description || ""}
-                  </p>
+      })
+      .then((data) => {
 
-                </article>
+        searchIndex = data;
 
-              `)
-              .join("")
+      })
+      .catch(() => {
 
-          : `<p>No se encontraron resultados.</p>`;
+        if (searchStatus) {
+          searchStatus.textContent =
+            "El buscador no está disponible temporalmente.";
+        }
 
-    });
+      });
 
-}
+
+    const normalize = (text) =>
+
+      (text || "")
+        .toLowerCase()
+        .normalize("NFD")
+        .replace(/\p{Diacritic}/gu, "");
+
+
+    searchInput.addEventListener(
+      "input",
+      () => {
+
+        const query =
+          normalize(searchInput.value.trim());
+
+
+        if (query.length < 2) {
+
+          searchResults.innerHTML = "";
+
+          if (searchStatus) {
+            searchStatus.textContent =
+              "Escribe al menos dos caracteres para buscar.";
+          }
+
+          return;
+
+        }
+
+
+        const matches =
+          searchIndex
+            .filter((item) => {
+
+              const haystack =
+                normalize(
+                  `${item.title}
+                   ${item.description}
+                   ${item.content}`
+                );
+
+              return haystack.includes(query);
+
+            })
+            .slice(0, 20);
+
+
+        if (searchStatus) {
+
+          searchStatus.textContent =
+            matches.length === 1
+              ? "1 resultado encontrado."
+              : `${matches.length} resultados encontrados.`;
+
+        }
+
+
+        searchResults.innerHTML =
+          matches.length
+            ? matches
+                .map((item) => {
+
+                  const type =
+                    typeLabels[item.type] || "Contenido";
+
+                  return `
+                    <article class="search-result">
+
+                      <span class="search-result__type">
+                        ${escapeHtml(type)}
+                      </span>
+
+                      <h2>
+                        <a href="${escapeHtml(item.url)}">
+                          ${escapeHtml(item.title)}
+                        </a>
+                      </h2>
+
+                      <p>
+                        ${escapeHtml(item.description || "")}
+                      </p>
+
+                    </article>
+                  `;
+
+                })
+                .join("")
+
+            : `<p class="search-empty">
+                 No se encontraron resultados.
+               </p>`;
+
+      });
+
+  }
 
   const root = document.documentElement;
   const themeToggle = document.getElementById("theme-toggle");
@@ -434,23 +501,55 @@ if (searchInput && searchResults) {
   });
 });
 
-//añado el efecto typping
-  const brandTypewrite = document.getElementById("brand-typewrite");
+// Efecto de escritura de la marca.
+const brandTypewrite =
+  document.getElementById("brand-typewrite");
 
-  if (brandTypewrite) {
-    const text = brandTypewrite.dataset.text || brandTypewrite.textContent || "";
+if (brandTypewrite) {
+
+  const text =
+    brandTypewrite.dataset.text ||
+    brandTypewrite.textContent ||
+    "";
+
+  const reduceMotion =
+    window.matchMedia &&
+    window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+
+  if (reduceMotion) {
+
+    brandTypewrite.textContent = text;
+
+  } else {
+
     brandTypewrite.textContent = "";
 
     let i = 0;
     const speed = 75;
 
+
     function typeBrand() {
+
       if (i < text.length) {
-        brandTypewrite.textContent += text.charAt(i);
+
+        brandTypewrite.textContent +=
+          text.charAt(i);
+
         i += 1;
-        setTimeout(typeBrand, speed);
+
+        setTimeout(
+          typeBrand,
+          speed
+        );
+
       }
+
     }
 
+
     typeBrand();
+
   }
+
+}

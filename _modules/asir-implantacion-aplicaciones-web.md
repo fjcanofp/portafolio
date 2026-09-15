@@ -13,12 +13,21 @@ status: Publicación progresiva
 
 summary: Arquitecturas web, servidores, despliegue, CMS, seguridad y administración de aplicaciones.
 
-tech:
-  - Apache
-  - Nginx
-  - Linux
-  - CMS
-  - TLS
+topics:
+  - label: Linux
+    url: /docencia/asir/iaw/ut00/
+
+  - label: Apache
+    url: /docencia/asir/iaw/ut01/
+
+  - label: Nginx
+    url:
+
+  - label: CMS
+    url:
+
+  - label: TLS
+    url:
 
 permalink: /docencia/asir/iaw/
 ---

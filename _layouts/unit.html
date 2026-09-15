@@ -14,6 +14,8 @@ layout: default
    | where: "module_key", page.module_key
    | sort: "order" %}
 
+{% assign rights = site.data.licenses[page.rights] %}
+
 {% assign previous_unit = nil %}
 {% assign next_unit = nil %}
 {% assign previous_candidate = nil %}
@@ -34,7 +36,7 @@ layout: default
 
 {% endfor %}
 
-<article class="page-shell" id="unit-top">
+<article class="page-shell unit-page" id="unit-top">
 
 <div class="container">
 
@@ -84,6 +86,7 @@ layout: default
  href="{{ unit.url | relative_url }}"
  {% if unit.url == page.url %}
  class="active"
+ aria-current="page"
  {% endif %}
 >
 
@@ -121,34 +124,37 @@ layout: default
 {{ page.title }}
 </h1>
 
+{% if page.summary %}
 <p class="lead">
-  {% if page.toc %}
+  {{ page.summary }}
+</p>
+{% endif %}
 
-  <details class="mobile-toc">
+{% if page.toc %}
 
-    <summary>
-      ☰ Contenido de la unidad
-    </summary>
+<details class="mobile-toc">
 
-    <nav
-      aria-label="Contenido de {{ page.title }}"
-    >
+  <summary>
+    ☰ Contenido de la unidad
+  </summary>
 
-      {% for item in page.toc %}
+  <nav
+    aria-label="Contenido de {{ page.title }}"
+  >
 
-        <a href="#{{ item.id }}">
-          {{ item.title }}
-        </a>
+    {% for item in page.toc %}
 
-      {% endfor %}
+      <a href="#{{ item.id }}">
+        {{ item.title }}
+      </a>
 
-    </nav>
+    {% endfor %}
 
-  </details>
+  </nav>
+
+</details>
 
 {% endif %}
-{{ page.summary }}
-</p>
 
 
 <div class="prose">
@@ -168,28 +174,52 @@ layout: default
 
   <dl class="unit-meta__grid">
 
-    {% if author %}
+    {% if page.authors %}
 
       <div>
-        <dt>Autor</dt>
+        <dt>Autoría</dt>
 
         <dd>
-          <a href="{{ author.url | relative_url }}">
-            {{ author.name }}
-          </a>
+          {% for author_id in page.authors %}
+
+            {% assign author = site.data.authors[author_id] %}
+
+            {% if author %}
+
+              <a href="{{ author.url | relative_url }}">
+                {{ author.name }}
+              </a>
+
+              {% unless forloop.last %} · {% endunless %}
+
+            {% endif %}
+
+          {% endfor %}
         </dd>
       </div>
 
     {% endif %}
 
 
-    {% if reviewer %}
+    {% if page.reviewers %}
 
       <div>
         <dt>Revisión</dt>
 
         <dd>
-          {{ reviewer.name }}
+          {% for reviewer_id in page.reviewers %}
+
+            {% assign reviewer = site.data.authors[reviewer_id] %}
+
+            {% if reviewer %}
+
+              {{ reviewer.name }}
+
+              {% unless forloop.last %} · {% endunless %}
+
+            {% endif %}
+
+          {% endfor %}
         </dd>
       </div>
 
@@ -230,7 +260,7 @@ layout: default
 
         <dd>
           <a
-            href="{{ rights.url | relative_url }}"
+            href="{{ rights.url }}"
           >
             {{ rights.short_name }}
           </a>
