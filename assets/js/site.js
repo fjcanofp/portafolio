@@ -1,4 +1,104 @@
 document.addEventListener("DOMContentLoaded", () => {
+
+/* =========================================
+   COPIAR BLOQUES DE CÓDIGO
+========================================= */
+
+document
+  .querySelectorAll(".prose pre")
+  .forEach((pre) => {
+
+    if (
+      pre.parentElement &&
+      pre.parentElement.classList.contains("code-block")
+    ) {
+      return;
+    }
+
+    const wrapper =
+      document.createElement("div");
+
+    wrapper.className =
+      "code-block";
+
+    pre.parentNode.insertBefore(
+      wrapper,
+      pre
+    );
+
+    wrapper.appendChild(pre);
+
+
+    const button =
+      document.createElement("button");
+
+    button.type = "button";
+
+    button.className =
+      "copy-code-button";
+
+    button.textContent =
+      "Copiar";
+
+    button.setAttribute(
+      "aria-label",
+      "Copiar bloque de código"
+    );
+
+    wrapper.insertBefore(
+      button,
+      pre
+    );
+
+
+    button.addEventListener(
+      "click",
+      async () => {
+
+        const code =
+          pre.querySelector("code") || pre;
+
+        const text =
+          code.innerText;
+
+
+        try {
+
+          await navigator.clipboard.writeText(
+            text
+          );
+
+          button.textContent =
+            "Copiado ✓";
+
+          button.classList.add(
+            "is-copied"
+          );
+
+        } catch {
+
+          button.textContent =
+            "No se pudo copiar";
+
+        }
+
+
+        setTimeout(() => {
+
+          button.textContent =
+            "Copiar";
+
+          button.classList.remove(
+            "is-copied"
+          );
+
+        }, 1600);
+
+      }
+    );
+
+  });
+  
 const backToTop =
   document.querySelector(
     "[data-back-to-top]"

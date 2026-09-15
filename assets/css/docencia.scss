@@ -544,3 +544,219 @@
 #unit-top {
   scroll-margin-top: 90px;
 }
+
+/* =========================================
+   PÁGINA DE MÓDULO · AULA VIRTUAL
+========================================= */
+
+.module-classroom {
+  display: flex;
+
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 1.5rem;
+
+  margin: 1.5rem 0;
+
+  padding: 1rem 1.2rem;
+
+  border: 1px solid var(--line);
+  border-radius: 12px;
+
+  background: var(--panel);
+}
+
+
+.module-classroom p {
+  margin: .35rem 0 0;
+
+  color: var(--muted);
+
+  font-size: .9rem;
+}
+
+
+.module-classroom__button {
+  flex-shrink: 0;
+}
+
+
+/* =========================================
+   TEMAS NAVEGABLES DEL MÓDULO
+========================================= */
+
+.chip--link {
+  text-decoration: none;
+
+  transition:
+    border-color .2s ease,
+    background .2s ease,
+    color .2s ease;
+}
+
+
+.chip--link:hover {
+  border-color: var(--accent);
+
+  color: var(--accent);
+
+  background:
+    rgba(88, 166, 255, .14);
+}
+
+
+.chip--disabled {
+  opacity: .45;
+
+  cursor: default;
+}
+
+
+/* =========================================
+   RESPONSIVE
+========================================= */
+
+@media (max-width: 700px) {
+
+  .module-classroom {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .module-classroom__button {
+    text-align: center;
+  }
+
+}
+
+.unit-meta {
+  margin-top: 3rem;
+
+  padding:
+    1rem 1.1rem;
+
+  border:
+    1px solid var(--line);
+
+  border-radius:
+    12px;
+
+  background:
+    rgba(255,255,255,.02);
+}
+
+
+.unit-meta__title {
+  margin:
+    0 0 .85rem;
+
+  font-size:
+    1rem;
+}
+
+
+.unit-meta__grid {
+  display: grid;
+
+  grid-template-columns:
+    repeat(
+      2,
+      minmax(0, 1fr)
+    );
+
+  gap:
+    .75rem 1.2rem;
+
+  margin: 0;
+}
+
+
+.unit-meta dt {
+  color:
+    var(--muted);
+
+  font-family:
+    "IBM Plex Mono",
+    monospace;
+
+  font-size:
+    .72rem;
+
+  text-transform:
+    uppercase;
+}
+
+
+.unit-meta dd {
+  margin:
+    .15rem 0 0;
+}
+
+.mobile-toc {
+  display: none;
+
+  margin:
+    1.25rem 0 1.5rem;
+
+  border:
+    1px solid var(--line);
+
+  border-radius:
+    12px;
+
+  background:
+    var(--panel);
+}
+
+
+.mobile-toc summary {
+  padding:
+    .8rem 1rem;
+
+  font-weight:
+    700;
+
+  cursor:
+    pointer;
+}
+
+
+.mobile-toc nav {
+  display: grid;
+
+  gap: .2rem;
+
+  padding:
+    0 .7rem .8rem;
+}
+
+
+.mobile-toc nav a {
+  padding:
+    .55rem .65rem;
+
+  border-radius:
+    8px;
+}
+
+
+@media
+(max-width: 850px) {
+
+  .unit-page .doc-sidebar {
+    display: none;
+  }
+
+
+  .mobile-toc {
+    display: block;
+  }
+
+
+  .unit-meta__grid {
+    grid-template-columns:
+      1fr;
+  }
+
+}

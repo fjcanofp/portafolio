@@ -1303,3 +1303,207 @@ html:not([lang]) .lang-block.lang-en {
   }
 
 }
+
+/* =========================================
+   BLOQUES DE CÓDIGO · COPIAR
+========================================= */
+
+.code-block {
+  position: relative;
+
+  margin: 1.25rem 0;
+}
+
+
+.code-block pre {
+  margin: 0;
+
+  padding-top: 3rem;
+}
+
+
+.copy-code-button {
+  position: absolute;
+
+  top: .65rem;
+  right: .65rem;
+
+  z-index: 2;
+
+  padding: .35rem .65rem;
+
+  border: 1px solid var(--line);
+  border-radius: 8px;
+
+  background: var(--panel-2);
+
+  color: var(--muted);
+
+  font-family:
+    "IBM Plex Mono",
+    monospace;
+
+  font-size: .75rem;
+
+  cursor: pointer;
+}
+
+
+.copy-code-button:hover,
+.copy-code-button:focus-visible {
+  border-color: var(--accent);
+
+  color: var(--accent);
+}
+
+
+.copy-code-button.is-copied {
+  border-color: var(--accent);
+
+  color: var(--accent);
+}
+
+/* =========================================
+   ACCESIBILIDAD
+========================================= */
+
+.skip-link {
+  position: fixed;
+
+  top: -100px;
+  left: 1rem;
+
+  z-index: 9999;
+
+  padding: .7rem 1rem;
+
+  border: 1px solid var(--accent);
+  border-radius: 10px;
+
+  background: var(--panel);
+
+  color: var(--text);
+
+  font-weight: 700;
+}
+
+
+.skip-link:focus {
+  top: 1rem;
+}
+
+
+:focus-visible {
+  outline:
+    3px solid var(--accent-2);
+
+  outline-offset:
+    3px;
+}
+
+
+@media
+(prefers-reduced-motion: reduce) {
+
+  html {
+    scroll-behavior: auto;
+  }
+
+
+  *,
+  *::before,
+  *::after {
+    scroll-behavior:
+      auto !important;
+
+    animation-duration:
+      .01ms !important;
+
+    animation-iteration-count:
+      1 !important;
+
+    transition-duration:
+      .01ms !important;
+  }
+
+}
+
+/* =========================================
+   BUSCADOR
+========================================= */
+
+.search-box {
+  display: grid;
+
+  gap: .65rem;
+
+  margin:
+    1.5rem 0 1rem;
+}
+
+
+.search-box label {
+  font-weight: 700;
+}
+
+
+.search-box input {
+  width: 100%;
+
+  padding:
+    .9rem 1rem;
+
+  border:
+    1px solid var(--line);
+
+  border-radius:
+    12px;
+
+  background:
+    var(--panel);
+
+  color:
+    var(--text);
+
+  font: inherit;
+}
+
+
+.search-status {
+  min-height:
+    1.5rem;
+
+  margin-bottom:
+    1rem;
+
+  color:
+    var(--muted);
+}
+
+
+#search-results {
+  display: grid;
+
+  gap: .85rem;
+}
+
+
+.search-result {
+  padding:
+    1rem 1.1rem;
+
+  border:
+    1px solid var(--line);
+
+  border-radius:
+    12px;
+
+  background:
+    rgba(255,255,255,.02);
+}
+
+
+.search-result:hover {
+  border-color:
+    var(--accent-2);
+}

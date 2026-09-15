@@ -41,27 +41,27 @@ layout: default
 
 <nav class="breadcrumbs" aria-label="Ruta de navegación">
 
-<a href="{{ '/docencia/' | relative_url }}">
-Docencia
-</a>
+  <a href="{{ '/docencia/' | relative_url }}">
+    Docencia
+  </a>
 
-<span aria-hidden="true">›</span>
+  <span aria-hidden="true">›</span>
 
-<a href="{{ cycle.url | relative_url }}">
-{{ cycle.code }}
-</a>
+  <a href="{{ cycle.url | relative_url }}">
+    {{ cycle.code }}
+  </a>
 
-<span>/</span>
+  <span aria-hidden="true">›</span>
 
-<a href="{{ module.url | relative_url }}">
-{{ module.short_title }}
-</a>
+  <a href="{{ module.url | relative_url }}">
+    {{ module.short_title }}
+  </a>
 
-<span>/</span>
+  <span aria-hidden="true">›</span>
 
-<span aria-current="page">
-  {{ page.title }}
-</span>
+  <span aria-current="page">
+    {{ page.unit | default: page.title }}
+  </span>
 
 </nav>
 
@@ -70,10 +70,6 @@ Docencia
 
 
 <aside class="doc-sidebar">
-
-<span class="sidebar-kicker">
-{{ cycle.code }}
-</span>
 
 <h2>
 {{ module.short_title }}
@@ -121,15 +117,36 @@ Docencia
 
 <section class="doc-content">
 
-<p class="eyebrow">
-{{ cycle.code }} · {{ module.short_title }}
-</p>
-
 <h1>
 {{ page.title }}
 </h1>
 
 <p class="lead">
+  {% if page.toc %}
+
+  <details class="mobile-toc">
+
+    <summary>
+      ☰ Contenido de la unidad
+    </summary>
+
+    <nav
+      aria-label="Contenido de {{ page.title }}"
+    >
+
+      {% for item in page.toc %}
+
+        <a href="#{{ item.id }}">
+          {{ item.title }}
+        </a>
+
+      {% endfor %}
+
+    </nav>
+
+  </details>
+
+{% endif %}
 {{ page.summary }}
 </p>
 
@@ -139,6 +156,92 @@ Docencia
 {{ content }}
 
 </div>
+<footer
+  class="unit-meta"
+  aria-label="Información del material"
+>
+
+  <h2 class="unit-meta__title">
+    Información del material
+  </h2>
+
+
+  <dl class="unit-meta__grid">
+
+    {% if author %}
+
+      <div>
+        <dt>Autor</dt>
+
+        <dd>
+          <a href="{{ author.url | relative_url }}">
+            {{ author.name }}
+          </a>
+        </dd>
+      </div>
+
+    {% endif %}
+
+
+    {% if reviewer %}
+
+      <div>
+        <dt>Revisión</dt>
+
+        <dd>
+          {{ reviewer.name }}
+        </dd>
+      </div>
+
+    {% endif %}
+
+
+    {% if page.version %}
+
+      <div>
+        <dt>Versión</dt>
+
+        <dd>
+          {{ page.version }}
+        </dd>
+      </div>
+
+    {% endif %}
+
+
+    {% if page.last_reviewed %}
+
+      <div>
+        <dt>Última revisión</dt>
+
+        <dd>
+          {{ page.last_reviewed
+             | date: "%d/%m/%Y" }}
+        </dd>
+      </div>
+
+    {% endif %}
+
+
+    {% if rights %}
+
+      <div>
+        <dt>Derechos</dt>
+
+        <dd>
+          <a
+            href="{{ rights.url | relative_url }}"
+          >
+            {{ rights.short_name }}
+          </a>
+        </dd>
+      </div>
+
+    {% endif %}
+
+  </dl>
+
+</footer>
 
 <nav
   class="unit-pager"

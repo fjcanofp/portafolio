@@ -13,12 +13,26 @@ status: Publicación progresiva
 
 summary: Servicios de red mediante documentación accesible, laboratorios y resolución de incidencias.
 
-tech:
-  - Linux
-  - DHCP
-  - DNS
-  - FTP
-  - SSH
+topics:
+  - label: Linux
+    url: /docencia/smr/ser/ut00/
+
+  - label: DHCP
+    url: /docencia/smr/ser/ut01/
+
+  - label: DNS
+    url:
+
+  - label: FTP
+    url:
+
+  - label: SSH
+    url:
+
+virtual_classroom:
+  label: "Aula virtual · Moodle"
+  url: "https://moodle.educarex.es/evex/course/view.php?id=6217"
+  description: "Actividades, entregas y material reservado del módulo."
 
 permalink: /docencia/smr/ser/
 ---
