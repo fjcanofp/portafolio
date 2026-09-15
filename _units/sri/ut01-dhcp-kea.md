@@ -49,7 +49,7 @@ tags:
   - diagnostico
 
 permalink: /docencia/asir/sri/ut01/
-published: false
+published: true
 
 toc:
   - title: Introducción
