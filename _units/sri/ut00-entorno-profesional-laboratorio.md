@@ -860,26 +860,7 @@ Antes de terminar la unidad debes poder responder sin consultar los apuntes:
 
 ---
 
-## 10. Checklist antes de guardar `10_RED_OK`
-
-```text
-[ ] El hostname sigue el patrón srv-pXX-lYY
-[ ] La NIC NAT funciona
-[ ] La NIC interna está conectada a SRI-Pxx
-[ ] He identificado el gestor de red de mi instalación
-[ ] He usado solo el método correspondiente
-[ ] La IP interna es la que me corresponde
-[ ] No existe un gateway innecesario en la NIC interna
-[ ] Servidor y cliente pueden hacerse ping
-[ ] El servicio HTTP temporal responde desde el cliente
-[ ] Sé distinguir fallo de red y fallo de servicio
-[ ] La configuración persiste tras reiniciar
-[ ] He creado el snapshot 10_RED_OK
-```
-
----
-
-## 11. Siguiente unidad {#cierre}
+## 10. Siguiente unidad {#cierre}
 
 > **UT01 · Configuración automática profesional: DHCP con Kea**
 
