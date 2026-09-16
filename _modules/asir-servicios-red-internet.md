@@ -30,5 +30,10 @@ topics:
   - label: Servicios de red
     url:
 
+virtual_classroom:
+  label: "Aula virtual · Educarex Evex"
+  url: "https://moodle.educarex.es/evex/course/view.php?id=6219"
+  description: "Actividades, entregas y material reservado del módulo."
+
 permalink: /docencia/asir/sri/
 ---

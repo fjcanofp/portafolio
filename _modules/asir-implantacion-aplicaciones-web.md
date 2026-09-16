@@ -31,6 +31,11 @@ topics:
   - label: Extensiones
     unit_order: 7
 
+virtual_classroom:
+  label: "Aula virtual · Educarex Evex"
+  url: "https://moodle.educarex.es/evex/course/view.php?id=6218"
+  description: "Actividades, entregas y material reservado del módulo."
+
 permalink: /docencia/asir/iaw/
 ---
 
