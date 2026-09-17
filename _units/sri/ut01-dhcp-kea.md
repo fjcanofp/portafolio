@@ -22,8 +22,8 @@ reviewers:
   - fjcano
 
 rights: all-rights-reserved
-version: "1.0"
-last_reviewed: 2026-09-15
+version: "1.1"
+last_reviewed: 2026-09-17
 visibility: public
 
 ra:
@@ -86,48 +86,45 @@ toc:
     id: cierre
 ---
 
-## Introducción {#introduccion}
 
-> **Misión:** transformar el laboratorio estático de UT00 en una infraestructura donde clientes Linux y Windows reciben política de red de forma automática, observable y diagnosticable.
+# UT01 · Configuración automática profesional: DHCP con Kea
 
-> **Núcleo de la unidad:** DORA, Kea, pools, leases, reservas, clientes Linux/Windows y diagnóstico.  
-> **Ampliación:** relay, segunda subred, detección de DHCP no autorizado y el banco final. Estos contenidos se mantienen disponibles, pero pueden desplazarse o reducirse si el ritmo real del grupo lo aconseja sin perder el núcleo del RA2.
+> **Misión.** Transformar el laboratorio estático de UT00 en una infraestructura donde los clientes reciban configuración IPv4 automática mediante **Kea DHCP4**, y donde podamos demostrar qué ha ocurrido mediante **DORA, logs y leases**.
+>
+> **Núcleo:** DHCPv4, DORA, pool, lease, Kea, clientes Linux/Windows, reserva y diagnóstico.
+>
+> **Ampliación:** relay/segunda subred, clasificación de clientes y alta disponibilidad. No hace falta forzar estas ampliaciones antes de dominar el núcleo.
 
-**Orden didáctico del curso:** en esta versión SRI seguimos la secuencia usada en Avanza: **DHCP antes que DNS**. Por eso UT01 no presupone un servidor DNS ya instalado. La integración funcional con DNS se cerrará en UT02.
+## 1. Qué vas a saber hacer
 
-## 1. Qué vas a saber hacer {#objetivos}
+Al terminar la unidad deberías poder:
 
-Al terminar deberías poder:
+- explicar qué hace DHCP sin reducirlo a “da Internet”;
+- interpretar **Discover, Offer, Request y ACK**;
+- diferenciar **subred, pool, reserva y lease**;
+- instalar y operar Kea DHCP4 en Debian 13;
+- configurar asignación dinámica y reservas;
+- demostrar una concesión con cliente + PCAP + lease;
+- diagnosticar fallos separando red, servicio, protocolo y cliente;
+- ampliar el escenario con relay y una segunda subred cuando el núcleo esté consolidado.
 
-- explicar DHCP sin decir simplemente “da Internet”;
-- interpretar Discover, Offer, Request, ACK, NAK, Release e Inform;
-- localizar xid, yiaddr, Option 50, 51, 53, 54, 58 y 59;
-- diseñar un pool con margen, exclusiones y tiempos coherentes;
-- instalar e inventariar Kea DHCP4 en Debian 13;
-- configurar asignación dinámica y reserva;
-- demostrar la política recibida en Linux y Windows;
-- correlacionar cliente, PCAP, lease y configuración;
-- atender una segunda subred mediante relay y `giaddr`;
-- detectar un segundo servidor DHCP mediante Option 54 y origen de Offer;
-- resolver incidencias con pruebas discriminantes y rollback.
+## 2. RA2 y evidencias
 
-## 2. RA2 y CE {#ra-ce}
+**RA2.** Administra servicios de configuración automática, identificándolos y verificando la correcta asignación de los parámetros.
 
-**RA2:** Administra servicios de configuración automática, identificándolos y verificando la correcta asignación de los parámetros.
-
-| CE | Evidencia principal |
+| Evidencia | Qué debe poder demostrar el alumno |
 |---|---|
-| a | comparación manual/DHCP, ventajas, riesgos y dimensionado |
-| b | PCAP DORA/renovación interpretada |
-| c | Kea instalado, inventariado y operable |
-| d | pool y concesión real a cliente |
-| e | dinámica + reserva por identidad |
-| f | opciones coherentes + relay/multi-subred |
-| g | topología, runbook, tickets y rollback |
+| Diseño | red, pool, exclusiones y tiempos coherentes |
+| Implantación | Kea instalado, configurado y operativo |
+| Asignación | clientes con direcciones correctas |
+| Observación | DORA y lease correlacionadas |
+| Reserva | identidad concreta -> dirección prevista |
+| Diagnóstico | localizar la capa del fallo con pruebas discriminantes |
+| Ampliación | relay/multi-subred cuando proceda |
 
-## 3. Variante individual {#individualizacion}
+## 3. Variante individual Pxx-Lyy
 
-Se reutiliza `Pxx-Lyy` de UT00.
+Se reutiliza la variante de UT00.
 
 | Dato | Fórmula |
 |---|---|
@@ -135,21 +132,19 @@ Se reutiliza `Pxx-Lyy` de UT00.
 | servidor Kea | `10.37.P.(20+L)` |
 | pool A | `10.37.P.(100+P)` a `10.37.P.(129+P)` |
 | reserva | `10.37.P.(180+L)` |
-| valid-lifetime | `1800 + 60×L` segundos |
+| `valid-lifetime` | `1800 + 60×L` segundos |
 | T1 | `floor(valid/2)` |
 | T2 | `floor(valid×7/8)` |
-| LAN B | `10.38.P.0/24` |
+| LAN B (ampliación) | `10.38.P.0/24` |
 | relay upstream | `10.37.P.254` |
 | relay downstream | `10.38.P.254` |
 | pool B | mismos sufijos que pool A |
 
-![Pool dinámico y reserva de la variante]({{ '/assets/docencia/sri/ut01/02_pool_reserva.svg' | relative_url }})
-
-Ejemplo docente P07-L03:
+**Ejemplo docente P07-L03**
 
 ```text
 LAN A       10.37.7.0/24
-Kea         10.37.7.23
+Kea         10.37.7.23/24
 pool A      10.37.7.107 - 10.37.7.136
 reserva     10.37.7.183
 lease/T1/T2 1980 / 990 / 1732 s
@@ -158,32 +153,85 @@ relay       10.37.7.254 / 10.38.7.254
 pool B      10.38.7.107 - 10.38.7.136
 ```
 
-## 4. Qué debe tener el equipo antes de empezar {#prerrequisitos}
+> **Importante.** Antes de activar el pool, apaga o pasa a DHCP los clientes que conserven una IP manual que pueda caer dentro de ese rango.
 
-- `srv-pXX-lYY` Debian 13 con NIC NAT + NIC `SRI-Pxx`.
-- IP estática persistente de UT00 en la NIC interna.
-- snapshot `10_RED_OK`.
-- un cliente Debian o Windows con su NIC en `SRI-Pxx`.
-- antes de probar DHCP, eliminar la IP manual del cliente y seleccionar IPv4 automático.
+## 4. Prerrequisito de UT00: servidor con IP fija
 
-## 5. Protocolo: DORA y vida de la lease {#dora}
+El servidor tendrá:
 
-DHCPv4 usa UDP 67/68. El Discover inicial suele difundirse porque el cliente aún no tiene una configuración IPv4 utilizable.
+- NIC de administración/salida: NAT;
+- NIC del laboratorio: `SRI-Pxx`;
+- IP fija persistente en la NIC interna.
 
-| Mensaje | Qué buscar |
-|---|---|
-| Discover | xid, chaddr/client-id, Parameter Request List |
-| Offer | yiaddr, Option 54, Option 51 y política ofrecida |
-| Request | Option 50 + Option 54 |
-| ACK | concesión definitiva, opciones y T1/T2 |
+Primero identifica las interfaces:
 
-![Proceso DHCP DORA]({{ '/assets/docencia/sri/ut01/01_dora.svg' | relative_url }})
+```bash
+ip -br link
+ip -br a
+ip route
+```
 
-T1 intenta renovar con el servidor conocido; T2 amplía la búsqueda; al expirar la lease el cliente no debe seguir usando la dirección.
+### Ruta A · Debian con ifupdown
 
-![Tiempos de una concesión DHCP]({{ '/assets/docencia/sri/ut01/03_lease_t1_t2.svg' | relative_url }})
+Comprueba que ésta sea la ruta de tu máquina:
 
-## 6. Instalación e inventario de Kea {#instalacion}
+```bash
+systemctl is-active NetworkManager
+systemctl is-active systemd-networkd
+cat /etc/network/interfaces
+```
+
+Ejemplo docente:
+
+```text
+auto enp0s8
+iface enp0s8 inet static
+    address 10.37.7.23
+    netmask 255.255.255.0
+```
+
+Aplica y comprueba:
+
+```bash
+sudo systemctl restart networking
+ip -br a
+ip route
+```
+
+En una VM local también es válido reiniciar si quieres asegurar un estado limpio:
+
+```bash
+sudo reboot
+```
+
+> **No basta con ver `10.37.7.23`: debe aparecer `/24`.** `/etc/network/interfaces` describe la configuración persistente; `ip -br a` muestra el estado real del kernel.
+
+Si la configuración persistente es correcta pero la NIC conserva una máscara anterior:
+
+```bash
+sudo ip -4 addr flush dev NIC_LAN
+sudo ifup --force NIC_LAN
+ip -br a
+```
+
+## 5. Qué hace DHCP: DORA y vida de una lease
+
+DHCPv4 usa normalmente **UDP 67 en el servidor y UDP 68 en el cliente**.
+
+| Mensaje | Idea que debes entender | Campos útiles |
+|---|---|---|
+| Discover | “¿Hay algún DHCP?” | `xid`, identidad del cliente |
+| Offer | “Puedo ofrecerte esta configuración” | `yiaddr`, Option 51, Option 54 |
+| Request | “Solicito/acepto esta oferta” | Option 50, Option 54 |
+| ACK | “Concesión confirmada” | dirección, opciones, T1/T2 |
+
+**Lease** = concesión temporal.
+
+- **T1:** el cliente intenta renovar con el servidor conocido.
+- **T2:** amplía la búsqueda para poder renovar.
+- **Expiración:** la dirección deja de ser utilizable como concesión válida.
+
+## 6. Instalación e inventario de Kea
 
 ```bash
 sudo apt update
@@ -194,95 +242,45 @@ dpkg -L kea-dhcp4-server | sort
 systemctl list-unit-files | grep -i kea
 ```
 
-En Debian 13 estable el paquete `kea-dhcp4-server` pertenece a la rama empaquetada por Debian; se registra la versión real en lugar de memorizar una versión de una diapositiva.
-
-## 7. Cambio controlado {#cambio-controlado}
-
 Antes de editar:
 
 ```bash
 sudo cp /etc/kea/kea-dhcp4.conf /etc/kea/kea-dhcp4.conf.bak-ut01
 ```
 
-Ciclo obligatorio:
+## 7. Fase 1 · Configuración mínima de una LAN
+
+Empieza por **una sola LAN y un solo pool**. Reserva, relay y LAN B vendrán después.
 
 ```bash
-sudo kea-dhcp4 -t /etc/kea/kea-dhcp4.conf
-sudo systemctl restart kea-dhcp4-server
-systemctl --no-pager --full status kea-dhcp4-server
-sudo journalctl -u kea-dhcp4-server -b --no-pager -n 50
+sudo nano /etc/kea/kea-dhcp4.conf
 ```
 
-Comprobación auxiliar:
-
-```bash
-sudo ss -lunp | grep ':67'
-```
-
-> **Importante:** en Linux, Kea puede trabajar con *raw sockets*. Por tanto, que `ss` no muestre una línea UDP/67 convencional **no demuestra por sí solo** que DHCP esté fallando. La evidencia fuerte combina estado, logs, tráfico DORA y una concesión real.
-
-`kea-dhcp4 -t` valida la configuración, pero no sustituye a las pruebas de ejecución: una configuración válida puede fallar en *runtime* por una NIC inexistente, permisos, conflicto o condiciones del sistema.
-
-## 8. Configuración de referencia {#configuracion}
-
-La configuración evaluable se calcula con la variante; no copies los datos del ejemplo docente.
+### Ejemplo docente mínimo
 
 ```json
 {
   "Dhcp4": {
     "interfaces-config": {
-      "interfaces": [
-        "enp0s8"
-      ]
+      "interfaces": [ "enp0s8" ]
     },
+
     "lease-database": {
       "type": "memfile",
       "persist": true,
       "name": "/var/lib/kea/kea-leases4.csv"
     },
+
     "valid-lifetime": 1980,
     "renew-timer": 990,
     "rebind-timer": 1732,
+
     "subnet4": [
       {
         "id": 1,
         "subnet": "10.37.7.0/24",
         "pools": [
-          {
-            "pool": "10.37.7.107 - 10.37.7.136"
-          }
-        ],
-        "option-data": [
-          {
-            "name": "domain-name",
-            "data": "p07-l03.sri.test"
-          }
-        ],
-        "reservations": [
-          {
-            "hw-address": "08:00:27:aa:bb:cc",
-            "ip-address": "10.37.7.183",
-            "hostname": "res-p07-l03"
-          }
-        ]
-      },
-      {
-        "id": 2,
-        "subnet": "10.38.7.0/24",
-        "pools": [
-          {
-            "pool": "10.38.7.107 - 10.38.7.136"
-          }
-        ],
-        "option-data": [
-          {
-            "name": "routers",
-            "data": "10.38.7.254"
-          },
-          {
-            "name": "domain-name",
-            "data": "p07-l03.sri.test"
-          }
+          { "pool": "10.37.7.107 - 10.37.7.136" }
         ]
       }
     ]
@@ -290,135 +288,212 @@ La configuración evaluable se calcula con la variante; no copies los datos del 
 }
 ```
 
-### DNS todavía no está implantado
+### Qué significa cada bloque
 
-En UT01 **no se anuncia un servidor DNS ficticio como si funcionara**. Podemos analizar Option 6 en una PCAP o preparar una rama futura, pero la resolución real se implantará en UT02 DNS. Al cerrar UT02 volveremos a Kea y añadiremos Option 6 con los DNS reales.
+- `interfaces-config`: interfaz por la que Kea atiende el laboratorio.
+- `lease-database`: persistencia de las concesiones.
+- `valid-lifetime`: duración total de la lease.
+- `renew-timer`: T1.
+- `rebind-timer`: T2.
+- `subnet4`: red administrada.
+- `pools`: direcciones que Kea puede asignar dinámicamente.
 
-## 9. Clientes Linux y Windows {#clientes}
+> **Subred != pool.** Una `/24` contiene muchas direcciones, pero no todas tienen por qué formar parte del rango dinámico.
 
-Compara la política que llega por DHCP con el estado que aplica cada SO.
+## 8. Validación segura en nuestra Debian 13
 
-Linux:
+En la imagen de laboratorio validada durante la preparación, ejecutar `kea-dhcp4 -t` como root puede chocar con el confinamiento de AppArmor aunque `/etc/kea/kea-dhcp4.conf` exista y `_kea` pueda leerlo. Para reproducir el contexto del servicio:
+
+```bash
+sudo -u _kea /usr/sbin/kea-dhcp4 -t /etc/kea/kea-dhcp4.conf
+```
+
+Corrige todos los errores y, si aparece `extraneous comma`, elimina la coma sobrante correspondiente.
+
+Después:
+
+```bash
+sudo systemctl restart kea-dhcp4-server
+systemctl --no-pager --full status kea-dhcp4-server
+sudo journalctl -u kea-dhcp4-server -b --no-pager -n 50
+```
+
+> `-t` solo valida la configuración. `active (running)` solo demuestra que el proceso está levantado. La prueba definitiva llegará cuando un cliente obtenga una concesión correcta.
+
+Kea puede trabajar con **raw sockets**. Por ello, que `ss` no muestre una línea UDP/67 convencional no demuestra por sí solo que DHCP esté roto.
+
+## 9. Cliente Debian · Ruta A (ifupdown)
+
+En Debian 13, `ifupdown` puede usar `dhclient`, `udhcpc` o `dhcpcd`; en una instalación actual es habitual disponer de `dhcpcd-base`.
+
+Para la NIC conectada a `SRI-Pxx`:
+
+```text
+auto enp0s3
+iface enp0s3 inet dhcp
+```
+
+### Primera adquisición: la mejor forma de capturar DORA
+
+1. Deja el cliente apagado.
+2. En el servidor inicia la captura:
+
+```bash
+sudo tcpdump -ni NIC_LAN 'udp port 67 or udp port 68'
+```
+
+3. Arranca el cliente.
+4. Comprueba:
 
 ```bash
 ip -br a
 ip route
-resolvectl status
-nmcli device show 2>/dev/null
 ```
 
-Windows:
+La IP debe pertenecer al pool de **tu variante**.
 
-```powershell
-ipconfig /all
-ipconfig /release
-ipconfig /renew
-route print
-```
+### Si necesitas repetir la prueba
 
-> Si el equipo tiene varias NIC, identifica primero el adaptador de `SRI-Pxx` y evita renovar de forma indiscriminada interfaces que no pertenecen al laboratorio.
-
-No memorices un único comando Linux de renovación: identifica si el equipo usa NetworkManager, systemd-networkd u otro gestor.
-
-## 10. Leases y PCAP {#leases-pcap}
+Comprueba primero qué cliente DHCP está disponible:
 
 ```bash
-sudo tail -n 10 /var/lib/kea/kea-leases4.csv
-sudo tcpdump -ni NIC 'udp port 67 or udp port 68' -w ut01-dora.pcap
+command -v dhcpcd
+command -v dhclient
 ```
 
-Una captura no vale por contener cuatro colores: cada conclusión debe citar un paquete/campo.
+Si usa `dhcpcd`:
 
-## 11. Ampliación avanzada · Relay y segunda subred {#relay}
+```bash
+sudo dhcpcd -k NIC_CLIENTE
+sudo ifup --force NIC_CLIENTE
+```
 
-El broadcast inicial no cruza routers de forma ordinaria. El relay permite centralizar DHCP.
+No instales NetworkManager únicamente para disponer de `nmcli`.
 
-Este bloque es **ampliación avanzada**. Si el ritmo del grupo no permite trabajarlo con calma, puede posponerse sin afectar al núcleo de la unidad.
+## 10. Tres evidencias de que DHCP funciona
 
-![Topología DHCP con relay y segunda subred]({{ '/assets/docencia/sri/ut01/04_topologia_relay.svg' | relative_url }})
+### 1. Estado del cliente
 
-Relay:
+```bash
+ip -br a
+ip route
+```
+
+### 2. Tráfico DORA
+
+```bash
+sudo tcpdump -ni NIC_LAN 'udp port 67 or udp port 68' -w ut01-dora.pcap
+```
+
+### 3. Lease en Kea
+
+```bash
+sudo tail -n 20 /var/lib/kea/kea-leases4.csv
+```
+
+Correlaciona:
 
 ```text
-upstream   10.37.P.254/24
-downstream 10.38.P.254/24
+cliente / identidad
+        ↓
+DORA observado
+        ↓
+IP recibida
+        ↓
+lease registrada por Kea
 ```
 
-En el servidor Kea debe existir ruta hacia LAN B mediante el relay:
+## 11. Fase 2 · Reserva DHCP
+
+Una reserva **no es lo mismo que configurar una IP estática en el cliente**. El cliente sigue en DHCP, pero el servidor decide que una identidad concreta reciba una dirección concreta.
+
+Ejemplo:
+
+```json
+"reservations": [
+  {
+    "hw-address": "08:00:27:aa:bb:cc",
+    "ip-address": "10.37.7.183",
+    "hostname": "res-p07-l03"
+  }
+]
+```
+
+En esta unidad se recomienda situar la reserva fuera del pool dinámico para que la separación sea visual y fácil de razonar.
+
+Después de cualquier cambio:
+
+```bash
+sudo -u _kea /usr/sbin/kea-dhcp4 -t /etc/kea/kea-dhcp4.conf
+sudo systemctl restart kea-dhcp4-server
+systemctl status kea-dhcp4-server --no-pager
+```
+
+## 12. Fase 3 · Relay y segunda subred (ampliación)
+
+El broadcast inicial del cliente no atraviesa routers de forma ordinaria. El **DHCP relay** recibe la petición y la reenvía al servidor.
+
+```text
+KEA 10.37.P.(20+L)
+        |
+   10.37.P.0/24
+        |
+  relay 10.37.P.254
+        |
+  relay 10.38.P.254
+        |
+   10.38.P.0/24
+        |
+      cliente
+```
+
+Servidor Kea: ruta a LAN B mediante el relay:
 
 ```bash
 sudo ip route add 10.38.P.0/24 via 10.37.P.254
 ```
 
-Instala el relay disponible en Debian si vas a realizar esta ampliación:
+Relay didáctico en Debian:
 
 ```bash
 sudo apt update
 sudo apt install isc-dhcp-relay
-```
-
-> Se usa aquí como **relay didáctico**. ISC DHCP es tecnología heredada; el servidor de la unidad sigue siendo Kea.
-
-Ejecución didáctica en primer plano del relay (sustituye interfaces y servidor):
-
-```bash
 sudo dhcrelay -4 -d -id NIC_LAN_B -iu NIC_LAN_A IP_SERVIDOR_KEA
 ```
 
-La captura debe demostrar `giaddr`/selección de subred, no solo que el cliente obtuvo “alguna IP”.
+La captura debe demostrar **giaddr/selección de subred**, no limitarse a mostrar que el cliente consiguió una IP.
 
-## 12. Ruta de aprendizaje {#ruta}
+## 13. Diagnóstico por evidencias
 
-```text
-DISEÑAR
-  ↓
-OBSERVAR DORA
-  ↓
-IMPLANTAR KEA
-  ↓
-PROBAR CLIENTES
-  ↓
-CORRELACIONAR LEASE + PCAP
-  ↓
-DIAGNOSTICAR
-  ↓
-AMPLIAR (si procede)
-```
+Cuando un cliente no obtiene configuración:
 
-El **relay y la segunda subred** pertenecen al tramo de ampliación. No es necesario forzarlos dentro de las 12 horas si el grupo necesita más tiempo para consolidar el núcleo.
+1. ¿La NIC está en la red VirtualBox correcta?
+2. ¿La configuración activa del servidor es realmente `/24`?
+3. ¿Kea está `active (running)`?
+4. ¿Qué dice `journalctl`?
+5. ¿Llega `DHCPDISCOVER`?
+6. Si llega Discover, ¿sale `DHCPOFFER`?
+7. ¿Aparecen Request y ACK?
+8. ¿Existe la lease en Kea?
+9. ¿Qué configuración aplicó realmente el cliente?
+10. Cambia una sola causa y repite la prueba.
 
+| Síntoma | Pista |
+|---|---|
+| no hay Discover | cliente/NIC/red interna/captura |
+| Discover sin Offer | Kea, subnet, pool, interfaz, logs |
+| Offer sin Request | lado cliente/selección de oferta |
+| Request sin ACK | servidor/configuración final |
+| ACK pero cliente no aplica | gestor de red/estado del cliente |
 
-## 13. Diagnóstico DHCP por evidencias {#diagnostico}
-
-Cuando un cliente no obtiene la configuración esperada, separa las capas:
-
-1. valida el JSON con `kea-dhcp4 -t`;
-2. comprueba estado y logs del servicio;
-3. observa si llega `DHCPDISCOVER`;
-4. verifica si sale `DHCPOFFER`;
-5. revisa qué aplica realmente el cliente;
-6. correlaciona `ACK`, lease y parámetros recibidos;
-7. cambia **una sola causa** y repite la prueba.
-
-![Diagnóstico DHCP basado en evidencias]({{ '/assets/docencia/sri/ut01/06_diagnostico_dhcp.svg' | relative_url }})
-
-> Las prácticas evaluables, tickets concretos, variantes de entrega y criterios de calificación se gestionan en el aula virtual.
-
-## 14. Banco de ampliación opcional {#ampliacion}
-
-![Servidor DHCP legítimo frente a un segundo servidor no autorizado]({{ '/assets/docencia/sri/ut01/05_dhcp_legitimo_rogue.svg' | relative_url }})
-
-
-- A01 · Migración controlada de configuración ISC DHCP heredada a Kea.
-- A02 · Forense de PCAP con dos servidores DHCP: Option 54, MAC origen y política falsa.
-- A03 · Capacidad y agotamiento de pool: dimensionado, churn y lease-time.
-- A04 · Windows Server DHCP equivalente y comparación con Kea.
-- A05 · DHCPv6/SLAAC: comparación razonada, no simple receta.
-- A06 · Stork/monitorización y operación de Kea.
-- A07 · Change request: duplicar clientes durante dos horas sin romper reservas.
-
-## 15. Criterio de cierre {#cierre}
+## 14. Criterio de cierre {#cierre}
 
 UT01 se considera cerrada cuando el alumno puede **diseñar, implantar, observar, romper y diagnosticar** DHCP; no cuando simplemente obtiene una dirección.
 
 > **Siguiente: UT02 · DNS profesional.** Al terminar DNS volveremos a UT01 para activar Option 6 con los servidores reales y demostrar la integración DHCP → DNS.
+
+### Referencias técnicas
+
+- Kea Administrator Reference Manual: https://kea.readthedocs.io/
+- Debian ifupdown interfaces(5): https://manpages.debian.org/trixie/ifupdown/interfaces.5.en.html
+- Debian dhcpcd-base: https://packages.debian.org/trixie/dhcpcd-base
