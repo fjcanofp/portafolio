@@ -87,7 +87,7 @@ toc:
 ---
 
 
-# UT01 · Configuración automática profesional: DHCP con Kea
+# UT01 · Configuración automática de IPs: DHCP con Kea
 
 > **Misión.** Transformar el laboratorio estático de UT00 en una infraestructura donde los clientes reciban configuración IPv4 automática mediante **Kea DHCP4**, y donde podamos demostrar qué ha ocurrido mediante **DORA, logs y leases**.
 >
