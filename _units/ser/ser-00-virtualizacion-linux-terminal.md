@@ -138,8 +138,6 @@ La **UT00 tiene un carácter principalmente introductorio y transversal**. Propo
 
 No obstante, una parte concreta de esta unidad se relaciona directamente con un criterio oficial del módulo.
 
-#### RA8 · Acceso desde redes locales a redes públicas
-
 > **RA8.** Establece el acceso desde redes locales a redes públicas identificando posibles escenarios y aplicando software específico.
 
 En UT00 comenzamos a trabajar este RA al construir una máquina con:
@@ -258,7 +256,7 @@ Durante el curso vamos a:
 - provocar fallos;
 - restaurar estados anteriores.
 
-Una VM nos permite trabajar con una filosofía muy útil:
+Una MV nos permite trabajar con una filosofía muy útil:
 
 ```text
 crear → comprobar → modificar → romper → diagnosticar → recuperar
@@ -317,8 +315,6 @@ Usa siempre fuentes oficiales.
 
 En los PC Intel/AMD habituales utilizaremos normalmente Debian `amd64`.
 
-> **Buena práctica:** conserva la ISO original y anota versión y procedencia. No descargues imágenes «repack» de páginas desconocidas para ahorrar unos minutos.
-
 ---
 
 ### 8. Crear la primera VM: `ser-ser01`
@@ -348,7 +344,7 @@ Para una Debian de servidor sin escritorio, un punto de partida razonable en un 
 25 GB de disco dinámico
 ```
 
-No es una ley. Es una **decisión inicial que podemos revisar**.
+No es una norma, es una **decisión inicial que podemos revisar**.
 
 #### Ejercicio resuelto 2 · RAM
 
@@ -430,7 +426,7 @@ Eso no significa que «le falte algo». Significa que aprenderemos a administrar
 sudo poweroff
 ```
 
-No conviertas cerrar bruscamente la ventana de VirtualBox en tu forma habitual de apagar Debian.
+No conviertas cerrar bruscamente la ventana de VirtualBox en tu forma habitual de apagar tu MV.
 
 ---
 
@@ -496,7 +492,7 @@ Esta diferencia evita muchos errores.
 
 *Figura 2. Debian ve una tarjeta virtual; VirtualBox decide a qué tipo de red está conectada.*
 
-Una **vNIC** es el adaptador que ve el sistema invitado. VirtualBox puede presentarle una o varias.
+Una **vNIC** es el adaptador que ve el sistema invitado. VirtualBox permite utilizar una o varias.
 
 Después elegimos dónde se conecta cada una:
 
@@ -508,14 +504,14 @@ Solo-anfitrión
 Puente
 ```
 
-Dentro de Debian pueden aparecer nombres como:
+Dentro de nuestra MV pueden aparecer nombres como:
 
 ```text
 enp0s3
 enp0s8
 ```
 
-No memorices que «enp0s3 siempre es NAT». **Compruébalo en tu VM.**
+No memorices que «enp0s3 siempre es NAT». **Compruébalo en tu MV.**
 
 #### Ejercicio resuelto 4
 
@@ -538,7 +534,7 @@ pero una está conectada a `SER-LAB` y otra a `SER_LAB`.
 
 ![Red NAT individual]({{ '/assets/docencia/ser/ut00/03_red_nat.svg' | relative_url }})
 
-*Figura 3. NAT permite que una VM salga a Internet sin aparecer directamente como otro equipo de la LAN física.*
+*Figura 3. NAT permite que una MV salga a Internet sin aparecer directamente como otro equipo de la LAN física.*
 
 Uso típico:
 
@@ -548,7 +544,7 @@ instalar paquetes
 consultar repositorios
 ```
 
-En VirtualBox, NAT da salida de forma sencilla. La VM no queda publicada automáticamente hacia la red exterior; si necesitáramos entrada hacia un servicio concreto habría que configurar una redirección.
+En VirtualBox, NAT da salida de forma sencilla. La MV no queda publicada automáticamente hacia la red exterior; si necesitáramos entrada hacia un servicio concreto habría que configurar una redirección.
 
 #### Ejercicio resuelto 5
 
@@ -562,7 +558,7 @@ Necesitamos descargar actualizaciones, pero no queremos que el servidor sea visi
 
 ![Red interna]({{ '/assets/docencia/ser/ut00/04_red_interna.svg' | relative_url }})
 
-*Figura 4. En una Red interna se comunican las VM que utilizan el mismo nombre de red, sin depender del host ni de la LAN física.*
+*Figura 4. En una Red interna se comunican las MV que utilizan el mismo nombre de red, sin depender del host ni de la LAN física.*
 
 Es nuestra opción principal para servicios de laboratorio.
 
@@ -588,9 +584,9 @@ Vamos a arrancar un DHCP creado por un alumno.
 
 ![Red solo-anfitrión]({{ '/assets/docencia/ser/ut00/05_red_hostonly.svg' | relative_url }})
 
-*Figura 5. Solo-anfitrión crea una red privada en la que participan el host y las VM.*
+*Figura 5. Solo-anfitrión crea una red privada en la que participan el host y las MV.*
 
-Resulta útil cuando queremos acceder a una VM desde herramientas instaladas en el host.
+Resulta útil cuando queremos acceder a una MV desde herramientas instaladas en el host.
 
 > **Atención para futuras prácticas DHCP:** una red host-only puede tener un servidor DHCP de VirtualBox. Si vamos a estudiar nuestro propio DHCP, debemos saber exactamente qué otros servidores pueden responder.
 
@@ -600,7 +596,7 @@ Resulta útil cuando queremos acceder a una VM desde herramientas instaladas en 
 
 ![Red NAT compartida]({{ '/assets/docencia/ser/ut00/06_red_natnetwork.svg' | relative_url }})
 
-*Figura 6. Una Red NAT ofrece un segmento compartido entre varias VM y salida al exterior.*
+*Figura 6. Una Red NAT ofrece un segmento compartido entre varias MV y salida al exterior.*
 
 La utilizaremos solo cuando el escenario lo justifique.
 
@@ -612,7 +608,7 @@ Es cómoda, pero puede introducir elementos automáticos —por ejemplo DHCP— 
 
 ![Adaptador puente]({{ '/assets/docencia/ser/ut00/07_red_puente.svg' | relative_url }})
 
-*Figura 7. En modo puente la VM se comporta de forma mucho más parecida a otro equipo conectado a la LAN física.*
+*Figura 7. En modo puente la MV se comporta de forma mucho más parecida a otro equipo conectado a la LAN física.*
 
 Profesionalmente es útil.
 
@@ -649,7 +645,7 @@ NIC 2 → Red interna SER-LAB
 
 ![Topología SER-LAB]({{ '/assets/docencia/ser/ut00/08_topologia_ser_lab.svg' | relative_url }})
 
-*Figura 8. Cada VM separa el acceso exterior de la red de servicios.*
+*Figura 8. Cada MV separa el acceso exterior de la red de servicios.*
 
 Direcciones iniciales:
 
@@ -672,7 +668,7 @@ La interfaz de `SER-LAB` **no necesita gateway** en este escenario. La ruta por 
 
 ### 20. Configurar los dos adaptadores
 
-Con la VM **apagada**:
+Con la MV **apagada**:
 
 #### Adaptador 1
 
@@ -792,8 +788,6 @@ Interpretación:
 
 > Estoy conectado como `francano` al servidor `ser-ser01` y estoy situado en mi directorio personal.
 
-Eso es más útil que pegar una captura sin explicar nada.
-
 ---
 
 ### 23. Pedir ayuda
@@ -854,8 +848,6 @@ Rutas importantes:
 | `/tmp` | temporales |
 | `/root` | home de root |
 | `/usr` | programas y recursos del sistema |
-
-No hay que memorizar toda la jerarquía en una tarde.
 
 Hay que aprender a **moverse y reconocer para qué sirven las zonas que vamos utilizando**.
 
@@ -1338,26 +1330,6 @@ date >> datos.txt
 >>  añade
 ```
 
-<details>
-<summary><strong>Ampliación: salida normal y errores</strong></summary>
-
-También existe una salida específica para errores.
-
-Ejemplo:
-
-```bash
-find /root -type f 2> errores.txt
-```
-
-Y podemos guardar salida normal y errores:
-
-```bash
-comando > salida.txt 2>&1
-```
-
-No es necesario dominarlo el primer día.
-</details>
-
 ---
 
 ## PARTE VI · USUARIOS, GRUPOS Y PERMISOS {#usuarios-permisos}
@@ -1416,7 +1388,8 @@ Añadir usuario:
 ```bash
 sudo usermod -aG serops tecnico01
 ```
-
+- <strong>a (append)</strong>: Indica que se va a añadir o adjuntar el usuario al nuevo grupo. Es fundamental incluir esta opción; si la olvidas y usas solo -G, el usuario  <strong>será eliminado </strong> de todos los demás grupos a los que pertenecía.
+-  <strong>G (groups) </strong>: Especifica la lista de grupos secundarios (suplementarios) a los que deseas asociar al usuario.
 Verificar:
 
 ```bash
@@ -1701,6 +1674,8 @@ pgrep -a ssh
 
 ### 44. Servicios con `systemctl`
 
+Nos permite controlar y administrar el gestor de sistemas y servicios.
+
 Estado:
 
 ```bash
@@ -1754,6 +1729,8 @@ sudo ss -lntp
 ---
 
 ### 45. Logs con `journalctl`
+
+Permite gestionar y administrar de forma centralizada los registros del sistema gestionados por el sistema.
 
 Arranque actual:
 
@@ -2063,22 +2040,6 @@ ser-ser01 ↔ ser-cli01 por SER-LAB
 ```
 
 y que la salida exterior utiliza NAT.
-
-#### Checklist técnico antes de pasar a DHCP
-
-Debes poder demostrar y explicar:
-
-```text
-[ ] distingo host, hipervisor, VM y guest
-[ ] sé por qué tengo dos vNIC
-[ ] sé qué tráfico debe ir por NAT
-[ ] sé qué tráfico debe ir por SER-LAB
-[ ] sé volver a 00_BASE_LIMPIA
-[ ] puedo moverme por Linux sin interfaz gráfica
-[ ] puedo crear/copiar/mover/eliminar archivos
-[ ] entiendo usuarios, grupos y permisos básicos
-[ ] sé consultar servicios, puertos, IP y rutas
-```
 
 ---
 
