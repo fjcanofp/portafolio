@@ -1,7 +1,7 @@
 ---
 title: "UT01 · Configuración automática profesional: DHCP con Kea"
-description: "DHCPv4 con Kea en Debian 13: DORA, pools individualizados, reservas, leases, opciones y diagnóstico; relay y multi-subred como ampliación."
-summary: "Diseño, implantación y diagnóstico de DHCPv4 con Kea, clientes Linux/Windows, leases, reservas y análisis de tráfico."
+description: "DHCPv4 con Kea en Debian 13: DORA, pools individualizados, reservas, leases, client classes, relay, varias subredes, alta disponibilidad y diagnóstico por evidencias."
+summary: "Diseño, implantación, observación y diagnóstico de DHCPv4 con Kea: DORA, leases, reservas, clases de cliente, relay/multisubred y HA."
 
 module_key: sri
 cycle_key: asir
@@ -22,7 +22,7 @@ reviewers:
   - fjcano
 
 rights: all-rights-reserved
-version: "1.1"
+version: "1.3"
 last_reviewed: 2026-09-17
 visibility: public
 
@@ -44,16 +44,21 @@ tags:
   - dora
   - leases
   - reservas
+  - client-classes
+  - pools
   - relay
-  - wireshark
+  - multisubred
+  - alta-disponibilidad
+  - ha
+  - tcpdump
+  - pcap
   - diagnostico
+  - debian
 
 permalink: /docencia/asir/sri/ut01/
 published: true
 
 toc:
-  - title: Introducción
-    id: introduccion
   - title: Objetivos
     id: objetivos
   - title: RA2 y CE
@@ -66,26 +71,37 @@ toc:
     id: dora
   - title: Instalación de Kea
     id: instalacion
-  - title: Cambio controlado
-    id: cambio-controlado
-  - title: Configuración
+  - title: Configuración mínima
     id: configuracion
+  - title: Validación
+    id: validacion
   - title: Clientes
     id: clientes
-  - title: Leases y PCAP
-    id: leases-pcap
-  - title: Relay (ampliación)
-    id: relay
-  - title: Ruta de aprendizaje
-    id: ruta
+  - title: Evidencias DHCP
+    id: evidencias
+  - title: Reservas
+    id: reservas
+  - title: Relay básico
+    id: relay-basico
   - title: Diagnóstico
     id: diagnostico
-  - title: Banco de ampliación
-    id: ampliacion
+  - title: Client classes
+    id: client-classes
+  - title: Relay y multisubred
+    id: relay-multisubred
+  - title: Kea HA
+    id: kea-ha
+  - title: Relay + HA
+    id: relay-ha
+  - title: Equivalencias ISC/Kea
+    id: equivalencias
+  - title: Ruta de aprendizaje
+    id: ruta
+  - title: Ampliaciones
+    id: ampliaciones
   - title: Cierre
     id: cierre
 ---
-
 
 # UT01 · Configuración automática de IPs: DHCP con Kea
 
@@ -486,11 +502,234 @@ Cuando un cliente no obtiene configuración:
 | Request sin ACK | servidor/configuración final |
 | ACK pero cliente no aplica | gestor de red/estado del cliente |
 
-## 14. Criterio de cierre {#cierre}
 
-UT01 se considera cerrada cuando el alumno puede **diseñar, implantar, observar, romper y diagnosticar** DHCP; no cuando simplemente obtiene una dirección.
 
-> **Siguiente: UT02 · DNS profesional.** Al terminar DNS volveremos a UT01 para activar Option 6 con los servidores reales y demostrar la integración DHCP → DNS.
+## 14. Fase 4 · Client classes y pools diferenciados
+
+Kea puede **clasificar clientes** a partir de información del paquete y utilizar esa clase para seleccionar pools, opciones o incluso subredes. Esto sustituye y amplía la idea de “classes” trabajada históricamente con ISC DHCP.
+
+### Ejemplo didáctico por prefijo MAC
+
+En VirtualBox asignaremos a los clientes del grupo `AULA` una MAC cuyo prefijo sea `02:05:AB`. Kea puede convertir la MAC a texto y examinar el prefijo:
+
+```json
+"client-classes": [
+  {
+    "name": "AULA",
+    "test": "substring(hexstring(pkt4.mac, ':'),0,8) == '02:05:ab'"
+  },
+  {
+    "name": "GENERAL",
+    "test": "not member('AULA')"
+  }
+]
+```
+
+Después podemos proteger pools:
+
+```json
+"pools": [
+  {
+    "pool": "10.37.7.107 - 10.37.7.116",
+    "client-classes": [ "GENERAL" ]
+  },
+  {
+    "pool": "10.37.7.117 - 10.37.7.126",
+    "client-classes": [ "AULA" ]
+  }
+]
+```
+
+**Idea clave:** una clase no es una IP ni un pool. Es una etiqueta lógica que Kea asigna al cliente; después otras partes de la configuración pueden exigir esa etiqueta.
+
+### Prueba mínima
+
+1. Cliente con MAC `02:05:AB:...` -> debe caer en pool AULA.
+2. Cliente con otra MAC -> debe caer en pool GENERAL.
+3. Captura DORA y comprueba la lease de ambos.
+4. Cambia una MAC y predice qué ocurrirá antes de renovar.
+
+## 15. Fase 5 · Relay y varias subredes
+
+La fase Relay anterior constituye el núcleo. Para una práctica completa usa dos subredes remotas y evita confundir tres problemas distintos:
+
+- **DHCP:** qué configuración se asigna.
+- **Relay:** cómo llega la petición a un servidor situado en otra red.
+- **Routing:** cómo se enruta el tráfico IP entre redes.
+
+### Selección de subred mediante relay
+
+Cuando Kea recibe una petición retransmitida, la información del relay (especialmente `giaddr`) permite asociar la solicitud con el segmento remoto y seleccionar la `subnet4` apropiada.
+
+Ejemplo de segunda red:
+
+```json
+{
+  "id": 2,
+  "subnet": "10.38.7.0/24",
+  "pools": [
+    { "pool": "10.38.7.107 - 10.38.7.136" }
+  ],
+  "option-data": [
+    { "name": "routers", "data": "10.38.7.254" }
+  ]
+}
+```
+
+Relay de laboratorio:
+
+```bash
+sudo apt install -y isc-dhcp-relay
+sudo dhcrelay -4 -d -id NIC_CLIENTES -iu NIC_SERVIDORES IP_KEA
+```
+
+En el servidor debe existir una ruta de retorno hacia la red remota cuando la topología lo requiera.
+
+## 16. Fase 6 · Alta disponibilidad con Kea HA
+
+Las prácticas antiguas con ISC DHCP utilizaban **DHCP Failover**. En Kea no copiamos `failover peer`: utilizamos la biblioteca **High Availability (HA)**.
+
+Para aula empezaremos con **hot-standby**:
+
+- `server1` = primary, atiende normalmente.
+- `server2` = standby, recibe actualizaciones y permanece preparado.
+- si el standby detecta caída del primary y el estado HA evoluciona, asume el servicio.
+
+### 16.1 Comprobar las librerías instaladas
+
+Debian 13 amd64 instala los hooks dentro de una ruta multiarch. No memorices la ruta:
+
+```bash
+dpkg -L kea-common | grep -E 'libdhcp_(ha|lease_cmds)\.so'
+```
+
+### 16.2 Bloque HA de referencia
+
+Ejemplo abreviado para el primary:
+
+```json
+"hooks-libraries": [
+  {
+    "library": "/usr/lib/x86_64-linux-gnu/kea/hooks/libdhcp_lease_cmds.so"
+  },
+  {
+    "library": "/usr/lib/x86_64-linux-gnu/kea/hooks/libdhcp_ha.so",
+    "parameters": {
+      "high-availability": [
+        {
+          "this-server-name": "server1",
+          "mode": "hot-standby",
+          "heartbeat-delay": 10000,
+          "max-response-delay": 60000,
+          "max-ack-delay": 5000,
+          "max-unacked-clients": 5,
+          "peers": [
+            {
+              "name": "server1",
+              "url": "http://IP_PRIMARY:8000/",
+              "role": "primary",
+              "auto-failover": true
+            },
+            {
+              "name": "server2",
+              "url": "http://IP_STANDBY:8000/",
+              "role": "standby",
+              "auto-failover": true
+            }
+          ]
+        }
+      ]
+    }
+  }
+]
+```
+
+En el standby el bloque debe ser equivalente, cambiando `this-server-name` a `server2`. La red, pools, reservas y opciones que deban ser coherentes entre ambos servidores se mantienen sincronizadas como configuración de laboratorio; las leases se sincronizan mediante HA.
+
+> **Importante.** El puerto de la URL HA debe estar disponible entre los peers. Si cambias el puerto por individualización, cambia las URL en ambos servidores.
+
+### 16.3 Secuencia de prueba
+
+```bash
+# en ambos servidores
+sudo -u _kea /usr/sbin/kea-dhcp4 -t /etc/kea/kea-dhcp4.conf
+sudo systemctl restart kea-dhcp4-server
+sudo journalctl -u kea-dhcp4-server -f
+```
+
+1. Adquiere una lease con el primary operativo.
+2. Comprueba la lease/logs en ambos peers.
+3. Detén el primary.
+4. Provoca una nueva adquisición.
+5. Demuestra con logs/captura qué servidor termina atendiendo.
+6. Restaura el primary y observa la recuperación.
+
+## 17. Fase 7 · Relay + HA
+
+La integración final combina **dos problemas independientes**:
+
+- el relay resuelve el **alcance entre subredes**;
+- HA resuelve la **continuidad del servicio DHCP**.
+
+Un diseño final puede utilizar:
+
+```text
+        KEA primary ===== KEA standby
+             \             /
+              \  LAN A    /
+               RELAY/ROUTER
+                /         \
+          LAN PROF       LAN ALUM
+```
+
+Orden de implantación recomendado:
+
+1. HA funcionando en una LAN.
+2. Añadir un relay y una LAN remota.
+3. Añadir la segunda LAN.
+4. Añadir reservas.
+5. Añadir clases/pools.
+6. Provocar caída del primary.
+7. Solo después añadir NAT/salida a Internet como ampliación.
+
+## 18. Matriz de equivalencia con las prácticas históricas
+
+| Trabajo histórico ISC | Equivalente en esta UT con Kea |
+|---|---|
+| Servidor DHCP básico | Fases 1-3: Kea mínimo + clientes + DORA |
+| Estática/dinámica + clases | Reserva + client classes + pools |
+| DHCP Relay | Relay + LAN B + `giaddr` |
+| DHCP Failover | Kea HA `hot-standby` |
+| Relay + Failover | Relay + Kea HA |
+| Práctica final compleja | Dos LAN, relay, reservas/clases, HA y diagnóstico |
+
+## 19. Qué entra primero y qué puede esperar
+
+**Bloque mínimo para empezar a practicar:** IP fija de UT00 + Kea mínimo + uno/dos clientes + DORA + lease.
+
+**Siguiente escalón:** reserva + clases.
+
+**Después:** relay.
+
+**Nivel avanzado/final:** HA y combinación relay+HA.
+
+Por tanto, el alumnado puede detenerse temporalmente al final del bloque mínimo sin haber “dejado DHCP a medias”: habrá completado una primera competencia funcional y demostrable. Las fases posteriores amplían políticas, alcance y disponibilidad.
+
+
+## 20. Ampliaciones posteriores opcionales
+
+Una vez dominado el núcleo y las fases anteriores, la unidad puede seguir creciendo sin cambiar de tecnología. Además de las ampliaciones ya desarrolladas de **reservas, client classes, relay y Kea HA**, quedan como líneas posteriores:
+
+- **reservas y opciones por cliente**;
+- **detección de DHCP no autorizado** mediante Offer/Option 54;
+- monitorización con **Stork**;
+- **DHCPv6/SLAAC**.
+
+> **Importante sobre HA.** Las antiguas prácticas de ISC DHCP usaban el protocolo/sintaxis de *DHCP Failover*. En Kea la evolución equivalente se trabaja con la biblioteca de **High Availability (HA)** de Kea; no se debe copiar la sintaxis `failover peer` de ISC DHCP a `kea-dhcp4.conf`.
+
+## 21. Criterio de cierre
+
+UT01 está dominada cuando puedes **diseñar, implantar, observar, ampliar y diagnosticar** DHCP: asignación básica, reserva/clases, relay y alta disponibilidad según el nivel alcanzado; **no cuando simplemente aparece una dirección en `ip a`**.
 
 ### Referencias técnicas
 
