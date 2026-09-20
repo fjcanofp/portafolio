@@ -1,82 +1,164 @@
 ---
-title: "UT02 · PHP desde cero: estructurada, modular, POO y web"
-description: "Aprendizaje progresivo de PHP en Debian: sintaxis, datos, control, funciones, clases, formularios y sesiones. Sin base de datos al inicio."
-summary: "Primero escribir y comprender PHP; después integrarlo con HTML, estado web e identidad."
+title: 'UT02 · PHP desde cero: estructurada, modular, POO y web'
+description: 'Aprendizaje gradual de PHP en Debian 13: sintaxis, datos, control, funciones, clases, formularios y sesiones, sin base de datos
+  al inicio.'
+summary: Comprender y construir PHP antes de conectar una aplicación con MariaDB.
 module_key: iaw
 cycle_key: asir
 order: 2
-module_title: "Implantación de Aplicaciones Web"
-module_code: "0376"
-cycle_title: "Administración de Sistemas Informáticos en Red"
-course: "2.º ASIR"
-unit: "UT02"
-hours: 32
-level: "iniciacion"
+module_title: Implantación de Aplicaciones Web
+module_code: '0376'
+cycle_title: Administración de Sistemas Informáticos en Red
+course: 2.º ASIR
+unit: UT02
+level: iniciacion
 authors:
-  - fjcano
+- fjcano
 reviewers:
-  - fjcano
+- fjcano
 rights: all-rights-reserved
-version: "2.0-reconstruccion-desde-cero"
-last_reviewed: 2026-09-21
+version: '2.1'
+last_reviewed: '2026-09-21'
 visibility: public
 ra:
-  - "RA5"
+- RA5
 ce:
-  - "RA5.a"
-  - "RA5.b"
-  - "RA5.c"
-  - "RA5.d"
-  - "RA5.e"
-  - "RA5.f"
-  - "RA5.g"
-  - "RA5.h"
-  - "RA5.i"
-
+- RA5.a
+- RA5.b
+- RA5.c
+- RA5.d
+- RA5.e
+- RA5.f
+- RA5.g
+- RA5.h
+- RA5.i
 tags:
-  - php
-  - desarrollo-servidor
-  - asir
+- php
+- desarrollo-servidor
+- poo
+- formularios
+- sesiones
+- asir
 permalink: /docencia/asir/iaw/ut02/
 published: true
+toc:
+- title: Mapa y laboratorio
+  id: mapa
+- title: Primer PHP
+  id: primer-php
+- title: Variables y arrays
+  id: variables-arrays
+- title: Estructurada
+  id: estructurada
+- title: Modular
+  id: modular
+- title: POO inicial
+  id: poo
+- title: Formularios
+  id: formularios
+- title: Sesiones
+  id: sesiones
+- title: Entrenamiento y continuación
+  id: cierre
 ---
 
-# UT02 · PHP desde cero
-
-> **Plan de 32 h propuesto para revisión de programación.** No confundir con las 24 h de la versión anterior: para una introducción real desde cero y un bloque de POO introductoria se propone reajuste global sin superar 130 h. Si no se aprueba el reajuste, POO y parte de la batería quedarán como ampliación fuera del mínimo lectivo.
+> **Ruta de aprendizaje.** La secuencia es progresiva y flexible: primero PHP básico y estructurado; después funciones, POO aplicada, formularios y sesiones. Las ampliaciones se adaptarán al ritmo de la clase. Las horas oficiales y las entregas se comunicarán en el aula virtual.
 
 **RA5 — Genera documentos Web utilizando lenguajes de guiones de servidor.** La POO se introduce como recurso didáctico para comprender código reutilizable, no como un RA nuevo ni una exigencia externa al currículo.
 
-## Punto de partida y mapa
+## Punto de partida y mapa {#mapa}
 
-| Capítulo | Horas propuestas | Evidencia núcleo |
-|---|---:|---|
-| 1. Introducción/entorno | 3 | Primer PHP desde navegador y terminal |
-| 2. Variables y arrays | 5 | Operaciones y datos individuales |
-| 3. Estructurada | 6 | Decisiones, iteraciones y tabla dinámica |
-| 4. Modular | 5 | Funciones y separación por ficheros |
-| 5. POO aplicada | 6 | Objeto Ticket y contrato de notificación |
-| 6. Formularios | 4 | Ticket HTML→PHP validado |
-| 7. Cookies/sesiones | 3 | Sesión e identidad por navegador |
-| **Total** | **32** | **RA5** |
+| Etapa | Aprenderemos a | Resultado observable |
+|---|---|---|
+| 1. Introducción y entorno | Reconocer ejecución en cliente/servidor | Primer PHP desde navegador y terminal |
+| 2. Variables y arrays | Representar información | Datos y operaciones de un ticket |
+| 3. Estructurada | Tomar decisiones y repetir trabajo | Lista y tabla HTML dinámicas |
+| 4. Modular | Reutilizar código con funciones y ficheros | Lógica separada de la vista |
+| 5. POO aplicada | Leer y construir objetos sencillos | Objeto `Ticket` y notificador |
+| 6. Formularios | Validar datos de entrada | Ticket HTML → PHP |
+| 7. Estado web | Comprender cookies y sesiones | Identidad y estado por navegador |
 
+![Evolución didáctica desde PHP básico hasta formularios y sesiones]({{ '/assets/docencia/iaw/ut02/01_ruta_php.svg' | relative_url }})
 
 > **Itinerario gradual.** No se presupone experiencia previa en PHP. Se presupone únicamente el repaso HTML/CSS y un formulario HTML con `name`, `action` y `method`. El objetivo es desarrollar las ideas, probarlas y después implantarlas; no copiar una aplicación terminada.
 
-**Problema profesional conductor:** el equipo de sistemas recibe el encargo de implantar *IAW Desk*, una aplicación web sencilla de tickets. No la programaremos entera de golpe: cada capítulo aporta una pieza y deja evidencias verificables.
+**Problema profesional conductor:** el equipo de sistemas recibe el encargo de implantar *IAW Desk*, una aplicación web sencilla de tickets. No la programaremos entera de golpe: cada capítulo aporta una pieza y deja resultados verificables.
 
 | Ruta | Papel | Dónde se ejecuta |
 |---|---|---|
 | VS Code + Remote-SSH | Editor del alumno | VS Code en el PC; ficheros en Debian |
 | `php -l`, `php archivo.php` | Comprobaciones CLI | Debian, terminal remota |
 | Navegador | Solicita páginas y envía formularios | PC o VM cliente |
-| Apache + PHP-FPM | Atiende HTTP y ejecuta PHP web | Debian `IAW-WEB01` |
+| Apache + PHP-FPM | Atiende HTTP y ejecuta PHP web | Debian `iaw-webNN` |
 
 > **No confundir:** editar por SSH no es enviar el PHP al navegador; PHP se ejecuta en Debian y el navegador recibe HTML. `php -S localhost:8000` puede usarse en una demostración local, pero no sustituye la implantación con Apache y FPM.
 
-**Antes de empezar:** en tu máquina comprueba que `php -v` y `php -l index.php` funcionan; desde el PC comprueba SSH y HTTP al servidor. Si no funciona HTTP, diagnostica red → Apache → PHP-FPM → error PHP; no modifiques código a ciegas.
+**Antes de empezar:** en la Debian de trabajo comprueba `php -v`; después de crear tu primer fichero usarás `php -l public/01_hola.php`. Desde el PC comprueba SSH y HTTP hacia el servidor. Si no funciona HTTP, diagnostica red → Apache → PHP-FPM → error PHP; no modifiques código a ciegas.
 
-## Capítulo 1 · De HTML estático a PHP ejecutable (3 h)
+![Dónde se edita y dónde se ejecuta PHP: PC, Debian, Apache y navegador]({{ '/assets/docencia/iaw/ut02/02_editor_servidor.svg' | relative_url }})
+
+### Preparación del proyecto propio (independiente de `iaw-demo`)
+
+La **UT01** desplegó `iaw-demo` sin modificar su lógica. La **UT02** crea otro proyecto: `IAW Desk`. No edites `/var/www/iaw-demo` ni cambies el VirtualHost de la demostración. En `iaw-webNN`, el profesor comprobará previamente que Apache y PHP-FPM de UT01 funcionan. Para el proyecto nuevo se puede usar:
+
+```text
+/srv/iaw/php/
+├── public/      ← futuro DocumentRoot del proyecto
+├── src/         ← funciones y clases (NO público)
+└── templates/   ← vistas y fragmentos (NO público)
+```
+
+El usuario con el que se edita debe tener permisos de escritura en **su propio proyecto**, mientras el proceso de Apache necesita poder leer los archivos públicos y atravesar los directorios. Evita trabajar como `root` en VS Code y evita `chmod 777`. El VirtualHost específico de este proyecto apuntará a `/srv/iaw/php/public`, no a la raíz de `/srv/iaw/php`. Para el primer PHP basta usar una ruta HTTP del sitio que se haya configurado para ello; la configuración completa de Apache se recuerda en UT01.
+
+> **Dos proyectos, dos responsabilidades:** `iaw-demo` es un artefacto que implantamos; `IAW Desk` es el proyecto didáctico que construiremos paso a paso.
+
+### Publicar el primer PHP sin modificar el VirtualHost de UT01
+
+En `iaw-webNN`, crea las carpetas del proyecto con permisos para el usuario editor y lectura para Apache (grupo `www-data`):
+
+```bash
+sudo install -d -m 0755 /srv/iaw
+sudo install -d -m 2750 -o "$USER" -g www-data /srv/iaw/php
+sudo install -d -m 2750 -o "$USER" -g www-data /srv/iaw/php/public
+sudo install -d -m 2750 -o "$USER" -g www-data /srv/iaw/php/src
+sudo install -d -m 2750 -o "$USER" -g www-data /srv/iaw/php/templates
+```
+
+El `2` de `2750` mantiene el grupo propietario en los archivos y subdirectorios nuevos cuando el sistema respeta los permisos de herencia. Si VS Code se conecta como otro usuario, sustituye `"$USER"` por ese usuario. No trabajes como `root` en el editor y no abras permisos con `chmod 777`.
+
+Crea un **segundo** VirtualHost `/etc/apache2/sites-available/iaw-php.conf` sin modificar el `iaw-demo.conf` de UT01:
+
+```apache
+<VirtualHost *:80>
+    ServerName phpNN.iaw.test
+    DocumentRoot /srv/iaw/php/public
+
+    <Directory /srv/iaw/php/public>
+        Options -Indexes +FollowSymLinks
+        AllowOverride None
+        Require all granted
+    </Directory>
+
+    ErrorLog ${APACHE_LOG_DIR}/iaw-php-error.log
+    CustomLog ${APACHE_LOG_DIR}/iaw-php-access.log combined
+</VirtualHost>
+```
+
+Sustituye `NN` por tu puesto (`php07.iaw.test` para el puesto 07), comprueba que PHP-FPM está integrado como aprendimos en UT01 y habilita el nuevo sitio:
+
+```bash
+sudo a2ensite iaw-php.conf
+sudo apache2ctl configtest
+sudo systemctl reload apache2
+# Después de crear public/01_hola.php:
+curl -i -H 'Host: php07.iaw.test' http://192.168.60.10/01_hola.php
+```
+
+En el equipo cliente asocia `192.168.60.10 php07.iaw.test` en `hosts` si todavía no has configurado DNS. Si el navegador o `curl` devuelven **código PHP literal**, detén la publicación y corrige Apache/PHP-FPM: no continúes sirviendo archivos `.php` como texto. El `DocumentRoot` de este nuevo proyecto no puede ser `/srv/iaw/php` porque expondría `src/` y `templates/`.
+
+
+
+## Capítulo 1 · De HTML estático a PHP ejecutable {#primer-php}
 
 **Pregunta inicial:** ¿qué cambia entre `horario.html` y `horario.php` si ambos se ven en el navegador? El HTML es el resultado; PHP puede producirlo dinámicamente antes de enviarlo.
 
@@ -128,7 +210,7 @@ Navegador del equipo del alumno
 
 **Antes de avanzar:** cada alumno debe poder explicar qué son `echo`, `;`, comentarios, qué significa extensión `.php` y por qué «Ver código fuente» muestra el resultado pero no la lógica. No instalar extensiones VS Code como sustituto de PHP: el editor colorea sintaxis, el intérprete ejecuta instrucciones y Apache publica la respuesta.
 
-## Capítulo 2 · Variables, tipos y expresiones (5 h)
+## Capítulo 2 · Variables, tipos y expresiones {#variables-arrays}
 
 **Motivación:** un ticket contiene nombre, prioridad y tiempo estimado; para transformarlos necesitamos datos y operaciones. Una variable representa un valor, no una pantalla ni una sesión.
 
@@ -197,7 +279,7 @@ echo '<p>IAW-' . $puesto . ': ' . $total . ' €</p>';
 
 **Pregunta de salida:** en `$ticket['codigo'] ?? 'sin código'`, ¿qué parte representa una clave? ¿Qué ocurre al añadir `['estado'=>'abierto']`? Justifica el resultado antes de usar `print_r`.
 
-## Capítulo 3 · Programación estructurada: decisiones y bucles (6 h)
+## Capítulo 3 · Programación estructurada: decisiones y bucles {#estructurada}
 
 **Motivación:** con variables ya representamos un ticket; ahora decidimos qué hacer según la prioridad y repetimos trabajo para listas. Cada estructura se aprende con entrada fija antes de formularios.
 
@@ -263,7 +345,7 @@ $media = count($notas) > 0 ? $suma / count($notas) : null;
 
 **No adelantar formularios:** cuando el enunciado antiguo dice «leer un número por teclado», en este capítulo significa una variable PHP de entrada fija. El formulario aparecerá en el capítulo 6 y permitirá reutilizar, no rehacer, la solución.
 
-## Capítulo 4 · Programación modular: funciones y ficheros (5 h)
+## Capítulo 4 · Programación modular: funciones y ficheros {#modular}
 
 **Motivación:** si calculamos la prioridad en cinco páginas, copiar el mismo bloque crea cinco posibles errores. Una función encapsula una responsabilidad y devuelve un resultado.
 
@@ -335,7 +417,7 @@ require __DIR__ . '/../templates/resumen.php';
 
 **Pruebas manuales:** `totalServicio(0, 20)` devuelve 0; `totalServicio(2, 20)` devuelve 40; `totalServicio(-1, 20)` genera la excepción prevista. La excepción se usa como ejemplo controlado, no se vuelca una traza al usuario de producción. Una función pequeña con nombre descriptivo es más fácil de contrastar individualmente que una página de 200 líneas que hace todo.
 
-## Capítulo 5 · Primeros pasos en POO sin frameworks (6 h)
+## Capítulo 5 · Primeros pasos en POO sin frameworks {#poo}
 
 **Por qué POO aquí:** queremos que el alumnado pueda leer una clase propia, entender objetos de bibliotecas como `PDO` y no ver los CMS/frameworks como magia. **No sustituimos el módulo de Programación:** esto es una introducción aplicada y recuperaremos POO al adaptar CMS.
 
@@ -397,7 +479,7 @@ final class NotificadorPantalla implements Notificador {
 
 **Prueba de comprensión:** ¿Cuál es la diferencia entre `Ticket` y `$ticket1`? ¿Qué hace `new`? ¿Por qué el método `cerrar()` puede ser `public` mientras la propiedad `$cerrado` permanece `private`? ¿Cuándo sería excesivo crear 12 clases para una página de dos operaciones?
 
-## Capítulo 6 · Formularios, GET/POST y validación (4 h)
+## Capítulo 6 · Formularios, GET/POST y validación {#formularios}
 
 **Ahora recuperamos el formulario de HTML realizado antes del PHP.** No se introduce `$_POST` antes de que la persona conozca variables, arrays y condicionales: `$_POST` es un array asociativo con los campos enviados de forma habitual por un formulario `method="post"`.
 
@@ -448,9 +530,9 @@ if ($asunto === '' || !in_array($prioridad, $validas, true)) {
 
 **Salida segura:** la cadena `<b>prueba</b>` puede ser contenido del ticket y debe mostrarse como texto cuando no es HTML que nosotros controlamos. Aplicar `htmlspecialchars(..., ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8')` en el contexto de texto/atributo HTML adecuado; no confundirlo con validación de email ni con seguridad SQL.
 
-**Para el profesor:** abrir DevTools → Network y señalar Request Method, Request Payload/Form Data y Response; comparar GET y POST sin explicar que POST es secreto. Identificar por qué el campo `id` conecta label/control y `name` se convierte en clave enviada al servidor.
+**Observación guiada:** abrir DevTools → Network y señalar Request Method, Request Payload/Form Data y Response; comparar GET y POST sin explicar que POST es secreto. Identificar por qué el campo `id` conecta label/control y `name` se convierte en clave enviada al servidor.
 
-## Capítulo 7 · Estado web: cookies, sesiones e identidad (3 h)
+## Capítulo 7 · Estado web: cookies, sesiones e identidad {#sesiones}
 
 **Pregunta:** un segundo HTTP GET no «recuerda» por sí solo los valores PHP de la petición anterior. Ahora sí está justificado presentar mecanismos de estado: cookie en el navegador, sesión gestionada por el servidor, BBDD para persistencia duradera (siguiente UT).
 
@@ -490,17 +572,14 @@ $_SESSION['usuario'] = [
 
 **Autorizar no es autenticar:** saber quién eres no concede permiso para leer cualquier `?id=...`. El usuario de sesión es la fuente de identidad; el identificador de recurso solicitado es un dato que debe comprobarse contra su propietario. Este principio pasará literalmente a `WHERE id=:id AND owner_id=:owner` en UT03.
 
-## Prácticas y evaluación del bloque
+## Entrenamiento y continuación {#cierre}
 
-Las actividades breves anteriores son **banco de entrenamiento público**. Las entregas integradoras (sin soluciones en la web), con variantes por número de puesto, casos de prueba y defensa, van en PDF del aula virtual. Cada alumno: `NN` = puesto con dos cifras; ejemplo `07`, prefijo `IAW-07`, formulario con `puesto=07`, nombre del proyecto `desk07`. No cambia la dificultad, solo la identidad/datos.
+Los «ejercicios rápidos web» de cada capítulo son ejemplos de entrenamiento y autoaprendizaje. Las **actividades evaluables, entregas, plazos, variantes y criterios de calificación** se facilitarán exclusivamente en el aula virtual.
 
-| Instrumento | Evidencia orientativa RA5 |
-|---|---|
-| Pruebas breves | Sintaxis, variables, control, funciones, clases básicas |
-| Laboratorio | Código operativo en Apache + PHP-FPM |
-| Prácticas | Formularios, sesión, validación y aislamiento |
-| Defensa | Explicar recorrido HTTP, errores y responsabilidades |
+**Individualización de ejemplos:** `NN` representa el número de puesto con dos cifras; para `07`, prefijo `IAW-07` y proyecto `desk07`. Los datos cambian; los conceptos y la dificultad, no.
+
+**Puedo explicar antes de seguir:** dónde se ejecuta PHP; cómo organizar el código; qué valida el servidor; por qué HTML y SQL requieren protecciones distintas; y cómo una sesión conserva información sin sustituir una base de datos.
 
 **Lecturas:** [Sintaxis PHP](https://www.php.net/manual/es/language.basic-syntax.php), [tipos](https://www.php.net/manual/es/language.types.php), [estructuras de control](https://www.php.net/manual/es/language.control-structures.php), [funciones](https://www.php.net/manual/es/language.functions.php), [clases](https://www.php.net/manual/es/language.oop5.php), [sesiones](https://www.php.net/manual/es/book.session.php), [seguridad OWASP: XSS](https://owasp.org/www-community/attacks/xss/).
 
-**Secuencia siguiente:** [UT03 · PHP y BBDD](/docencia/asir/iaw/ut03/). La lectura de formularios y sesiones sigue siendo competencia previa antes de introducir PDO.
+**Secuencia siguiente:** UT03 · PHP y BBDD (publicación progresiva). La lectura de formularios y sesiones sigue siendo competencia previa antes de introducir PDO.
