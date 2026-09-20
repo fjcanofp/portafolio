@@ -1,585 +1,1898 @@
 ---
-title: 'UT02 · PHP desde cero: estructurada, modular, POO y web'
-description: 'Aprendizaje gradual de PHP en Debian 13: sintaxis, datos, control, funciones, clases, formularios y sesiones, sin base de datos
-  al inicio.'
-summary: Comprender y construir PHP antes de conectar una aplicación con MariaDB.
+title: "UT02 · Introducción a PHP: de los primeros programas a una aplicación web"
+description: "PHP desde cero: ejecución en servidor, variables, tipos, operadores, condiciones, bucles, arrays, funciones, modularidad, POO, formularios, cookies y sesiones."
+summary: "Aprender a razonar, escribir, ejecutar y comprobar pequeños programas PHP antes de construir una aplicación web con estado."
+
 module_key: iaw
 cycle_key: asir
 order: 2
-module_title: Implantación de Aplicaciones Web
-module_code: '0376'
-cycle_title: Administración de Sistemas Informáticos en Red
-course: 2.º ASIR
-unit: UT02
-level: iniciacion
+module_title: "Implantación de Aplicaciones Web"
+module_code: "0376"
+cycle_title: "Administración de Sistemas Informáticos en Red"
+course: "2.º ASIR"
+unit: "UT02"
+level: "iniciacion"
+
 authors:
-- fjcano
+  - fjcano
 reviewers:
-- fjcano
+  - fjcano
 rights: all-rights-reserved
-version: '2.1'
-last_reviewed: '2026-09-21'
+version: "3.0"
+last_reviewed: 2026-09-21
 visibility: public
+
 ra:
-- RA5
+  - "RA5"
 ce:
-- RA5.a
-- RA5.b
-- RA5.c
-- RA5.d
-- RA5.e
-- RA5.f
-- RA5.g
-- RA5.h
-- RA5.i
+  - "RA5.a"
+  - "RA5.b"
+  - "RA5.c"
+  - "RA5.d"
+  - "RA5.e"
+  - "RA5.f"
+  - "RA5.g"
+  - "RA5.h"
+  - "RA5.i"
 tags:
-- php
-- desarrollo-servidor
-- poo
-- formularios
-- sesiones
-- asir
+  - php
+  - servidor
+  - programacion-estructurada
+  - funciones
+  - poo
+  - formularios
+  - sesiones
+  - asir
 permalink: /docencia/asir/iaw/ut02/
 published: true
+
 toc:
-- title: Mapa y laboratorio
-  id: mapa
-- title: Primer PHP
-  id: primer-php
-- title: Variables y arrays
-  id: variables-arrays
-- title: Estructurada
-  id: estructurada
-- title: Modular
-  id: modular
-- title: POO inicial
-  id: poo
-- title: Formularios
-  id: formularios
-- title: Sesiones
-  id: sesiones
-- title: Entrenamiento y continuación
-  id: cierre
+  - title: Qué aprenderás
+    id: objetivos
+  - title: Dónde y cómo ejecutamos PHP
+    id: entorno
+  - title: Primer programa
+    id: primer-php
+  - title: Variables y tipos
+    id: variables
+  - title: Cadenas y operadores
+    id: operadores
+  - title: Condiciones paso a paso
+    id: condiciones
+  - title: Repeticiones y bucles
+    id: bucles
+  - title: Arrays y foreach
+    id: arrays
+  - title: Funciones
+    id: funciones
+  - title: Organizar varios archivos
+    id: modularidad
+  - title: Primeros objetos
+    id: poo
+  - title: Formularios y PHP
+    id: formularios
+  - title: Cookies y sesiones
+    id: estado
+  - title: Ejercicios progresivos
+    id: ejercicios
+  - title: Diagnóstico y buenas prácticas
+    id: diagnostico
+  - title: Glosario y referencias
+    id: fuentes
 ---
 
-> **Ruta de aprendizaje.** La secuencia es progresiva y flexible: primero PHP básico y estructurado; después funciones, POO aplicada, formularios y sesiones. Las ampliaciones se adaptarán al ritmo de la clase. Las horas oficiales y las entregas se comunicarán en el aula virtual.
+# UT02 · Introducción a PHP: de los primeros programas a una aplicación web
 
-**RA5 — Genera documentos Web utilizando lenguajes de guiones de servidor.** La POO se introduce como recurso didáctico para comprender código reutilizable, no como un RA nuevo ni una exigencia externa al currículo.
+## Qué aprenderás {#objetivos}
 
-## Punto de partida y mapa {#mapa}
+Una página HTML es un documento que el navegador interpreta y muestra. Una aplicación web puede necesitar **calcular un precio, escoger qué contenido mostrar, procesar los datos de un formulario o recordar qué usuario ha iniciado sesión**. PHP permite desarrollar esa lógica en el servidor.
 
-| Etapa | Aprenderemos a | Resultado observable |
-|---|---|---|
-| 1. Introducción y entorno | Reconocer ejecución en cliente/servidor | Primer PHP desde navegador y terminal |
-| 2. Variables y arrays | Representar información | Datos y operaciones de un ticket |
-| 3. Estructurada | Tomar decisiones y repetir trabajo | Lista y tabla HTML dinámicas |
-| 4. Modular | Reutilizar código con funciones y ficheros | Lógica separada de la vista |
-| 5. POO aplicada | Leer y construir objetos sencillos | Objeto `Ticket` y notificador |
-| 6. Formularios | Validar datos de entrada | Ticket HTML → PHP |
-| 7. Estado web | Comprender cookies y sesiones | Identidad y estado por navegador |
+En esta unidad aprenderemos PHP desde sus elementos más sencillos. No es necesario haber programado antes en PHP; sí conviene recordar la estructura básica de HTML y los atributos `name`, `action` y `method` de los formularios. Comenzaremos con valores escritos directamente en el código. Cuando esos valores ya no presenten dificultades, aprenderemos a recibirlos del navegador.
 
-![Evolución didáctica desde PHP básico hasta formularios y sesiones]({{ '/assets/docencia/iaw/ut02/01_ruta_php.svg' | relative_url }})
+**Resultado de aprendizaje relacionado: RA5 — Genera documentos web utilizando lenguajes de guiones de servidor.** Los criterios de evaluación vinculados a la unidad se identifican en el frontmatter. La programación orientada a objetos se introduce aquí como una herramienta para comprender bibliotecas y aplicaciones PHP; no supone un resultado de aprendizaje adicional.
 
-> **Itinerario gradual.** No se presupone experiencia previa en PHP. Se presupone únicamente el repaso HTML/CSS y un formulario HTML con `name`, `action` y `method`. El objetivo es desarrollar las ideas, probarlas y después implantarlas; no copiar una aplicación terminada.
+![Camino de aprendizaje: primer PHP, datos, decisiones, bucles, colecciones, funciones, objetos y web]({{ '/assets/docencia/iaw/ut02/01_ruta_aprendizaje.svg' | relative_url }})
 
-**Problema profesional conductor:** el equipo de sistemas recibe el encargo de implantar *IAW Desk*, una aplicación web sencilla de tickets. No la programaremos entera de golpe: cada capítulo aporta una pieza y deja resultados verificables.
+**Método de trabajo.** En cada apartado encontraremos una pregunta inicial, un ejemplo corto explicado línea a línea, una prueba de escritorio (predecir el resultado), ejercicios graduados y una comprobación de lo aprendido. Una vez dominados esos elementos los utilizaremos juntos para desarrollar una aplicación sencilla de gestión de incidencias, *IAW Desk*.
 
-| Ruta | Papel | Dónde se ejecuta |
-|---|---|---|
-| VS Code + Remote-SSH | Editor del alumno | VS Code en el PC; ficheros en Debian |
-| `php -l`, `php archivo.php` | Comprobaciones CLI | Debian, terminal remota |
-| Navegador | Solicita páginas y envía formularios | PC o VM cliente |
-| Apache + PHP-FPM | Atiende HTTP y ejecuta PHP web | Debian `iaw-webNN` |
+> **Distingue dos cosas:** aprender la sintaxis de PHP y aprender a implantar una aplicación PHP. En IAW necesitamos ambas, pero avanzaremos de la primera a la segunda de manera gradual.
+{: .notice--info}
 
-> **No confundir:** editar por SSH no es enviar el PHP al navegador; PHP se ejecuta en Debian y el navegador recibe HTML. `php -S localhost:8000` puede usarse en una demostración local, pero no sustituye la implantación con Apache y FPM.
+---
 
-**Antes de empezar:** en la Debian de trabajo comprueba `php -v`; después de crear tu primer fichero usarás `php -l public/01_hola.php`. Desde el PC comprueba SSH y HTTP hacia el servidor. Si no funciona HTTP, diagnostica red → Apache → PHP-FPM → error PHP; no modifiques código a ciegas.
+## 1. Dónde y cómo ejecutamos PHP {#entorno}
 
-![Dónde se edita y dónde se ejecuta PHP: PC, Debian, Apache y navegador]({{ '/assets/docencia/iaw/ut02/02_editor_servidor.svg' | relative_url }})
+### 1.1. Cliente, servidor y lenguaje del lado servidor
 
-### Preparación del proyecto propio (independiente de `iaw-demo`)
+Imagina que escribimos en el navegador la dirección de una página llamada `hola.php`. El navegador **no interpreta las instrucciones PHP**. Realiza una petición HTTP al servidor web; allí se ejecuta PHP, se genera una respuesta y el navegador muestra el contenido recibido.
 
-La **UT01** desplegó `iaw-demo` sin modificar su lógica. La **UT02** crea otro proyecto: `IAW Desk`. No edites `/var/www/iaw-demo` ni cambies el VirtualHost de la demostración. En `iaw-webNN`, el profesor comprobará previamente que Apache y PHP-FPM de UT01 funcionan. Para el proyecto nuevo se puede usar:
+![Recorrido de una petición PHP, desde el navegador al servidor y de vuelta]({{ '/assets/docencia/iaw/ut02/02_peticion_php.svg' | relative_url }})
+
+| Elemento | Responsabilidad |
+|---|---|
+| Navegador | Solicita la página y representa el HTML recibido. |
+| Apache | Recibe la petición HTTP y selecciona el sitio o recurso solicitado. |
+| PHP-FPM | Ejecuta el programa PHP cuando Apache le deriva la petición. |
+| Archivo `.php` | Contiene las instrucciones que escribimos. Está almacenado en el servidor. |
+| HTML resultante | Es el contenido que recibirá el navegador. |
+
+JavaScript ejecutado en el navegador y PHP ejecutado en el servidor **pueden colaborar**, pero no son equivalentes. El código PHP no debería enviarse al cliente como texto. Si abres una dirección HTTP y se muestran las etiquetas `<?php` literalmente, detén la práctica: hay un problema en la configuración del servidor.
+
+### 1.2. Cómo trabajamos con VS Code
+
+El entorno habitual del laboratorio separa el equipo desde el que desarrollamos y el servidor que ejecuta nuestra aplicación:
+
+```text
+Equipo del alumno (Windows o Linux con escritorio)
+├── VS Code + extensión Remote - SSH
+└── Navegador web
+          │
+          ├── SSH ───> Debian: editar los ficheros PHP
+          └── HTTP ──> Apache: solicitar los resultados
+
+Debian de trabajo (IAW-WEB01)
+├── OpenSSH
+├── Apache
+├── PHP-FPM
+└── /srv/iaw/php/public/      ← archivos publicados
+```
+
+**Remote - SSH** abre en VS Code una carpeta que está realmente en Debian. Guardar en el editor modifica el archivo del servidor; no es necesario subirlo manualmente mediante FTP después de cada cambio.
+
+Antes de utilizar la extensión verifica la conexión SSH desde el equipo cliente. Sustituye `alumno` por tu usuario y la IP por la que tenga tu máquina Debian:
+
+```bash
+ssh alumno@192.168.60.10
+```
+
+Después, en VS Code, utiliza `Ctrl + Shift + P` → `Remote-SSH: Connect to Host…` → `alumno@192.168.60.10` → `File > Open Folder`. El servidor remoto necesita OpenSSH y los requisitos habituales de VS Code Server. La [documentación oficial de Remote - SSH](https://code.visualstudio.com/docs/remote/ssh) explica el procedimiento detallado.
+
+### 1.3. Carpeta pública y código interno
+
+Usaremos una estructura sencilla que podrá ampliarse posteriormente:
 
 ```text
 /srv/iaw/php/
-├── public/      ← futuro DocumentRoot del proyecto
-├── src/         ← funciones y clases (NO público)
-└── templates/   ← vistas y fragmentos (NO público)
+├── public/          ← DocumentRoot del sitio Apache
+│   ├── 01_hola.php
+│   └── index.php
+├── src/             ← funciones y clases reutilizables
+└── templates/       ← fragmentos HTML/PHP para presentación
 ```
 
-El usuario con el que se edita debe tener permisos de escritura en **su propio proyecto**, mientras el proceso de Apache necesita poder leer los archivos públicos y atravesar los directorios. Evita trabajar como `root` en VS Code y evita `chmod 777`. El VirtualHost específico de este proyecto apuntará a `/srv/iaw/php/public`, no a la raíz de `/srv/iaw/php`. Para el primer PHP basta usar una ruta HTTP del sitio que se haya configurado para ello; la configuración completa de Apache se recuerda en UT01.
+Solo `public/` debe quedar expuesto a HTTP. La carpeta `src/` contiene código que se carga desde otros archivos PHP, pero **no se consulta directamente desde el navegador**. El VirtualHost y la integración de Apache con PHP-FPM se estudian y preparan en la [UT01]({{ '/docencia/asir/iaw/ut01/' | relative_url }}).
 
-> **Dos proyectos, dos responsabilidades:** `iaw-demo` es un artefacto que implantamos; `IAW Desk` es el proyecto didáctico que construiremos paso a paso.
-
-### Publicar el primer PHP sin modificar el VirtualHost de UT01
-
-En `iaw-webNN`, crea las carpetas del proyecto con permisos para el usuario editor y lectura para Apache (grupo `www-data`):
+En un laboratorio donde el servidor ya está configurado, las comprobaciones más útiles son:
 
 ```bash
-sudo install -d -m 0755 /srv/iaw
-sudo install -d -m 2750 -o "$USER" -g www-data /srv/iaw/php
-sudo install -d -m 2750 -o "$USER" -g www-data /srv/iaw/php/public
-sudo install -d -m 2750 -o "$USER" -g www-data /srv/iaw/php/src
-sudo install -d -m 2750 -o "$USER" -g www-data /srv/iaw/php/templates
+php -v                  # Versión de PHP disponible en la terminal
+php -m                  # Extensiones cargadas para PHP CLI
+systemctl status apache2
+systemctl status php8.4-fpm  # En Debian 13 con el paquete PHP 8.4
 ```
 
-El `2` de `2750` mantiene el grupo propietario en los archivos y subdirectorios nuevos cuando el sistema respeta los permisos de herencia. Si VS Code se conecta como otro usuario, sustituye `"$USER"` por ese usuario. No trabajes como `root` en el editor y no abras permisos con `chmod 777`.
+`php -v` describe el intérprete de la terminal (**CLI**); no basta por sí solo para demostrar que Apache y PHP-FPM estén funcionando. El nombre concreto del servicio FPM debe comprobarse según la versión instalada. Un `php -S localhost:8000 -t public` permite hacer una prueba local controlada, pero el [servidor integrado de PHP está destinado a desarrollo y demostraciones, no a producción](https://www.php.net/manual/es/features.commandline.webserver.php).
 
-Crea un **segundo** VirtualHost `/etc/apache2/sites-available/iaw-php.conf` sin modificar el `iaw-demo.conf` de UT01:
+> **Para comenzar a programar, el laboratorio debe estar preparado.** No confundas un error de SSH, de Apache, de permisos o de PHP-FPM con un error de sintaxis del programa que estás aprendiendo a escribir.
+{: .notice--warning}
 
-```apache
-<VirtualHost *:80>
-    ServerName phpNN.iaw.test
-    DocumentRoot /srv/iaw/php/public
+---
 
-    <Directory /srv/iaw/php/public>
-        Options -Indexes +FollowSymLinks
-        AllowOverride None
-        Require all granted
-    </Directory>
+## 2. Tu primer programa PHP {#primer-php}
 
-    ErrorLog ${APACHE_LOG_DIR}/iaw-php-error.log
-    CustomLog ${APACHE_LOG_DIR}/iaw-php-access.log combined
-</VirtualHost>
-```
+### 2.1. Una instrucción, un resultado
 
-Sustituye `NN` por tu puesto (`php07.iaw.test` para el puesto 07), comprueba que PHP-FPM está integrado como aprendimos en UT01 y habilita el nuevo sitio:
-
-```bash
-sudo a2ensite iaw-php.conf
-sudo apache2ctl configtest
-sudo systemctl reload apache2
-# Después de crear public/01_hola.php:
-curl -i -H 'Host: php07.iaw.test' http://192.168.60.10/01_hola.php
-```
-
-En el equipo cliente asocia `192.168.60.10 php07.iaw.test` en `hosts` si todavía no has configurado DNS. Si el navegador o `curl` devuelven **código PHP literal**, detén la publicación y corrige Apache/PHP-FPM: no continúes sirviendo archivos `.php` como texto. El `DocumentRoot` de este nuevo proyecto no puede ser `/srv/iaw/php` porque expondría `src/` y `templates/`.
-
-
-
-## Capítulo 1 · De HTML estático a PHP ejecutable {#primer-php}
-
-**Pregunta inicial:** ¿qué cambia entre `horario.html` y `horario.php` si ambos se ven en el navegador? El HTML es el resultado; PHP puede producirlo dinámicamente antes de enviarlo.
-
-1. Abre la terminal de Debian desde VS Code Remote-SSH y ejecuta `php -v`.
-2. En tu proyecto crea `public/01_hola.php`; escribe el ejemplo; prueba sintaxis con `php -l public/01_hola.php`.
-3. Abre la ruta HTTP publicada en Apache. No abras el archivo con `file:///`: eso NO ejecuta PHP.
-4. Usa «Ver código fuente»: identifica qué fragmentos PHP han desaparecido en la respuesta.
+Crea el archivo `public/01_hola.php` y escribe exactamente:
 
 ```php
 <?php
-// Código ejecutado en el servidor: primero sin variables.
-echo '<h1>Hola desde IAW</h1>';
-echo '<p>Este HTML lo ha generado PHP.</p>';
+
+echo 'Hola desde PHP';
 ```
 
-**Sintaxis desde cero:** etiqueta `<?php`, instrucciones terminadas con `;`, comentario `//` y `/* ... */`, `echo`, `print_r`, `var_dump` y errores de sintaxis. En ficheros solo PHP es preferible omitir el cierre `?>` para evitar salida accidental. En plantillas mixtas se usa `<?= ... ?>` para mostrar una expresión.
+**Qué significa cada elemento:**
+
+| Elemento | Explicación |
+|---|---|
+| `<?php` | Indica dónde comienzan las instrucciones PHP. |
+| `echo` | Envía texto al resultado que se va a mostrar. |
+| `'Hola desde PHP'` | Es una cadena de texto o *string*. |
+| `;` | Finaliza esta instrucción. |
+
+Guarda el archivo. En la terminal remota, desde la raíz de tu proyecto, comprueba la sintaxis:
+
+```bash
+php -l public/01_hola.php
+```
+
+Después ábrelo mediante la URL HTTP del sitio que publicó Apache, por ejemplo `http://php07.iaw.test/01_hola.php` si ese nombre está configurado para tu laboratorio. **No utilices `file:///…/01_hola.php`**: abrir un fichero local directamente en el navegador no ejecuta PHP.
+
+El resultado visible será:
+
+```text
+Hola desde PHP
+```
+
+Si aparece una página en blanco o un mensaje de error, no avances todavía: comprueba que has guardado el archivo, que la URL corresponde al `DocumentRoot` correcto y que `php -l` no comunica errores de sintaxis.
+
+### 2.2. Varias instrucciones y comentarios
+
+```php
+<?php
+
+// Primera línea de salida.
+echo 'Buenos días';
+echo '<br>';
+
+/*
+   Este comentario puede ocupar
+   varias líneas.
+*/
+echo 'Estoy aprendiendo PHP';
+```
+
+`echo '<br>';` escribe una etiqueta HTML para que, **al interpretarse como HTML en el navegador**, el siguiente texto aparezca en otra línea. Si ejecutas el mismo archivo con `php public/01_hola.php` desde la terminal, verás texto y etiquetas: la terminal no representa HTML como un navegador.
+
+**Prueba de escritorio:** antes de ejecutar, escribe qué tres fragmentos emitirá PHP y cuáles no aparecerán por ser comentarios.
+
+### 2.3. HTML y PHP en un mismo fichero
+
+La extensión `.php` permite escribir HTML normal junto a pequeños fragmentos ejecutados en el servidor:
 
 ```php
 <!doctype html>
 <html lang="es">
-<head><meta charset="utf-8"><title>IAW</title></head>
+<head>
+    <meta charset="UTF-8">
+    <title>Mi primera página PHP</title>
+</head>
 <body>
-  <h1>Mi primer PHP</h1>
-  <p>Servidor: <?= htmlspecialchars(php_uname('n'), ENT_QUOTES, 'UTF-8') ?></p>
+    <h1>Mi primera página dinámica</h1>
+    <p><?php echo 'Generado en el servidor'; ?></p>
 </body>
 </html>
 ```
 
-**Error guiado:** quita un `;`, usa `php -l`, anota síntoma, línea y corrección. Nunca uses un `phpinfo()` público de forma permanente: sirve de diagnóstico temporal y expone detalles del entorno.
+El documento completo sigue siendo HTML. La etiqueta `<?php` cambia temporalmente a código PHP y `?>` permite volver al HTML. Si el archivo contiene **solo código PHP**, habitualmente se omite el cierre final `?>` para evitar generar espacios o líneas en blanco accidentalmente.
 
-**Ejercicios rápidos web:** (1) Genera tres `<p>` con `echo`; (2) alterna HTML/PHP; (3) comenta una línea y predice el resultado; (4) provoca y repara un ParseError; (5) describe el viaje HTTP en seis pasos; (6) compara resultado de `php archivo.php` con el navegador cuando el HTML contiene etiquetas.
+### 2.4. Qué ocurre cuando hay un error
 
-
-
-### Guion guiado para la primera clase: predicción → ejecución → explicación
-
-Antes de pulsar F5, el alumnado escribe qué espera ver, en qué ordenador se encuentra el fichero y qué programa lo interpreta. La primera práctica NO pide sesiones ni funciones. El profesor enseña simultáneamente tres vistas: el editor remoto, la terminal del servidor con `php -l` y el navegador del cliente con el resultado.
-
-```text
-Servidor Debian
-  /srv/iaw/php/public/01_hola.php
-        ↓ petición HTTP
-Apache → PHP-FPM → salida HTML
-        ↓ respuesta HTTP
-Navegador del equipo del alumno
-```
-
-**Revisión paso a paso:** ¿Se ve el código literal `<?php`? Comprobar si la ruta se abrió como `file:///`, si Apache sirve `.php` sin FPM o si se trata de un archivo de texto. ¿Se muestra una página blanca? Comprobar `php -l`, respuesta HTTP y log; no adivinar a partir del aspecto. ¿Se ve HTML pero no el valor esperado? Inspeccionar las variables y el recorrido de ejecución.
-
-**Antes de avanzar:** cada alumno debe poder explicar qué son `echo`, `;`, comentarios, qué significa extensión `.php` y por qué «Ver código fuente» muestra el resultado pero no la lógica. No instalar extensiones VS Code como sustituto de PHP: el editor colorea sintaxis, el intérprete ejecuta instrucciones y Apache publica la respuesta.
-
-## Capítulo 2 · Variables, tipos y expresiones {#variables-arrays}
-
-**Motivación:** un ticket contiene nombre, prioridad y tiempo estimado; para transformarlos necesitamos datos y operaciones. Una variable representa un valor, no una pantalla ni una sesión.
+Prueba **intencionadamente** este fragmento en una copia:
 
 ```php
 <?php
-$puesto = 7;                // int
-$nombre = 'Cano';         // string
-$precioHora = 18.50;      // float
-$urgente = false;         // bool
-$sinAsignar = null;       // null
-$importe = 2 * $precioHora;
-echo "$nombre · puesto $puesto · total: $importe €";
+
+echo 'Texto sin terminar'
 ```
 
-**Se estudia en este orden:** nombres y `$`; asignación y reasignación; tipos `int`, `float`, `string`, `bool`, `null`; `gettype` / `var_dump`; comillas simples/dobles y concatenación con `.`; operadores `+`, `-`, `*`, `/`, `%`, `**`, `+=`; comparaciones `===` y `!==` sin confundirlas con `=`; casting explícito; constantes `const` y `define` cuando corresponda.
+Ejecuta `php -l archivo.php`. La herramienta señalará el problema; falta `;` al terminar la instrucción. Corrígelo, vuelve a ejecutar el comprobador y solo después consulta el navegador.
+
+**Ejercicios 2.1–2.5.** Crea un saludo con tu nombre y número de puesto; genera tres párrafos; cambia el título HTML; explica por qué la terminal muestra `<p>` mientras el navegador lo representa; provoca y corrige un error por falta de `;`. El objetivo es distinguir **editor, intérprete y navegador**.
+
+---
+
+## 3. Variables, asignación y tipos {#variables}
+
+### 3.1. ¿Por qué necesitamos variables?
+
+Si necesitamos calcular el precio de distintas intervenciones, escribir siempre un número fijo dentro de la fórmula nos obliga a modificar el programa cada vez. Una **variable** permite asignar un nombre a un valor y reutilizarlo.
 
 ```php
 <?php
-const IVA = 0.21;
-$base = 52.00;
-$total = $base * (1 + IVA);
-echo number_format($total, 2, ',', '.') . ' €';
-```
 
-### Arrays: nuestra primera colección
-
-```php
-<?php
-$prioridades = ['baja', 'media', 'alta'];
-$ticket = [
-    'codigo' => 'IAW-07',
-    'asunto' => 'No carga la web',
-    'prioridad' => 'alta',
-];
-echo $ticket['asunto'];
-```
-
-Explica **array indexado frente a asociativo**, clave/valor, acceso e índice inexistente; `count`, `in_array`, `array_keys`, `array_values`, `isset` y `??`. Introduce la diferencia entre cadena `'7'` y entero `7`: no confíes en conversiones implícitas cuando la intención sea numérica.
-
-**Ejercicios rápidos web:** (1) salario con horas; (2) segundos → horas y minutos; (3) factura con IVA; (4) concatenar nombre/apellido; (5) tres notas y media; (6) porcentaje de ocupación; (7) acceder a un ticket asociativo; (8) añadir un módulo a un array; (9) explicar `=`, `==`, `===`; (10) comprobar `null` con `??`.
-
-**Control de calidad:** explica con tus palabras el resultado antes de ejecutar; usa `var_dump` en desarrollo, no como interfaz de usuario.
-
-
-
-### Ejemplo guiado desde una situación cotidiana
-
-Un alumno conoce su número de puesto y cuántas horas tardaría en resolver una incidencia. Construye primero una frase estática. Después sustituye cada dato cambiante por una variable y la frase continúa teniendo sentido aunque varíen los valores.
-
-```php
-<?php
-$puesto = 7;
 $horas = 3;
-$tarifa = 22.5;
+$tarifa = 20;
+
 $total = $horas * $tarifa;
 
-// Primero operación; después representación.
-echo '<p>IAW-' . $puesto . ': ' . $total . ' €</p>';
+echo $total;
 ```
 
-**Recorrido de valores:** al ejecutar `$horas = 3`, la variable contiene 3; tras `$horas = $horas + 1`, contiene 4. La asignación no expresa igualdad matemática: calcula el lado derecho y guarda el resultado a la izquierda. `var_dump($horas)` ayuda a verificar este cambio.
+**Lectura línea a línea:**
 
-**Tipos y operaciones:** `2 + 3` suma números; `'2' . '3'` une cadenas; `'2' + 3` puede convertirse implícitamente, pero para entrada humana validaremos y convertiremos de forma controlada. La precisión de `float` puede no ser exacta en cálculos monetarios complejos: para estas prácticas solo trabajamos importes didácticos y mostramos dos decimales.
+1. `$horas = 3;` guarda el valor `3` en la variable `horas`.
+2. `$tarifa = 20;` guarda `20` en otra variable.
+3. `$total = $horas * $tarifa;` multiplica los valores y almacena `60`.
+4. `echo $total;` produce el resultado `60`.
 
-**Arrays en cuatro pasos:** se escribe una lista de prioridades, se accede al primer elemento `[$indice]`, se recorre con `foreach`, se construye un ticket con claves explícitas y se accede mediante `['asunto']`. No mezcles la posición 0 de un array indexado con la clave `'0'` o con el identificador SQL del ticket.
+La instrucción `=` se llama **asignación**: calcula el lado derecho y guarda el resultado en la variable del lado izquierdo. No equivale a plantear una igualdad matemática.
 
-**Pregunta de salida:** en `$ticket['codigo'] ?? 'sin código'`, ¿qué parte representa una clave? ¿Qué ocurre al añadir `['estado'=>'abierto']`? Justifica el resultado antes de usar `print_r`.
+![Cómo cambia el contenido de una variable al asignarle y actualizarle un valor]({{ '/assets/docencia/iaw/ut02/03_asignacion.svg' | relative_url }})
 
-## Capítulo 3 · Programación estructurada: decisiones y bucles {#estructurada}
-
-**Motivación:** con variables ya representamos un ticket; ahora decidimos qué hacer según la prioridad y repetimos trabajo para listas. Cada estructura se aprende con entrada fija antes de formularios.
+### 3.2. Reasignación: el valor puede cambiar
 
 ```php
 <?php
-$prioridad = 'alta';
-if ($prioridad === 'alta') {
-    echo 'Resolver hoy';
-} elseif ($prioridad === 'media') {
-    echo 'Planificar';
-} else {
-    echo 'Seguimiento normal';
+
+$horas = 3;
+$horas = 4;
+
+echo $horas; // 4
+```
+
+En el segundo paso se sustituye el valor anterior. El mismo razonamiento permite aumentar un contador:
+
+```php
+<?php
+
+$visitas = 1;
+$visitas = $visitas + 1;
+
+echo $visitas; // 2
+```
+
+| Momento | Instrucción | Valor de `$visitas` |
+|---|---|---:|
+| Inicial | `$visitas = 1;` | 1 |
+| Actualización | `$visitas = $visitas + 1;` | 2 |
+| Visualización | `echo $visitas;` | 2 |
+
+Las variables se escriben con `$` y distinguen mayúsculas y minúsculas. `$nombre` y `$Nombre` **no son la misma variable**. Es preferible utilizar nombres expresivos (`$precioHora`, `$totalHoras`) en lugar de `$x` o `$dato1` cuando el significado no está claro.
+
+### 3.3. Tipos de datos fundamentales
+
+| Tipo | Qué representa | Ejemplo PHP |
+|---|---|---|
+| `int` | Entero sin parte decimal | `$puesto = 7;` |
+| `float` | Número con parte decimal | `$tarifa = 18.50;` |
+| `string` | Texto | `$nombre = 'Ana';` |
+| `bool` | Verdadero o falso | `$activo = true;` |
+| `null` | Ausencia de valor | `$responsable = null;` |
+
+```php
+<?php
+
+$puesto = 7;
+$tarifa = 18.50;
+$nombre = 'Ana';
+$urgente = false;
+$responsable = null;
+
+var_dump($puesto);
+var_dump($tarifa);
+var_dump($nombre);
+var_dump($urgente);
+var_dump($responsable);
+```
+
+`var_dump` sirve para **observar el tipo y el contenido durante el aprendizaje y la depuración**. No suele ser la presentación definitiva de una aplicación.
+
+**Ojo con `bool`:** `echo false;` no escribe la palabra `false`. Para estudiar un valor booleano, utiliza `var_dump` y comprueba qué significa cada resultado.
+
+### 3.4. Variables frente a constantes
+
+Una variable puede cambiar. Una **constante** representa un valor que no queremos reasignar durante la ejecución:
+
+```php
+<?php
+
+const IVA = 0.21;
+
+$base = 100;
+$total = $base * (1 + IVA);
+
+echo $total; // 121
+```
+
+`IVA` no lleva `$`. PHP permite declarar constantes mediante `const` y también mediante `define()`. Por el momento utilizaremos `const` cuando el valor sea fijo y conocido al escribir el programa.
+
+**Ejercicios 3.1–3.6.** Muestra tus datos utilizando variables; intercambia los valores de dos variables con ayuda de una tercera; calcula un salario; calcula la media de tres notas; crea un programa que convierta minutos a segundos; predice la salida tras tres reasignaciones. **Todos los datos estarán escritos inicialmente en el propio programa**, sin formularios ni lectura «por teclado».
+
+---
+## 4. Cadenas y operadores, con ejemplos {#operadores}
+
+Una **expresión** es una combinación de valores, variables y operadores que PHP puede calcular. No es suficiente memorizar una tabla de símbolos: debemos entender **qué hace cada uno, qué resultado produce y de qué tipo es ese resultado**.
+
+### 4.1. Comillas simples, dobles y concatenación
+
+Las cadenas de texto se delimitan normalmente con comillas simples o dobles:
+
+```php
+<?php
+
+$nombre = 'Ana';
+
+echo 'Hola $nombre';  // Muestra literalmente: Hola $nombre
+echo "Hola $nombre";  // Muestra: Hola Ana
+```
+
+En cadenas delimitadas por comillas dobles PHP puede interpolar variables sencillas. En cadenas delimitadas por comillas simples, `$nombre` se conserva como texto literal.
+
+También podemos **concatenar**: unir textos mediante el punto `.`.
+
+```php
+<?php
+
+$nombre = 'Ana';
+$apellido = 'García';
+
+$completo = $nombre . ' ' . $apellido;
+echo $completo; // Ana García
+```
+
+Presta atención al espacio `' '`: sin él el resultado sería `AnaGarcía`.
+
+| Expresión | Resultado | Explicación |
+|---|---|---|
+| `'IAW' . '02'` | `IAW02` | Se unen cadenas. |
+| `2 + 3` | `5` | Se suman números. |
+| `'2' . '3'` | `23` | Los dígitos son texto y se concatenan. |
+| `'Hola ' . $nombre` | `Hola Ana` | Se une texto fijo y una variable. |
+
+**Comprueba la diferencia:** `echo '2' . '3';` **no equivale** a `echo 2 + 3;`.
+
+### 4.2. Operadores aritméticos
+
+| Operador | Operación | Ejemplo | Resultado |
+|---|---|---|---:|
+| `+` | Suma | `7 + 3` | 10 |
+| `-` | Resta | `7 - 3` | 4 |
+| `*` | Multiplicación | `7 * 3` | 21 |
+| `/` | División | `7 / 2` | 3.5 |
+| `%` | Resto de división entera | `7 % 3` | 1 |
+| `**` | Potencia | `2 ** 3` | 8 |
+
+Prueba los operadores sin formularios:
+
+```php
+<?php
+
+$a = 7;
+$b = 3;
+
+echo $a + $b;  // 10
+echo '<br>';
+echo $a - $b;  // 4
+echo '<br>';
+echo $a * $b;  // 21
+echo '<br>';
+echo $a / $b;  // 2.333...
+echo '<br>';
+echo $a % $b;  // 1
+```
+
+**El resto `%` merece una prueba propia.** `10 % 2` es `0`, porque `10` es divisible por `2`; `11 % 2` es `1`, porque sobra una unidad. Más adelante lo utilizaremos para detectar números pares e impares.
+
+**División entre cero.** No ejecutaremos una división si el divisor es cero. Cuando estudiemos condiciones veremos cómo impedirla con `if`.
+
+### 4.3. Orden de las operaciones
+
+PHP aplica reglas de precedencia, como en matemáticas. Los paréntesis ayudan a indicar con claridad la operación deseada:
+
+```php
+<?php
+
+echo 2 + 3 * 4;    // 14
+echo '<br>';
+echo (2 + 3) * 4;  // 20
+```
+
+**Cálculo guiado de una factura:**
+
+```php
+<?php
+
+$precio = 25;
+$unidades = 3;
+$descuento = 5;
+
+$subtotal = $precio * $unidades; // 75
+$base = $subtotal - $descuento;  // 70
+$total = $base * 1.21;          // 84.7
+
+echo number_format($total, 2, ',', '.') . ' €'; // 84,70 €
+```
+
+`number_format` **da formato para mostrar** el número; no es el mecanismo con el que se garantiza la precisión de cálculos monetarios complejos. Para nuestros ejercicios iniciales utilizaremos importes sencillos.
+
+### 4.4. Operadores de asignación abreviada
+
+Ya conocemos `=`. Algunos operadores permiten escribir de manera más breve una actualización:
+
+| Forma larga | Forma abreviada | Efecto |
+|---|---|---|
+| `$n = $n + 2;` | `$n += 2;` | Suma 2 al valor anterior. |
+| `$n = $n - 2;` | `$n -= 2;` | Resta 2. |
+| `$n = $n * 2;` | `$n *= 2;` | Multiplica por 2. |
+| `$n = $n / 2;` | `$n /= 2;` | Divide entre 2. |
+| `$texto = $texto . '!';` | `$texto .= '!';` | Añade texto. |
+
+```php
+<?php
+
+$puntos = 10;
+$puntos += 5;  // 15
+$puntos -= 3;  // 12
+$puntos *= 2;  // 24
+
+echo $puntos; // 24
+```
+
+Los incrementos `$n++` y `$n--` aumentan o disminuyen una unidad. Por ahora los usaremos como instrucciones independientes, sin mezclar su resultado con otras expresiones:
+
+```php
+<?php
+
+$contador = 0;
+$contador++;
+$contador++;
+echo $contador; // 2
+```
+
+### 4.5. Operadores de comparación: producen `true` o `false`
+
+Una comparación responde a una pregunta. **No guarda un valor ni muestra automáticamente un mensaje**. Produce un booleano que después podrá usar `if`.
+
+| Operador | Pregunta | Ejemplo | Resultado |
+|---|---|---|---|
+| `===` | ¿Mismo valor y mismo tipo? | `7 === 7` | `true` |
+| `!==` | ¿No son idénticos? | `7 !== 8` | `true` |
+| `>` | ¿Es mayor? | `7 > 8` | `false` |
+| `<` | ¿Es menor? | `7 < 8` | `true` |
+| `>=` | ¿Mayor o igual? | `7 >= 7` | `true` |
+| `<=` | ¿Menor o igual? | `5 <= 3` | `false` |
+
+Existe además `==` (igualdad no estricta). Puede convertir tipos antes de comparar, por lo que conviene saber distinguirla de `===`:
+
+```php
+<?php
+
+$numero = 7;
+$texto = '7';
+
+var_dump($numero == $texto);  // bool(true)
+var_dump($numero === $texto); // bool(false)
+```
+
+El contenido representa el mismo número, pero **uno es entero y otro es texto**. En estos apuntes utilizaremos preferentemente comparación estricta cuando importe distinguir valores y tipos. `=` es asignación; `==` y `===` son comparaciones.
+
+**Ejercicios 4.1–4.9.** Calcula el área de rectángulo y círculo; transforma Celsius a Fahrenheit; calcula el porcentaje de ocupación de un aula; convierte segundos a horas/minutos/segundos; calcula el importe de horas extraordinarias partiendo de valores fijos; demuestra la diferencia entre concatenar y sumar; predice cinco comparaciones con `var_dump`; modifica una factura mediante `+=` y `-=`; comprueba qué ocurre con `/` y `%` en casos distintos de cero.
+
+---
+
+## 5. Decisiones: `if`, `else` y `elseif`, sin saltarnos pasos {#condiciones}
+
+Hasta ahora los programas han ejecutado las instrucciones en el orden en el que están escritas. Pero una aplicación debe tomar decisiones: **¿hay que mostrar una alerta? ¿la prioridad es alta? ¿el divisor es válido?**
+
+![Evolución desde if simple a if/else y elseif]({{ '/assets/docencia/iaw/ut02/04_condicionales.svg' | relative_url }})
+
+### 5.1. Primero, un `if` simple
+
+Lee la frase: **«Si la nota es al menos 5, muestra Aprobado»**. No se ha indicado qué hacer si la nota es menor. Esa es la función del `if` simple.
+
+```php
+<?php
+
+$nota = 7;
+
+if ($nota >= 5) {
+    echo 'Aprobado';
 }
 ```
 
-**Conceptos:** `if/elseif/else`, `switch`, `match` (después de `switch`, no antes), `&&`, `||`, `!`, cortocircuito y comparación estricta; `for`, `while`, `do ... while`, `foreach` (valor y clave), `break` y `continue`; bucles infinitos y condiciones de parada.
+| Elemento | Significado |
+|---|---|
+| `if` | Introduce una condición. |
+| `($nota >= 5)` | Pregunta si la nota es mayor o igual que cinco. |
+| `{` y `}` | Delimitan el bloque que se ejecutará cuando sea verdad. |
+| `echo 'Aprobado';` | Solo se ejecuta si la condición resulta `true`. |
+
+Prueba **dos valores**: con `$nota = 7` aparece `Aprobado`; con `$nota = 3` no aparece ese texto. El programa no tiene por qué mostrar un mensaje si la condición resulta falsa.
+
+**Otro `if` simple:**
 
 ```php
 <?php
-$tickets = [
-  ['id' => 1, 'estado' => 'abierto'],
-  ['id' => 2, 'estado' => 'cerrado'],
-  ['id' => 3, 'estado' => 'abierto'],
+
+$temperatura = 39;
+
+if ($temperatura > 35) {
+    echo 'Aviso: temperatura elevada';
+}
+```
+
+### 5.2. Después, `if` con `else`: dos caminos
+
+Ahora la regla sí exige un resultado para el otro caso: **«Si la nota es al menos 5, aprobado; en caso contrario, suspenso»**.
+
+```php
+<?php
+
+$nota = 3;
+
+if ($nota >= 5) {
+    echo 'Aprobado';
+} else {
+    echo 'Suspenso';
+}
+```
+
+**¿Cómo se lee?** Se evalúa una sola vez `$nota >= 5`. Si es verdadera se ejecuta el primer bloque. Si es falsa se ejecuta el segundo. **No se ejecutan ambos bloques en una misma evaluación**.
+
+| `$nota` | ¿`$nota >= 5`? | Salida |
+|---:|---|---|
+| 3 | `false` | Suspenso |
+| 5 | `true` | Aprobado |
+| 9 | `true` | Aprobado |
+
+### 5.3. `elseif`: tres o más alternativas excluyentes
+
+Para distinguir **suspenso, aprobado y notable/sobresaliente**, necesitamos probar otra condición cuando la anterior sea falsa.
+
+```php
+<?php
+
+$nota = 8;
+
+if ($nota < 5) {
+    echo 'Suspenso';
+} elseif ($nota < 7) {
+    echo 'Aprobado';
+} else {
+    echo 'Notable o sobresaliente';
+}
+```
+
+Con `$nota = 8`, primero se comprueba `8 < 5` (falso); después `8 < 7` (falso); finalmente se ejecuta `else`. Con nota `6`, la primera comparación es falsa y la segunda verdadera: **no se llega a `else`**.
+
+**Prueba de escritorio:** repite el recorrido para `4`, `5`, `6`, `7` y `10` antes de ejecutar. Anota qué condiciones se consultan realmente en cada caso.
+
+### 5.4. Operadores lógicos: combinar condiciones
+
+A veces una decisión exige comprobar **varias condiciones simultáneamente**:
+
+| Operador | Se lee | Resultado verdadero cuando… |
+|---|---|---|
+| `&&` | Y | Ambas condiciones son verdaderas. |
+| `||` | O | Al menos una es verdadera. |
+| `!` | NO | Se invierte el resultado booleano. |
+
+Ejemplo con `&&`:
+
+```php
+<?php
+
+$edad = 19;
+$autorizado = true;
+
+if ($edad >= 18 && $autorizado === true) {
+    echo 'Acceso permitido';
+}
+```
+
+Ejemplo con `||`:
+
+```php
+<?php
+
+$prioridad = 'alta';
+$servicioCaido = false;
+
+if ($prioridad === 'alta' || $servicioCaido === true) {
+    echo 'Revisar inmediatamente';
+}
+```
+
+Ejemplo con `!`:
+
+```php
+<?php
+
+$activo = false;
+
+if (!$activo) {
+    echo 'Cuenta desactivada';
+}
+```
+
+**Cortocircuito:** con `&&`, si la primera condición ya es falsa, PHP no necesita evaluar la segunda para decidir el resultado. Con `||`, si la primera ya es verdadera, tampoco necesita comprobar la segunda.
+
+### 5.5. Solo ahora: un `if` anidado
+
+Anidar significa poner **una condición dentro del bloque de otra**. Primero debe cumplirse la condición externa; después se evalúa la interna.
+
+```php
+<?php
+
+$usuarioActivo = true;
+$esAdministrador = false;
+
+if ($usuarioActivo) {
+    echo 'Usuario activo. ';
+
+    if ($esAdministrador) {
+        echo 'Puede administrar.';
+    } else {
+        echo 'Puede consultar.';
+    }
+} else {
+    echo 'Acceso deshabilitado.';
+}
+```
+
+Para entenderlo, sigue los niveles:
+
+1. ¿Está activa la cuenta?
+2. **Solo si lo está**, ¿tiene permisos de administración?
+3. La respuesta interna determina el mensaje final.
+
+En este ejemplo, también podría utilizarse una condición lógica para un resultado más sencillo. Los anidamientos son útiles cuando queremos realizar varias acciones dentro de un caso, pero demasiados niveles hacen difícil comprender el programa.
+
+### 5.6. Comprobación práctica: evitar dividir entre cero
+
+```php
+<?php
+
+$dividendo = 12;
+$divisor = 0;
+
+if ($divisor === 0) {
+    echo 'No se puede dividir entre cero';
+} else {
+    echo $dividendo / $divisor;
+}
+```
+
+No se ejecuta la división si el divisor vale cero. Esta comprobación **no exige todavía formularios ni funciones**: estamos aprendiendo a decidir con valores previamente definidos.
+
+### 5.7. `switch` y `match`: opciones para más adelante
+
+Cuando una variable puede tomar varios valores concretos, `switch` permite agrupar casos:
+
+```php
+<?php
+
+$prioridad = 'media';
+
+switch ($prioridad) {
+    case 'alta':
+        echo 'Atención inmediata';
+        break;
+    case 'media':
+        echo 'Planificar intervención';
+        break;
+    default:
+        echo 'Revisión ordinaria';
+}
+```
+
+`break` termina el `switch` cuando se ha resuelto un caso. Más adelante podrás reconocer `match`, que **devuelve un valor** y compara de forma estricta:
+
+```php
+<?php
+
+$prioridad = 'alta';
+
+$mensaje = match ($prioridad) {
+    'alta' => 'Hoy',
+    'media' => 'Esta semana',
+    default => 'Sin urgencia',
+};
+
+echo $mensaje;
+```
+
+No es necesario introducir `switch` y `match` antes de dominar **`if` simple → `if/else` → `elseif`**.
+
+**Ejercicios 5.1–5.11.** Determina si un número es positivo; comprueba si es par; muestra aprobado/suspenso; clasifica una nota en tres tramos; encuentra el mayor de dos números; encuentra el mayor de tres; calcula el salario con recargo de horas extraordinarias; clasifica un ticket por prioridad; comprueba si una cuenta está activa; valida que una nota esté entre 0 y 10; resuelve una calculadora con división protegida. **Para cada ejercicio prueba al menos un caso verdadero, uno falso y un límite**.
+
+---
+
+## 6. Repetir instrucciones: los bucles {#bucles}
+
+Hasta ahora hemos elegido qué código ejecutar. En esta sección aprenderemos **cuántas veces repetirlo**. Antes de utilizar arrays, practicaremos con un simple contador.
+
+![Estructuras for y while: inicialización, condición, cuerpo y actualización]({{ '/assets/docencia/iaw/ut02/05_bucles.svg' | relative_url }})
+
+### 6.1. ¿Por qué no escribir diez veces lo mismo?
+
+```php
+<?php
+
+echo '1';
+echo '2';
+echo '3';
+```
+
+Para tres números podemos escribir tres instrucciones; para cien o diez mil es poco práctico. Un **bucle** ejecuta repetidamente un bloque mientras se cumpla una regla.
+
+### 6.2. Bucle `for`: sabemos las vueltas que queremos hacer
+
+```php
+<?php
+
+for ($i = 1; $i <= 5; $i++) {
+    echo $i . '<br>';
+}
+```
+
+El `for` contiene **tres partes**:
+
+| Parte | Fragmento | Significado |
+|---|---|---|
+| Inicialización | `$i = 1` | Empieza contando en 1. |
+| Condición | `$i <= 5` | Repite mientras sea verdadera. |
+| Actualización | `$i++` | Suma 1 después de cada vuelta. |
+
+**Traza del programa:**
+
+| Vuelta | `$i` al comprobar | ¿`$i <= 5`? | ¿Qué escribe? |
+|---:|---:|---|---:|
+| 1 | 1 | Sí | 1 |
+| 2 | 2 | Sí | 2 |
+| 3 | 3 | Sí | 3 |
+| 4 | 4 | Sí | 4 |
+| 5 | 5 | Sí | 5 |
+| — | 6 | No | Nada; termina |
+
+Observa que **el último valor comprobado puede no llegar a mostrarse**. El bucle termina cuando la condición pasa a ser falsa.
+
+**Tabla de multiplicar:**
+
+```php
+<?php
+
+$numero = 7;
+
+for ($i = 1; $i <= 10; $i++) {
+    $producto = $numero * $i;
+    echo $numero . ' × ' . $i . ' = ' . $producto . '<br>';
+}
+```
+
+### 6.3. Bucle `while`: repetimos mientras se cumpla una condición
+
+Un `while` comprueba la condición **antes** de entrar al bloque:
+
+```php
+<?php
+
+$contador = 1;
+
+while ($contador <= 5) {
+    echo $contador . '<br>';
+    $contador++;
+}
+```
+
+Comparación con el `for`: la inicialización está fuera del bucle y la actualización está dentro. **Si olvidamos `$contador++`, la condición nunca dejará de cumplirse** y aparecerá un bucle infinito.
+
+### 6.4. `do ... while`: al menos una ejecución
+
+Este bucle comprueba al final:
+
+```php
+<?php
+
+$contador = 8;
+
+do {
+    echo $contador;
+    $contador++;
+} while ($contador <= 5);
+```
+
+Aunque `8` no cumple la condición `<= 5`, el cuerpo ya se ha ejecutado una vez. Este es el rasgo que diferencia `do ... while` de `while`.
+
+### 6.5. Contadores y acumuladores
+
+Un **contador** suele aumentar una unidad por cada caso. Un **acumulador** suma valores para obtener un total.
+
+```php
+<?php
+
+$suma = 0;
+
+for ($i = 1; $i <= 4; $i++) {
+    $suma += $i;
+}
+
+echo $suma; // 10
+```
+
+| Vuelta | `$i` | `$suma` antes | `$suma` después |
+|---:|---:|---:|---:|
+| 1 | 1 | 0 | 1 |
+| 2 | 2 | 1 | 3 |
+| 3 | 3 | 3 | 6 |
+| 4 | 4 | 6 | 10 |
+
+La variable `$suma` debe inicializarse **antes** del bucle. Si la reiniciamos a cero dentro de cada vuelta perderemos lo acumulado.
+
+### 6.6. `break` y `continue`
+
+`break` termina el bucle. `continue` salta el resto de la vuelta actual y continúa con la siguiente:
+
+```php
+<?php
+
+for ($i = 1; $i <= 6; $i++) {
+    if ($i === 3) {
+        continue;
+    }
+
+    if ($i === 6) {
+        break;
+    }
+
+    echo $i . ' ';
+}
+```
+
+**Salida:** `1 2 4 5 `. El `3` se omite y el `6` provoca la salida antes de imprimirse.
+
+**Ejercicios 6.1–6.11.** Muestra 1…20; cuenta de 10 a 1; escribe solo los pares; genera la tabla de multiplicar de tu puesto; suma 1…N; calcula un factorial iterativo; encuentra múltiplos de 3 hasta N; suma los cuadrados de los diez primeros naturales; calcula la media de cinco notas fijadas en el programa; identifica y corrige un bucle infinito; imprime los números de un rango sin mostrar un valor prohibido. **No empieces con 10 000 filas en el navegador: prueba primero un rango pequeño.**
+
+---
+## 7. Arrays y `foreach`: trabajar con varios datos {#arrays}
+
+Ahora sabemos almacenar un valor, elegir un camino y repetir instrucciones. Podemos dar el siguiente paso: **almacenar varios valores relacionados en una misma estructura**.
+
+### 7.1. El problema de utilizar muchas variables
+
+Si necesitamos guardar tres prioridades, podríamos escribir:
+
+```php
+<?php
+
+$prioridad1 = 'baja';
+$prioridad2 = 'media';
+$prioridad3 = 'alta';
+```
+
+Pero ¿qué pasaría si tuviéramos cien? Un **array** es una colección de valores que podemos guardar bajo un mismo nombre.
+
+### 7.2. Array indexado: posiciones que empiezan en cero
+
+```php
+<?php
+
+$prioridades = ['baja', 'media', 'alta'];
+
+echo $prioridades[0]; // baja
+echo $prioridades[1]; // media
+echo $prioridades[2]; // alta
+```
+
+![Array indexado con las posiciones cero, uno y dos]({{ '/assets/docencia/iaw/ut02/06_arrays.svg' | relative_url }})
+
+| Posición | Valor |
+|---:|---|
+| `0` | baja |
+| `1` | media |
+| `2` | alta |
+
+**El primer elemento se encuentra en la posición `0`**, no en la posición `1`. `count($prioridades)` devuelve `3`: el número de elementos, no el último índice.
+
+Podemos modificar o añadir elementos:
+
+```php
+<?php
+
+$prioridades = ['baja', 'media', 'alta'];
+$prioridades[1] = 'normal';
+$prioridades[] = 'crítica';
+
+var_dump($prioridades);
+```
+
+No confundas `$prioridades[1] = 'normal'` (**modifica la posición 1**) con `$prioridades[] = 'crítica'` (**añade un elemento al final**).
+
+### 7.3. Recorrer un array utilizando `for`
+
+Como ya conocemos `for`, podemos utilizarlo para mostrar cada posición:
+
+```php
+<?php
+
+$prioridades = ['baja', 'media', 'alta'];
+
+for ($i = 0; $i < count($prioridades); $i++) {
+    echo $prioridades[$i] . '<br>';
+}
+```
+
+**Lee el recorrido:** `$i` vale 0, después 1, después 2. Al llegar a 3, la condición `3 < 3` resulta falsa y el bucle termina.
+
+Esta construcción funciona para un array que tenga índices consecutivos de `0` a `count()-1`. No debemos dar por hecho que todos los arrays conservarán siempre esa forma si se eliminan elementos o se utilizan claves personalizadas.
+
+### 7.4. `foreach`: recorrer sin administrar manualmente los índices
+
+PHP dispone de una estructura especialmente práctica para colecciones:
+
+```php
+<?php
+
+$prioridades = ['baja', 'media', 'alta'];
+
+foreach ($prioridades as $prioridad) {
+    echo $prioridad . '<br>';
+}
+```
+
+Se lee: **«Por cada elemento de `$prioridades`, toma su valor en `$prioridad` y ejecuta el bloque»**. No hemos tenido que escribir `$i = 0` ni actualizar `$i++`.
+
+| Vuelta | `$prioridad` |
+|---:|---|
+| 1 | baja |
+| 2 | media |
+| 3 | alta |
+
+`foreach` trabaja igualmente si el array está vacío: en ese caso, el cuerpo no se ejecuta ninguna vez.
+
+### 7.5. Array asociativo: claves con significado
+
+A veces una posición numérica no basta para entender el contenido. Un ticket puede tener `codigo`, `asunto` y `prioridad`. Un **array asociativo** utiliza claves que describen cada dato:
+
+```php
+<?php
+
+$ticket = [
+    'codigo' => 'IAW-07',
+    'asunto' => 'No carga la página',
+    'prioridad' => 'alta',
 ];
+
+echo $ticket['asunto']; // No carga la página
+```
+
+| Clave | Valor |
+|---|---|
+| `'codigo'` | `'IAW-07'` |
+| `'asunto'` | `'No carga la página'` |
+| `'prioridad'` | `'alta'` |
+
+El símbolo `=>` asocia una clave con un valor. Para obtener un dato concreto necesitamos conocer su clave: `$ticket['asunto']`.
+
+También podemos recorrer **clave y valor**:
+
+```php
+<?php
+
+foreach ($ticket as $clave => $valor) {
+    echo $clave . ': ' . $valor . '<br>';
+}
+```
+
+### 7.6. Una lista de tickets: array de arrays
+
+```php
+<?php
+
+$tickets = [
+    ['codigo' => 'IAW-07', 'estado' => 'abierto'],
+    ['codigo' => 'IAW-08', 'estado' => 'cerrado'],
+    ['codigo' => 'IAW-09', 'estado' => 'abierto'],
+];
+
 $abiertos = 0;
+
 foreach ($tickets as $ticket) {
     if ($ticket['estado'] === 'abierto') {
         $abiertos++;
     }
 }
-echo "Abiertos: $abiertos";
+
+echo 'Tickets abiertos: ' . $abiertos; // 2
 ```
 
-**Generación de tabla HTML con `foreach`:** recuperamos la tabla del horario sin repetir 30 filas manuales. El valor mostrado se escapará con `htmlspecialchars` cuando proceda de una entrada o fuente no fiable.
+**Este ejemplo integra piezas ya aprendidas:** el array reúne datos; `foreach` recorre; `if` decide; `$abiertos++` actualiza el contador; `echo` muestra el resultado.
 
-**Ejercicios rápidos web:** (1) determinar par/impar; (2) clasificar temperatura; (3) mayor de tres valores; (4) tabla de multiplicar; (5) suma 1..N; (6) factorial iterativo; (7) primos en un rango; (8) mostrar ticket por prioridad; (9) contar estados de un array; (10) tabla HTML por `foreach`; (11) localizar primer error en array; (12) corregir bucle infinito. **Ampliación:** problema de cambio de moneda con tarifa fija suministrada, sin presentarla como cotización actual.
+### 7.7. Comprobar claves y trabajar con valores opcionales
 
-**Prueba explicada:** con `N=1`, `N=0`, `N=10`, demuestra dónde se inicia, cuándo termina y qué pasa si está vacío el array.
-
-
-
-### Paso a paso: de un cálculo a una decisión y a una lista
-
-1. **Condición simple:** dado un valor de prioridad fijo, decidir si es alta; probar también el caso falso.
-2. **Dos alternativas:** incorporar `else`; hacer explícito qué salida corresponde al caso no urgente.
-3. **Tres alternativas:** `elseif`; mover un caso a `switch` y comparar legibilidad.
-4. **Repetición:** usar `for` para números consecutivos y `foreach` para tickets ya almacenados en un array.
-5. **Acumulador:** inicializar `$abiertos = 0` antes del bucle, incrementarlo solo en la rama correcta y comprobar el total después.
-
-La condición de `for` se evalúa antes de cada vuelta. En `while`, el alumno debe identificar qué instrucción cambia la variable implicada: si no cambia, puede aparecer un bucle infinito. `foreach` no requiere gestionar manualmente un índice para recorrer un array. Si el array está vacío, el cuerpo no se ejecuta y el acumulador conserva el valor inicial.
+Si consultamos una clave inexistente como `$ticket['responsable']`, PHP puede avisar de que la clave no está definida. Cuando un dato puede faltar, utilizaremos una comprobación:
 
 ```php
 <?php
-$notas = [6, 8, 5];
-$suma = 0;
-foreach ($notas as $nota) {
-    $suma += $nota;
+
+$ticket = ['asunto' => 'Error de acceso'];
+
+$responsable = $ticket['responsable'] ?? 'Sin asignar';
+echo $responsable;
+```
+
+El operador `??` devuelve el valor de la izquierda si existe y no es `null`; en caso contrario, utiliza el valor alternativo. `isset($ticket['responsable'])` permite comprobar si la clave está definida y no es nula.
+
+**Ejercicios 7.1–7.11.** Define cinco módulos; muestra el primero y el último; modifica un elemento; añade otro; recorre un array con `for`; recórrelo con `foreach`; calcula la media de notas de un array no vacío; encuentra el máximo mediante una variable auxiliar; crea un ticket asociativo; recorre un ticket mostrando claves y valores; cuenta cuántos tickets están abiertos en una lista. Ampliación: explica por qué acceder mediante `$i` a un array asociativo no equivale a recorrerlo con `foreach`.
+
+---
+
+## 8. Funciones: reutilizar lo que ya sabemos programar {#funciones}
+
+Hemos escrito cálculos que pueden necesitarse en varios lugares. Si copiamos el mismo bloque una y otra vez, cualquier corrección tendrá que repetirse. Una **función** da nombre a una operación y permite utilizarla con distintos datos.
+
+### 8.1. Primero, una función sin parámetros
+
+```php
+<?php
+
+function mostrarSaludo(): void {
+    echo 'Bienvenido a IAW';
 }
-$media = count($notas) > 0 ? $suma / count($notas) : null;
+
+mostrarSaludo();
 ```
 
-**Error frecuente:** calcular la media dentro del bucle o dividir por cero cuando el array está vacío. **Depuración guiada:** crear una tabla en papel con columnas vuelta, `$nota`, `$suma` y comprobar la salida. Después trasladar la misma tabla a un HTML visible para el usuario.
+**Partes de la función:**
 
-**No adelantar formularios:** cuando el enunciado antiguo dice «leer un número por teclado», en este capítulo significa una variable PHP de entrada fija. El formulario aparecerá en el capítulo 6 y permitirá reutilizar, no rehacer, la solución.
+| Fragmento | Función |
+|---|---|
+| `function` | Indica que estamos definiendo una función. |
+| `mostrarSaludo` | Es su nombre. |
+| `()` | Zona reservada a parámetros; por ahora no recibe ninguno. |
+| `: void` | Indica que no devuelve un valor mediante `return`. |
+| `{ ... }` | Contiene las instrucciones que ejecutará al llamarla. |
+| `mostrarSaludo();` | Invoca la función. |
 
-## Capítulo 4 · Programación modular: funciones y ficheros {#modular}
+**Definir no es ejecutar:** si escribimos la definición pero nunca llamamos a `mostrarSaludo()`, el mensaje no aparecerá.
 
-**Motivación:** si calculamos la prioridad en cinco páginas, copiar el mismo bloque crea cinco posibles errores. Una función encapsula una responsabilidad y devuelve un resultado.
+### 8.2. Una función con parámetros
+
+Ahora queremos saludar a distintas personas. En vez de definir varias funciones, recibimos el nombre como **parámetro**:
 
 ```php
 <?php
+
+function saludar(string $nombre): void {
+    echo 'Hola, ' . $nombre . '<br>';
+}
+
+saludar('Ana');
+saludar('Luis');
+```
+
+Al llamar `saludar('Ana')`, el valor `'Ana'` se entrega al parámetro `$nombre`. En la segunda llamada se entrega `'Luis'`. El **parámetro** es la variable declarada en la función; el **argumento** es el dato con el que la llamamos.
+
+### 8.3. La diferencia entre `echo` y `return`
+
+Una función puede **mostrar** un resultado o **devolverlo** para que otras partes del programa lo utilicen. No es lo mismo:
+
+```php
+<?php
+
+function sumar(int $a, int $b): int {
+    return $a + $b;
+}
+
+$resultado = sumar(4, 5);
+echo $resultado; // 9
+```
+
+Aquí sucede lo siguiente:
+
+1. `sumar(4, 5)` ejecuta la función con `$a = 4` y `$b = 5`.
+2. `return $a + $b;` devuelve `9` al lugar de la llamada.
+3. `$resultado` recibe ese `9`.
+4. `echo $resultado;` lo muestra.
+
+![Función con parámetros y valor devuelto]({{ '/assets/docencia/iaw/ut02/07_funciones.svg' | relative_url }})
+
+Esta separación será útil cuando una aplicación necesite mostrar una cantidad en pantalla, guardarla en un archivo o enviarla a otro sistema: **el cálculo no tiene por qué decidir cómo se presenta**.
+
+### 8.4. Tipos de los parámetros y valor devuelto
+
+```php
+<?php
+
 declare(strict_types=1);
+
+function calcularCoste(float $horas, float $tarifa): float {
+    return $horas * $tarifa;
+}
+
+$total = calcularCoste(2.5, 18.0);
+echo $total; // 45
+```
+
+`float` indica que esperamos números con parte decimal (también se aceptan enteros en los contextos compatibles de PHP). `: float` indica qué tipo devolverá la función. `declare(strict_types=1);` permite utilizar un modo más estricto para ciertas conversiones automáticas de tipos en las llamadas realizadas desde ese archivo; **no sustituye la validación de formularios**.
+
+### 8.5. Parámetros opcionales
+
+```php
+<?php
+
+function saludar(string $nombre, string $prefijo = 'Hola'): string {
+    return $prefijo . ', ' . $nombre;
+}
+
+echo saludar('Ana');             // Hola, Ana
+echo saludar('Ana', 'Buenos días'); // Buenos días, Ana
+```
+
+Cuando falta el segundo argumento, la función utiliza el valor predeterminado `'Hola'`.
+
+### 8.6. Ámbito local: una variable dentro y otra fuera
+
+```php
+<?php
+
+$tarifa = 20;
+
+function calcularDoble(int $numero): int {
+    $resultado = $numero * 2;
+    return $resultado;
+}
+
+echo calcularDoble(3); // 6
+// $resultado pertenece a la función; no se utiliza aquí fuera.
+```
+
+Las variables definidas dentro de una función tienen normalmente **ámbito local**. Para comunicar un resultado al resto del programa utilizaremos `return` en lugar de depender de variables globales.
+
+### 8.7. Caso resuelto: de un bloque repetido a una función
+
+**Situación.** Debemos calcular el importe de una intervención para distintas parejas de horas y tarifas. Sin funciones podríamos copiar varias veces `$horas * $tarifa`. Con una función centralizamos la operación:
+
+```php
+<?php
+
+declare(strict_types=1);
+
 function calcularImporte(float $horas, float $tarifa): float {
     return $horas * $tarifa;
 }
-echo calcularImporte(2.5, 20.0);
+
+$importeAna = calcularImporte(2.0, 20.0);
+$importeLuis = calcularImporte(3.5, 25.0);
+
+echo 'Ana: ' . $importeAna . ' €<br>';
+echo 'Luis: ' . $importeLuis . ' €';
 ```
 
-**Orden:** definir y llamar; parámetro y argumento; `return` frente a `echo`; tipos de parámetros y retorno; ámbito local; parámetros opcionales; valor y referencia (solo tras entender valores); refactorizar repetición; funciones puras y pruebas de casos.
+**Prueba de escritorio:** indica el valor de ambos importes, modifica solo la segunda tarifa y comprueba qué salida cambia.
 
-```php
-<?php
-declare(strict_types=1);
-function etiquetaPrioridad(string $prioridad): string {
-    return match ($prioridad) {
-        'alta' => 'Urgente',
-        'media' => 'Planificable',
-        default => 'Normal',
-    };
-}
-```
+**Ejercicios 8.1–8.12.** Escribe `saludar`; convierte una cantidad de minutos a segundos; crea `esPar(int): bool`; crea `areaRectangulo`; crea `calcularIVA`; crea `mayorDeDos`; crea `factorial` con `for`; crea `esPrimo`; crea `contarAbiertos(array): int`; modifica una función para recibir un parámetro opcional; separa una función de cálculo de su `echo`; prueba cada función con un valor típico y uno límite. **No necesitas POO para realizar estos ejercicios.**
 
-### De una función a una estructura modular
+---
+
+## 9. Organizar una aplicación con varios archivos {#modularidad}
+
+Una página pequeña puede escribirse en un único `.php`. Cuando crece, resulta conveniente separar **el archivo al que entra la petición, las funciones reutilizables y el HTML de presentación**.
+
+### 9.1. Nuestro primer proyecto modular
 
 ```text
-iaw-desk/
+/srv/iaw/php/
 ├── public/
 │   └── index.php
 ├── src/
-│   └── tickets.php
+│   └── calculos.php
 └── templates/
-    └── lista.php
+    └── resultado.php
 ```
 
-En `public/index.php`: `require_once __DIR__ . '/../src/tickets.php';` y después una plantilla sencilla. Explica **`include` vs `require`**, `__DIR__`, rutas relativas, separación lógica/vista y por qué `src/` debe permanecer fuera del `DocumentRoot`.
-
-**Ejercicios rápidos web:** (1) `esPar(int): bool`; (2) `areaCirculo(float): float`; (3) `calcularIVA(float): float`; (4) `esPrimo(int): bool`; (5) `contarAbiertos(array): int`; (6) `formatearCodigo(int): string`; (7) separar la calculadora en funciones; (8) incorporar `require_once`; (9) crear pruebas con entradas límite; (10) mover HTML a plantilla sin perder el flujo.
-
-
-
-### Escalera de modularidad: lo mismo tres veces, pero cada vez mejor
-
-**Primero**, cálculo repetido dentro del fichero; **segundo**, función que recibe parámetros y devuelve el dato; **tercero**, separar función de presentación y cargarla desde `public/index.php`. Se pide al alumno detectar qué cambia si se modifica una tarifa, una regla de prioridad o la estructura HTML.
+En `src/calculos.php`:
 
 ```php
 <?php
+
 declare(strict_types=1);
-function totalServicio(float $horas, float $tarifa): float {
-    if ($horas < 0 || $tarifa < 0) {
-        throw new InvalidArgumentException('No se permiten negativos');
-    }
+
+function calcularImporte(float $horas, float $tarifa): float {
     return $horas * $tarifa;
 }
 ```
 
-Una función que devuelve el número permite mostrarlo como tabla HTML, imprimirlo en CLI o utilizarlo en otro cálculo. Si una función produce directamente HTML con `echo`, pierde parte de esa reutilización. **No significa que `echo` sea erróneo**: significa que salida y cálculo tienen responsabilidades distintas.
+En `public/index.php`:
 
 ```php
 <?php
-// public/index.php
+
 require_once __DIR__ . '/../src/calculos.php';
-$importe = totalServicio(3.0, 22.5);
-require __DIR__ . '/../templates/resumen.php';
+
+$importe = calcularImporte(3.0, 22.5);
+
+require __DIR__ . '/../templates/resultado.php';
 ```
 
-**Pruebas manuales:** `totalServicio(0, 20)` devuelve 0; `totalServicio(2, 20)` devuelve 40; `totalServicio(-1, 20)` genera la excepción prevista. La excepción se usa como ejemplo controlado, no se vuelca una traza al usuario de producción. Una función pequeña con nombre descriptivo es más fácil de contrastar individualmente que una página de 200 líneas que hace todo.
+En `templates/resultado.php`:
 
-## Capítulo 5 · Primeros pasos en POO sin frameworks {#poo}
+```php
+<!doctype html>
+<html lang="es">
+<head><meta charset="UTF-8"><title>Resultado</title></head>
+<body>
+    <h1>Importe del servicio</h1>
+    <p><?= number_format($importe, 2, ',', '.') ?> €</p>
+</body>
+</html>
+```
 
-**Por qué POO aquí:** queremos que el alumnado pueda leer una clase propia, entender objetos de bibliotecas como `PDO` y no ver los CMS/frameworks como magia. **No sustituimos el módulo de Programación:** esto es una introducción aplicada y recuperaremos POO al adaptar CMS.
+![Tres archivos y sus responsabilidades: entrada, lógica y presentación]({{ '/assets/docencia/iaw/ut02/08_modulos.svg' | relative_url }})
 
-**Primero:** objeto real (un ticket) → estado (`asunto`, `prioridad`) → comportamiento (`cerrar`); clase vs objeto; propiedades y métodos; constructor; `$this`; visibilidad `private/public`; encapsulación.
+**¿Qué ocurre en orden?** Apache solicita `public/index.php`; el PHP de entrada carga `src/calculos.php`; ejecuta `calcularImporte`; guarda el importe; y carga la plantilla que generará el HTML.
+
+### 9.2. `include`, `require`, `_once` y `__DIR__`
+
+| Recurso | Para qué sirve |
+|---|---|
+| `include 'archivo.php';` | Carga otro archivo; si falla, emite una advertencia y el programa puede continuar. |
+| `require 'archivo.php';` | Carga un archivo necesario; si falla, se detiene la ejecución. |
+| `require_once 'archivo.php';` | Evita cargarlo más de una vez en la misma petición. |
+| `__DIR__` | Carpeta en la que se encuentra el archivo actual; ayuda a construir rutas fiables. |
+
+Para las funciones indispensables del proyecto usaremos normalmente `require_once`. La estructura modular **no exige crear decenas de archivos sin razón**; exige que sea fácil localizar una responsabilidad.
+
+**Ejercicios 9.1–9.5.** Divide una calculadora en `index.php` y `src/calculos.php`; añade una plantilla HTML; mueve el CSS a `public/css/`; comprueba con el navegador que `src/` no está publicado directamente; cambia una tarifa y señala qué archivo debe modificarse y cuáles deben permanecer iguales.
+
+---
+
+## 10. Primeros pasos en programación orientada a objetos {#poo}
+
+Hasta ahora hemos agrupado instrucciones en funciones. En aplicaciones mayores también puede ser útil reunir **datos y operaciones relacionadas** en un mismo tipo de objeto. Lo estudiaremos con un ejemplo pequeño, sin comenzar directamente por herencia o interfaces.
+
+### 10.1. De un ticket descrito con variables a una clase
+
+Un ticket puede tener datos como `asunto` y `estado`, y comportamientos como `cerrar()`. La **clase** define el modelo; el **objeto** es una instancia concreta creada a partir de ese modelo.
+
+![Distinción entre clase Ticket y dos objetos con estados independientes]({{ '/assets/docencia/iaw/ut02/09_objetos.svg' | relative_url }})
+
+Primero vamos a escribir una clase muy sencilla:
 
 ```php
 <?php
-declare(strict_types=1);
-final class Ticket {
-    private bool $cerrado = false;
 
-    public function __construct(
-        private int $id,
-        private string $asunto,
-        private string $prioridad
-    ) {}
+class Ticket {
+    public string $asunto = '';
+}
 
-    public function cerrar(): void { $this->cerrado = true; }
-    public function estaCerrado(): bool { return $this->cerrado; }
+$ticket1 = new Ticket();
+$ticket1->asunto = 'No carga Apache';
+
+$ticket2 = new Ticket();
+$ticket2->asunto = 'Error de contraseña';
+
+echo $ticket1->asunto; // No carga Apache
+```
+
+**Lectura:**
+
+- `class Ticket` define el tipo de objetos que podemos crear.
+- `public string $asunto` define una propiedad donde cada objeto podrá guardar texto.
+- `new Ticket()` crea un objeto distinto cada vez.
+- `->` permite acceder a una propiedad o llamar a un método de ese objeto.
+
+Aunque ambos objetos pertenecen a la clase `Ticket`, **cada uno tiene su propio asunto**.
+
+### 10.2. Métodos: una acción que puede realizar el objeto
+
+```php
+<?php
+
+class Ticket {
+    public string $asunto = '';
+
+    public function mostrarResumen(): string {
+        return 'Ticket: ' . $this->asunto;
+    }
+}
+
+$ticket = new Ticket();
+$ticket->asunto = 'No carga Apache';
+
+echo $ticket->mostrarResumen();
+```
+
+`$this` representa **el objeto concreto cuyo método se está ejecutando**. Si existen dos objetos, `$this->asunto` puede contener un valor distinto en cada uno.
+
+### 10.3. Constructor: datos al crear el objeto
+
+No queremos crear primero un ticket vacío y después recordar que hay que asignarle siempre su asunto. Un **constructor** permite establecer sus valores iniciales:
+
+```php
+<?php
+
+class Ticket {
+    public string $asunto;
+    public string $estado;
+
+    public function __construct(string $asunto, string $estado = 'abierto') {
+        $this->asunto = $asunto;
+        $this->estado = $estado;
+    }
+
     public function resumen(): string {
-        return "#{$this->id} {$this->asunto}";
+        return $this->asunto . ' (' . $this->estado . ')';
     }
 }
 
-$ticket = new Ticket(7, 'No carga Apache', 'alta');
-$ticket->cerrar();
-echo $ticket->resumen();
+$ticket = new Ticket('Apache no responde');
+echo $ticket->resumen(); // Apache no responde (abierto)
 ```
 
-**Luego, solo cuando dominan una clase:** relación «es un» frente a «tiene un», herencia con `extends`, interfaz como contrato (`implements`), separación de responsabilidades. Prioriza composición y clases pequeñas antes que herencias profundas.
+El constructor recibe el argumento `$asunto` y **lo guarda en la propiedad del mismo nombre de este objeto** mediante `$this->asunto = $asunto;`. Observa que **el parámetro `$asunto` y la propiedad `$this->asunto` no son lo mismo**: la variable del parámetro existe durante la llamada, mientras la propiedad pertenece al objeto. El segundo argumento es opcional porque tiene un valor por defecto. PHP también ofrece una sintaxis más corta llamada *promoción de propiedades*; conviene conocer primero esta versión explícita.
+
+### 10.4. Encapsulación: no permitir cualquier cambio
+
+Si un programa puede cambiar libremente `$estado` a `'volando'`, el objeto representará una situación sin sentido. Podemos ocultar la propiedad y ofrecer métodos controlados:
 
 ```php
 <?php
-interface Notificador {
-    public function enviar(string $mensaje): void;
-}
-final class NotificadorPantalla implements Notificador {
-    public function enviar(string $mensaje): void {
-        echo htmlspecialchars($mensaje, ENT_QUOTES, 'UTF-8');
+
+class Ticket {
+    private string $asunto;
+    private string $estado = 'abierto';
+
+    public function __construct(string $asunto) {
+        $this->asunto = $asunto;
+    }
+
+    public function cerrar(): void {
+        $this->estado = 'cerrado';
+    }
+
+    public function resumen(): string {
+        return $this->asunto . ' (' . $this->estado . ')';
     }
 }
+
+$ticket = new Ticket('Error de acceso');
+$ticket->cerrar();
+echo $ticket->resumen(); // Error de acceso (cerrado)
 ```
 
-**Autoload/Composer:** mostrar qué problema resuelven; no exigir un proyecto Laravel antes de entender una clase propia.
+La propiedad `private` solo puede modificarse directamente desde la clase. El método público `cerrar()` expresa una acción reconocible. **Encapsular** no significa esconder todo sin criterio: significa exponer operaciones que conserven las reglas del objeto.
 
-**Ejercicios rápidos web:** (1) clase `Modulo` con nombre y horas; (2) clase `Ticket` con cerrar/reabrir; (3) constructor que rechaza asunto vacío; (4) método que devuelve HTML escapado; (5) clase `Usuario` con rol; (6) colección de objetos Ticket y conteo; (7) interfaz `Notificador`; (8) dos implementaciones de notificación; (9) refactorizar funciones globales hacia un servicio sencillo; (10) diagrama de responsabilidades y qué no debe conocer la clase.
+### 10.5. Antes de añadir más POO, comprueba estos conceptos
 
+| Concepto | Pregunta que debes poder responder |
+|---|---|
+| Clase | ¿Qué modelo representa `Ticket`? |
+| Objeto | ¿Qué crea `new Ticket()`? |
+| Propiedad | ¿Dónde guarda un ticket su asunto? |
+| Método | ¿Qué hace `cerrar()`? |
+| Constructor | ¿Cómo llegan los valores iniciales? |
+| `$this` | ¿A qué objeto se refiere? |
+| `public` / `private` | ¿Quién puede acceder al miembro? |
 
+**Ampliación de lectura.** La herencia con `extends` permite especializar una clase; una interfaz con `implements` define operaciones que distintas clases deben proporcionar. Las veremos cuando tengamos una necesidad concreta, no antes de comprender la clase anterior. Composer y los frameworks aparecerán después: son herramientas para organizar aplicaciones, no sustitutos de la comprensión del lenguaje.
 
-### Secuencia de POO para no aprender palabras vacías
+**Ejercicios 10.1–10.8.** Crea dos objetos `Modulo`; añade una propiedad y un método; crea un `Ticket` con asunto obligatorio; implementa `cerrar()` y `reabrir()`; prueba dos objetos que cambian independientemente; sustituye una propiedad pública por una privada; crea un método de resumen sin HTML; explica por qué una clase `Ticket` no debería encargarse también de configurar Apache.
 
-**Fase A — sin herencia.** Pide al alumno escribir en una hoja «ticket 7, asunto: Apache caído, estado: abierto»; pregúntale qué datos son estado y qué acciones se pueden realizar. Solo entonces presenta `class Ticket`, `new Ticket(...)`, propiedades y métodos. Dos objetos de la misma clase deben poder contener valores diferentes.
+---
+## 11. Recuperamos el formulario HTML: PHP recibe datos {#formularios}
 
-**Fase B — encapsulación.** Si `$ticket->estado = 'cualquier cosa'` fuese permitido, el programa aceptaría estados imposibles. Oculta la propiedad con `private` y crea un método de cambio que limite los valores. Explica `$this` como la instancia actual, nunca como variable del navegador.
+Ahora sí es el momento de utilizar el formulario creado en el repaso de HTML. Ya conocemos variables, arrays asociativos, condiciones, bucles, funciones y organización por archivos. Así podremos comprender **qué datos llegan, cómo comprobarlos y qué respuesta generar**.
 
-**Fase C — responsabilidad.** `Ticket` entiende su estado, pero no debería abrir una conexión de base de datos ni imprimir la cabecera HTML. Introduce `TicketRepository` como nombre de una responsabilidad que ampliaremos en UT03. Antes de usar una clase como PDO el alumno ya habrá utilizado un objeto propio.
+![Del campo name en HTML a la clave del array POST en PHP]({{ '/assets/docencia/iaw/ut02/10_formularios.svg' | relative_url }})
 
-**Fase D — contrato.** Una interfaz `Notificador` define qué operación está disponible; las implementaciones cambian el destino sin cambiar el código que usa la interfaz. Herencia (`extends`) se presenta con un ejemplo pequeño para reconocerla, no como obligación de utilizarla por todas partes.
+### 11.1. Un formulario muy pequeño
 
-**Prueba de comprensión:** ¿Cuál es la diferencia entre `Ticket` y `$ticket1`? ¿Qué hace `new`? ¿Por qué el método `cerrar()` puede ser `public` mientras la propiedad `$cerrado` permanece `private`? ¿Cuándo sería excesivo crear 12 clases para una página de dos operaciones?
-
-## Capítulo 6 · Formularios, GET/POST y validación {#formularios}
-
-**Ahora recuperamos el formulario de HTML realizado antes del PHP.** No se introduce `$_POST` antes de que la persona conozca variables, arrays y condicionales: `$_POST` es un array asociativo con los campos enviados de forma habitual por un formulario `method="post"`.
+Crea `public/formulario.html`:
 
 ```html
-<form method="post" action="procesar.php">
-  <label for="nombre">Nombre</label>
-  <input id="nombre" name="nombre" required>
-  <button type="submit">Enviar</button>
-</form>
+<!doctype html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Formulario de prueba</title>
+</head>
+<body>
+    <form action="procesar.php" method="post">
+        <label for="nombre">Nombre</label>
+        <input type="text" id="nombre" name="nombre" required>
+        <button type="submit">Enviar</button>
+    </form>
+</body>
+</html>
 ```
+
+Distingue tres atributos:
+
+| Atributo | Función |
+|---|---|
+| `id="nombre"` | Identifica ese control dentro del HTML y lo asocia al `label`. |
+| `name="nombre"` | Define la **clave** con la que se enviará su valor. |
+| `action="procesar.php"` | Señala el recurso al que el navegador enviará el formulario. |
+
+`method="post"` indica el método HTTP utilizado para enviar los datos. **No cifra por sí mismo el contenido**: para proteger el transporte de información sensible se utiliza HTTPS.
+
+### 11.2. PHP recibe el valor mediante `$_POST`
+
+Crea `public/procesar.php`:
 
 ```php
 <?php
-$nombre = trim($_POST['nombre'] ?? '');
+
+$nombre = $_POST['nombre'] ?? '';
+
+echo 'Hola, ' . htmlspecialchars(
+    $nombre,
+    ENT_QUOTES | ENT_SUBSTITUTE,
+    'UTF-8'
+);
+```
+
+`$_POST` es un **array superglobal** que contiene valores recibidos normalmente en el cuerpo de una petición de formulario POST. **No es una función ni un objeto**, y sus claves dependen de los nombres `name` que se hayan enviado.
+
+| En HTML | En PHP |
+|---|---|
+| `name="nombre"` | `$_POST['nombre']` |
+| `name="email"` | `$_POST['email']` |
+| `name="prioridad"` | `$_POST['prioridad']` |
+
+El operador `?? ''` evita asumir que la clave existe: utiliza una cadena vacía si falta o es nula. Una entrada HTTP no debe considerarse automáticamente correcta o segura.
+
+### 11.3. GET y POST: dos formas de enviar valores
+
+Cambia **temporalmente** el método del formulario a `get`, envía `Ana` y observa la URL:
+
+```text
+http://php07.iaw.test/procesar.php?nombre=Ana
+```
+
+Con `method="get"`, el programa consultaría `$_GET['nombre']`. Con `method="post"`, los datos se envían normalmente en el cuerpo de la petición y se consultan mediante `$_POST['nombre']`.
+
+| Aspecto | GET | POST |
+|---|---|---|
+| Uso frecuente | Consulta, búsqueda, filtros y navegación. | Envío de formularios que producen cambios. |
+| Dónde viajan valores de formulario típicos | En la cadena de consulta de la URL. | En el cuerpo de la petición. |
+| ¿Aparecen en la barra de direcciones? | Normalmente, sí. | Normalmente, no. |
+| ¿Cifra el contenido? | No. HTTPS protege el transporte en ambos casos. |
+
+**Experimento:** utiliza las herramientas del navegador → *Network* → selecciona la petición y compara `Request Method`, URL y los datos enviados. Vuelve después a POST y adapta `procesar.php` a `$_POST`.
+
+### 11.4. Validación paso a paso
+
+En el formulario podemos escribir `required`, pero el navegador no es una frontera de confianza. Un usuario puede modificar HTML, desactivar validaciones o enviar peticiones construidas por otros medios.
+
+Primero validaremos **un solo campo**. Además de comprobar su contenido, comprobaremos que recibimos el tipo esperado:
+
+```php
+<?php
+
+if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+    http_response_code(405);
+    exit('Este recurso espera un formulario POST');
+}
+
+$valor = $_POST['nombre'] ?? '';
+
+if (!is_string($valor)) {
+    http_response_code(422);
+    exit('Nombre no válido');
+}
+
+$nombre = trim($valor);
+
 if ($nombre === '') {
     http_response_code(422);
-    echo 'Falta el nombre';
-    exit;
+    exit('Debes escribir tu nombre');
 }
-echo htmlspecialchars($nombre, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+
+echo 'Hola, ' . htmlspecialchars(
+    $nombre,
+    ENT_QUOTES | ENT_SUBSTITUTE,
+    'UTF-8'
+);
 ```
 
-**Línea por línea:** ruta `action`, verbo `method`, clave `name`, GET en URL frente a POST en el cuerpo, `$_SERVER['REQUEST_METHOD']`, `??`, `trim`, validación en servidor, salida HTML escapada, estados HTTP y `header('Location: ...', true, 303); exit;` (solo tras procesar POST correctamente).
+**Recorrido:** (1) comprobar el método; (2) leer la clave; (3) comprobar el tipo; (4) eliminar espacios iniciales y finales; (5) rechazar contenido vacío; (6) mostrar el texto como HTML seguro. Con `name="nombre[]"` podría llegar un array en lugar de una cadena, por lo que no conviene llamar a `trim()` sin comprobar el tipo de un valor externo.
 
-**Seguridad sin ruido:** `required` es comodidad del navegador, no defensa. `POST` no significa cifrado: para confidencialidad se requiere HTTPS. No confundas escapar HTML con validar negocio ni con parametrizar SQL.
+### 11.5. Un formulario de tickets con varios campos
 
-**Ejercicios rápidos web:** (1) recuperar `nombre`; (2) leer radio y select; (3) checkbox ausente; (4) GET como filtro; (5) validar nota 0..10; (6) validar prioridad entre valores permitidos; (7) escapar `&`, `<`, comillas; (8) recuperar valores tras error; (9) separar formulario y procesador; (10) reto ticket personalizado `IAW-NN`.
-
-
-
-### El recorrido de una petición con datos reales
-
-El alumno tiene `formulario.html` y `procesar.php`. Primero abre solo el formulario, indica qué controles se enviarán, pulsa y comprueba el resultado en el procesador. Luego añade el método incorrecto y observa que el servidor rechaza GET donde espera POST.
+Cuando el primer formulario funcione, añade `asunto`, `prioridad` y `descripcion`. La prioridad debe seleccionarse entre las opciones admitidas:
 
 ```php
 <?php
-// procesar.php, fragmento explicativo
-$asunto = trim($_POST['asunto'] ?? '');
+
 $prioridad = $_POST['prioridad'] ?? '';
-$validas = ['baja', 'media', 'alta'];
-if ($asunto === '' || !in_array($prioridad, $validas, true)) {
+$permitidas = ['baja', 'media', 'alta'];
+
+if (!is_string($prioridad) || !in_array($prioridad, $permitidas, true)) {
     http_response_code(422);
-    exit('Corrige los datos del formulario');
+    exit('Prioridad no permitida');
 }
 ```
 
-**Tres pruebas imprescindibles:** (a) envío correcto, (b) asunto vacío, (c) prioridad inventada editando el HTML local del navegador. `required` solo ayuda con (b) en uso normal; no impide (c) ni sustituye la comprobación de servidor.
+`in_array(..., true)` utiliza comparación estricta. **No basta con que un `select` HTML presente solo tres opciones**: el servidor tiene que controlar los valores realmente recibidos.
 
-**Salida segura:** la cadena `<b>prueba</b>` puede ser contenido del ticket y debe mostrarse como texto cuando no es HTML que nosotros controlamos. Aplicar `htmlspecialchars(..., ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8')` en el contexto de texto/atributo HTML adecuado; no confundirlo con validación de email ni con seguridad SQL.
-
-**Observación guiada:** abrir DevTools → Network y señalar Request Method, Request Payload/Form Data y Response; comparar GET y POST sin explicar que POST es secreto. Identificar por qué el campo `id` conecta label/control y `name` se convierte en clave enviada al servidor.
-
-## Capítulo 7 · Estado web: cookies, sesiones e identidad {#sesiones}
-
-**Pregunta:** un segundo HTTP GET no «recuerda» por sí solo los valores PHP de la petición anterior. Ahora sí está justificado presentar mecanismos de estado: cookie en el navegador, sesión gestionada por el servidor, BBDD para persistencia duradera (siguiente UT).
+Los checkbox no marcados normalmente **no envían su clave**. Por eso, para una casilla de confirmación:
 
 ```php
 <?php
-session_start();
-$_SESSION['visitas'] = ($_SESSION['visitas'] ?? 0) + 1;
-echo 'Visitas: ' . $_SESSION['visitas'];
+
+$acepta = ($_POST['acepta'] ?? '') === 'si';
 ```
 
-**Escalera:** estado en URL → cookie de preferencia (no secreto) → sesión (identificador en cookie + datos de sesión en servidor) → login y logout → aislamiento (un usuario no consulta datos de otro por cambiar `?user=...`).
+En HTML es conveniente declarar expresamente `value="si"` para que el valor esperado sea conocido.
 
-**Funciones:** `setcookie` antes de salida, `$_COOKIE`, `session_start`, `$_SESSION`, `session_regenerate_id(true)` tras login, `unset`, cierre y `session_destroy` con borrado de cookie si corresponde. **Nunca guardes contraseñas ni hashes de contraseña en cookies de preferencias.** Para comprobación de contraseñas usa `password_hash` y `password_verify` en el bloque de identidad más avanzado.
+### 11.6. Validar, escapar y almacenar son tres responsabilidades distintas
 
-**Ejercicios rápidos web:** (1) contador de sesión; (2) color de tema en cookie; (3) visita tras cerrar navegador; (4) dos navegadores y dos sesiones; (5) login de demostración con cuentas de prueba; (6) logout; (7) impedir consulta de notas ajenas; (8) explicar qué sí persistirá tras reiniciar Apache y qué no se debe presumir.
+- **Validar:** ¿el asunto no está vacío?, ¿la prioridad pertenece a las opciones?, ¿el email tiene el formato requerido?
+- **Escapar al mostrar HTML:** ¿el asunto enviado se representará como texto aunque contenga etiquetas?
+- **Almacenar:** ¿dónde permanecerá el ticket cuando otra petición lo necesite? Esto se desarrollará en la UT03 mediante PDO y MariaDB.
 
-> **Cierre RA5:** demostrar código claro, formulario validado, sesión e identidad aislada. La siguiente UT introduce una base de datos para que los tickets sobrevivan a las peticiones sin depender solo de la sesión.
-
-
-### Línea temporal: tres peticiones distintas y una identidad
-
-Primera visita: no hay sesión de la aplicación; PHP puede crearla y enviar al navegador un identificador de sesión en una cookie. Segunda petición: el navegador devuelve ese identificador y PHP recupera los datos correspondientes del lado del servidor. Tercera petición desde ventana privada: normalmente una cookie diferente, por tanto otra sesión. La sesión no representa por sí sola una cuenta autenticada: necesitamos verificar las credenciales y asociar una identidad validada.
+Ejemplo de salida HTML segura:
 
 ```php
 <?php
-// Esquema tras una autenticación CORRECTA ya verificada.
+
+$asunto = '<b>Problema de acceso</b>';
+
+echo htmlspecialchars(
+    $asunto,
+    ENT_QUOTES | ENT_SUBSTITUTE,
+    'UTF-8'
+);
+```
+
+El navegador mostrará literalmente `<b>Problema de acceso</b>` como texto, en lugar de interpretarlo como una etiqueta del usuario. `htmlspecialchars` sirve para **escapar en un contexto HTML apropiado**; no valida una dirección de correo ni sustituye las consultas preparadas SQL.
+
+### 11.7. Qué hacer después de un POST correcto
+
+Una aplicación que recibe un formulario puede redirigir al navegador a una página de confirmación para evitar que actualizar la página reenvíe accidentalmente el mismo POST. El patrón se conoce como **POST/Redirect/GET (PRG)**.
+
+```php
+<?php
+
+// Fragmento que se ejecuta únicamente tras validar y procesar el POST.
+header('Location: confirmado.php', true, 303);
+exit;
+```
+
+`header()` debe ejecutarse **antes de enviar contenido** que comprometa las cabeceras HTTP; después de enviar la redirección, `exit` impide continuar la ejecución. No pondremos este fragmento en el primer formulario hasta entender sus pasos previos.
+
+**Ejercicios 11.1–11.10.** Procesa un nombre; explica `id` frente a `name`; compara GET y POST; procesa un número entero válido; calcula un área a partir de formulario; valida la nota 0…10; comprueba casilla marcada/desmarcada; rechaza una prioridad inventada; recupera los valores de un formulario tras un error; procesa un ticket con nombre, asunto y prioridad mostrando los datos escapados. **No utilizaremos aún una base de datos.**
+
+---
+
+## 12. Estado entre peticiones: cookies y sesiones {#estado}
+
+### 12.1. ¿Qué ocurre cuando visitamos otra página?
+
+Una petición web no conserva automáticamente las variables PHP de una petición anterior. Por ejemplo, si un script ejecuta `$visitas = 1;` en cada petición, el valor vuelve a empezar cuando se solicita otra vez la página.
+
+Este comportamiento plantea preguntas reales: ¿cómo recordar la preferencia de idioma?, ¿cómo reconocer que dos peticiones pertenecen al mismo navegador?, ¿cómo mantener una identidad autenticada?
+
+![Tres peticiones HTTP y relación entre cookie de sesión y datos en servidor]({{ '/assets/docencia/iaw/ut02/11_estado_http.svg' | relative_url }})
+
+### 12.2. Primera pieza: una cookie de preferencia
+
+Una cookie es un pequeño dato que el servidor solicita guardar al navegador y que este puede devolver en peticiones posteriores, de acuerdo con sus políticas y configuración.
+
+Ejemplo simplificado de una preferencia **no sensible**:
+
+```php
+<?php
+
+setcookie('tema', 'oscuro', [
+    'expires' => time() + 3600,
+    'path' => '/',
+    'httponly' => true,
+    'samesite' => 'Lax',
+]);
+
+echo 'Preferencia enviada al navegador';
+```
+
+**Lectura de las opciones:** `expires` indica una fecha de caducidad expresada como marca temporal; `time() + 3600` representa aproximadamente una hora desde ahora. `path` indica las rutas del sitio a las que se enviará; `httponly` impide que JavaScript del navegador acceda a la cookie mediante las API habituales; `samesite` limita determinados envíos entre sitios. Una cookie de preferencia no debe utilizarse como mecanismo de autenticación.
+
+`setcookie()` prepara una cabecera HTTP. La cookie no tiene por qué aparecer inmediatamente en `$_COOKIE` durante esa misma petición; normalmente se leerá cuando el navegador la envíe en una petición posterior:
+
+```php
+<?php
+
+$tema = $_COOKIE['tema'] ?? 'claro';
+
+echo 'Tema: ' . htmlspecialchars(
+    is_string($tema) ? $tema : 'claro',
+    ENT_QUOTES | ENT_SUBSTITUTE,
+    'UTF-8'
+);
+```
+
+En una web pública con HTTPS, deberá valorarse además la opción `'secure' => true` para cookies que solo deban viajar por conexiones cifradas. Los navegadores pueden eliminar cookies antes de su caducidad prevista. **Nunca guardes contraseñas ni hashes de contraseña en cookies de preferencias.**
+
+### 12.3. Segunda pieza: una sesión en el servidor
+
+PHP proporciona `$_SESSION`, un array donde podemos conservar datos entre peticiones pertenecientes a la misma sesión.
+
+Crea `public/contador.php`:
+
+```php
+<?php
+
+session_start();
+
+$_SESSION['visitas'] = ($_SESSION['visitas'] ?? 0) + 1;
+
+echo 'Número de visitas de esta sesión: ' . $_SESSION['visitas'];
+```
+
+**Primera visita:** si no existe `visitas`, `?? 0` toma cero y se suma una unidad. **Segunda visita con la misma sesión:** se recupera el valor anterior y vuelve a incrementarse.
+
+El identificador de sesión viaja normalmente en una cookie, mientras que los datos de `$_SESSION` se conservan del lado servidor según el almacenamiento configurado. **Una sesión no es una base de datos duradera ni equivale por sí sola a una cuenta autenticada.**
+
+### 12.4. Dos páginas que comparten una sesión
+
+Archivo `public/guardar.php`:
+
+```php
+<?php
+
+session_start();
+
+$_SESSION['modulo'] = 'IAW';
+
+echo '<a href="consultar.php">Consultar otra página</a>';
+```
+
+Archivo `public/consultar.php`:
+
+```php
+<?php
+
+session_start();
+
+$modulo = $_SESSION['modulo'] ?? 'Sin módulo';
+
+echo htmlspecialchars(
+    is_string($modulo) ? $modulo : 'Sin módulo',
+    ENT_QUOTES | ENT_SUBSTITUTE,
+    'UTF-8'
+);
+```
+
+Observa que ambos archivos llaman a `session_start()` porque cada petición necesita abrir o recuperar la sesión. Pruébalo también en una ventana privada: normalmente utilizará cookies separadas.
+
+### 12.5. Inicio de sesión, autorización y cierre
+
+Una aplicación puede utilizar una sesión para recordar la identidad **después de comprobar las credenciales**. Debemos diferenciar:
+
+| Concepto | Pregunta |
+|---|---|
+| Autenticación | ¿Quién eres y cómo se ha comprobado? |
+| Autorización | ¿Puedes realizar esta operación sobre este recurso? |
+| Sesión | ¿Cómo se conserva el estado entre peticiones relacionadas? |
+
+Después de un login correctamente verificado se debe regenerar el identificador de sesión para dificultar ataques de fijación:
+
+```php
+<?php
+
+// Fragmento: solo después de verificar las credenciales.
 session_start();
 session_regenerate_id(true);
-$_SESSION['usuario'] = [
-    'id' => 7,
-    'nombre' => 'alumno07',
-    'rol' => 'usuario',
-];
+$_SESSION['usuario_id'] = 7;
 ```
 
-**Cookies:** sirven, entre otros usos, para preferencias. `setcookie` envía una cabecera de respuesta; el valor llegará en peticiones posteriores. No asumir que el navegador conserva una cookie hasta la fecha prevista en cualquier configuración de privacidad. **Sesiones:** `$_SESSION` no es una base de datos; su configuración y almacenamiento pueden variar, y «cerrar pestaña» no equivale a ejecutar `session_destroy()` en el servidor.
+Para almacenar y verificar contraseñas cuando llegue el bloque de persistencia utilizaremos `password_hash()` y `password_verify()`, **no contraseñas en texto claro**. En un sistema real la autorización debe comprobarse en cada operación; ocultar un botón no impide acceder directamente a una URL.
 
-**Autorizar no es autenticar:** saber quién eres no concede permiso para leer cualquier `?id=...`. El usuario de sesión es la fuente de identidad; el identificador de recurso solicitado es un dato que debe comprobarse contra su propietario. Este principio pasará literalmente a `WHERE id=:id AND owner_id=:owner` en UT03.
+Para cerrar la sesión de forma completa habrá que eliminar sus datos, invalidarla y tratar adecuadamente su cookie de identificación. `session_destroy()` elimina los datos de sesión del almacenamiento, pero no borra automáticamente todas las variables ya presentes en memoria ni la cookie del navegador. El cierre completo se practicará como una operación diferenciada.
 
-## Entrenamiento y continuación {#cierre}
+**Ejercicios 12.1–12.7.** Crea un contador; compara la primera y segunda visita; abre otra ventana privada; guarda el nombre de un módulo y recupéralo en otra página; implementa una preferencia visual sin guardar datos sensibles; explica qué ocurre cuando no llega la cookie; distingue autenticación de autorización en un supuesto de tickets de dos usuarios.
 
-Los «ejercicios rápidos web» de cada capítulo son ejemplos de entrenamiento y autoaprendizaje. Las **actividades evaluables, entregas, plazos, variantes y criterios de calificación** se facilitarán exclusivamente en el aula virtual.
+---
 
-**Individualización de ejemplos:** `NN` representa el número de puesto con dos cifras; para `07`, prefijo `IAW-07` y proyecto `desk07`. Los datos cambian; los conceptos y la dificultad, no.
+## 13. Banco de ejercicios progresivos {#ejercicios}
 
-**Puedo explicar antes de seguir:** dónde se ejecuta PHP; cómo organizar el código; qué valida el servidor; por qué HTML y SQL requieren protecciones distintas; y cómo una sesión conserva información sin sustituir una base de datos.
+Los ejemplos resueltos de los apartados anteriores muestran **cómo razonar cada construcción**. Los ejercicios siguientes permiten practicar sin limitarse a copiar el ejemplo: primero realizan una modificación pequeña, después plantean una variación y finalmente integran varias técnicas conocidas.
 
-**Lecturas:** [Sintaxis PHP](https://www.php.net/manual/es/language.basic-syntax.php), [tipos](https://www.php.net/manual/es/language.types.php), [estructuras de control](https://www.php.net/manual/es/language.control-structures.php), [funciones](https://www.php.net/manual/es/language.functions.php), [clases](https://www.php.net/manual/es/language.oop5.php), [sesiones](https://www.php.net/manual/es/book.session.php), [seguridad OWASP: XSS](https://owasp.org/www-community/attacks/xss/).
+**Regla de personalización.** Donde se indique `NN`, utiliza tu número de puesto con dos cifras: `07`, `12`, `25`… Por ejemplo, el ticket del puesto 07 se identifica como `IAW-07`. Esta variable modifica los datos de prueba, no la dificultad del ejercicio. No incluyas contraseñas reales ni datos personales de terceras personas en los repositorios.
 
-**Secuencia siguiente:** UT03 · PHP y BBDD (publicación progresiva). La lectura de formularios y sesiones sigue siendo competencia previa antes de introducir PDO.
+### Bloque A · Primeros programas, variables y operadores
+
+1. Crea `01_saludo.php` e imprime una presentación utilizando `echo` y una etiqueta `<h1>`.
+2. Declara nombre, módulo, puesto y edad como variables; muestra una frase completa.
+3. Define dos números distintos y muestra suma, resta, producto y división si el segundo no es cero.
+4. Calcula el importe de una intervención con horas y tarifa; añade un IVA constante.
+5. Calcula la media aritmética de tres notas y muéstrala con dos decimales.
+6. Convierte una cantidad de segundos a minutos y segundos restantes mediante `/`, `intdiv()` y `%`; compara sus resultados.
+7. Comprueba con `var_dump` qué diferencias hay entre `'8'`, `8`, `8.0` y `true`.
+8. Define una cadena con el código `IAW-NN`; concatena descripción y prioridad de una incidencia.
+
+### Bloque B · Condiciones
+
+9. Con `if` simple muestra un aviso si la temperatura supera un límite.
+10. Amplía el ejercicio anterior a `if/else` para informar en ambos casos.
+11. Clasifica una nota en suspenso, aprobado, notable o sobresaliente mediante `elseif`.
+12. Calcula el recargo de horas extraordinarias solo cuando se supera un límite fijado.
+13. Comprueba con `&&` si el número pertenece a un rango y con `||` si corresponde a uno de dos casos especiales.
+14. Construye una calculadora que no divida por cero.
+15. Reescribe una clasificación de prioridad usando `switch`, una vez que funcione mediante `elseif`.
+
+### Bloque C · Repeticiones y colecciones
+
+16. Genera los números del 1 hasta `NN` mediante `for`.
+17. Muestra los múltiplos de tres sin utilizar HTML repetido a mano.
+18. Calcula el factorial de un entero pequeño mediante un acumulador.
+19. Genera la tabla de multiplicar de tu número de puesto.
+20. Crea un array de notas, recórrelo con `foreach` y muestra la media.
+21. Crea un array asociativo con los datos de un ticket `IAW-NN`.
+22. Construye un array con varios tickets y cuenta cuántos siguen abiertos.
+23. Genera una tabla HTML a partir de ese array sin copiar y pegar filas.
+24. Identifica en un código dado un bucle que no termina y explica qué variable debe actualizarse.
+
+### Bloque D · Funciones, modularidad y objetos
+
+25. Implementa `esPar(int $n): bool` y pruébala con valores pares e impares.
+26. Implementa `calcularImporte(float $horas, float $tarifa): float`.
+27. Implementa `contarAbiertos(array $tickets): int`.
+28. Separa dos funciones en `src/funciones.php` y utilízalas desde `public/index.php`.
+29. Extrae un fragmento repetido de HTML a `templates/cabecera.php`.
+30. Crea la clase `Ticket`; instancia dos objetos con asuntos diferentes.
+31. Añade un método que cierre un ticket sin dejar modificar libremente su estado.
+32. Explica mediante un esquema qué responsabilidad corresponde a cada archivo o clase.
+
+### Bloque E · Formularios y estado
+
+33. Reutiliza el formulario HTML ya construido para enviar el asunto de una incidencia.
+34. Valida en PHP que el asunto no sea una cadena vacía ni un array.
+35. Añade prioridad y comprueba que pertenezca a la lista permitida.
+36. Realiza una petición GET de búsqueda y compara sus datos con el POST de creación.
+37. Muestra un asunto que contenga `<b>` y comprueba que aparece como texto.
+38. Crea un contador de sesión independiente de un contador local reiniciado en cada petición.
+39. Guarda y recupera una preferencia no sensible mediante cookie.
+40. Integra un formulario validado y una página de confirmación **sin** almacenar todavía el ticket en MariaDB.
+
+> **Antes de entregar o publicar una aplicación:** comprueba al menos el caso esperado, el caso incorrecto y un valor límite; explica qué ocurre y por qué. No es suficiente obtener una captura de pantalla de un resultado casualmente correcto.
+{: .notice--info}
+
+---
+
+## 14. Diagnóstico y buenas prácticas {#diagnostico}
+
+Los errores proporcionan información sobre **qué capa** está fallando. No empieces a modificar PHP si todavía no has comprobado que la página correcta llega al servidor.
+
+| Síntoma | Primera comprobación |
+|---|---|
+| No conecta por SSH | IP de Debian, red, servidor SSH y credenciales. |
+| El navegador no accede al sitio | IP, DNS/hosts, Apache y VirtualHost. |
+| Aparece el PHP como texto | La integración con PHP-FPM no se está aplicando correctamente. Suspende la publicación. |
+| HTTP 404 | Nombre de archivo, ruta y `DocumentRoot`. |
+| HTTP 500 | `php -l`, registro de error de Apache y registro de PHP-FPM. |
+| `Undefined array key` | Una clave que estás consultando no existe en el array. |
+| `TypeError` | Una función recibió un tipo no admitido o una operación no puede realizarse con ese dato. |
+| El resultado numérico es incorrecto | Comprueba asignaciones, precedencia y tipos con una traza. |
+| El bucle no termina | Busca la condición de salida y la variable que debería actualizarse. |
+| Los datos desaparecen en otra página | Revisa primero qué se conserva por petición y qué se ha guardado en sesión. |
+
+Comandos básicos desde la terminal remota:
+
+```bash
+php -l public/01_hola.php
+php -v
+sudo apache2ctl configtest
+sudo systemctl status apache2
+sudo systemctl status php8.4-fpm
+sudo tail -n 30 /var/log/apache2/error.log
+```
+
+Los nombres de servicio y las rutas de registros pueden variar según la instalación y el VirtualHost. No necesitas ejecutar todos los comandos ante cualquier error: selecciona la prueba que corresponda al síntoma.
+
+**Reglas que conservaremos en las siguientes unidades:** utilizar variables descriptivas; comprobar casos límite; separar cálculos de presentación cuando aporte claridad; no confiar en datos del navegador; no publicar secretos; evitar editar como `root` o dar permisos `777`; escapar contenido no confiable al generar HTML; y comprender la responsabilidad de cada servicio antes de reiniciarlo.
+
+---
+
+## 15. Glosario y referencias {#fuentes}
+
+| Término | Significado breve |
+|---|---|
+| Intérprete | Programa que ejecuta instrucciones PHP. |
+| CLI | Ejecución desde la terminal. |
+| PHP-FPM | Gestor de procesos que ejecuta PHP en el servicio web. |
+| Variable | Identificador al que asignamos un valor. |
+| Expresión | Combinación de datos y operadores que produce un resultado. |
+| Booleano | Valor verdadero o falso. |
+| Condición | Expresión que permite decidir qué bloque ejecutar. |
+| Bucle | Estructura que repite instrucciones. |
+| Array | Colección de valores accesibles mediante claves. |
+| Función | Bloque reutilizable que puede recibir argumentos y devolver un valor. |
+| Clase / objeto | Modelo y una instancia concreta de ese modelo. |
+| GET / POST | Métodos de petición HTTP con usos distintos. |
+| Cookie | Dato gestionado por el navegador y enviado bajo ciertas condiciones. |
+| Sesión | Estado asociado a peticiones relacionadas, administrado por el servidor. |
+
+**Documentación para ampliar y contrastar ejemplos:**
+
+- [Manual oficial de PHP: introducción y sintaxis](https://www.php.net/manual/es/language.basic-syntax.php).
+- [Variables, tipos de datos y operadores](https://www.php.net/manual/es/language.variables.php), [tipos](https://www.php.net/manual/es/language.types.php) y [operadores](https://www.php.net/manual/es/language.operators.php).
+- [Estructuras de control de PHP](https://www.php.net/manual/es/language.control-structures.php).
+- [Arrays](https://www.php.net/manual/es/language.types.array.php) y [`foreach`](https://www.php.net/manual/es/control-structures.foreach.php).
+- [Funciones](https://www.php.net/manual/es/language.functions.php) y [clases/objetos](https://www.php.net/manual/es/language.oop5.php).
+- [Superglobales](https://www.php.net/manual/es/language.variables.superglobals.php), [`htmlspecialchars`](https://www.php.net/manual/es/function.htmlspecialchars.php) y [sesiones](https://www.php.net/manual/es/book.session.php).
+- [VS Code Remote - SSH](https://code.visualstudio.com/docs/remote/ssh).
+- [OWASP: prevención de XSS](https://cheatsheetseries.owasp.org/cheatsheets/Cross_Site_Scripting_Prevention_Cheat_Sheet.html).
+
+**Continuación:** [UT03 · PHP y bases de datos]({{ '/docencia/asir/iaw/ut03/' | relative_url }}). Después de comprender variables, control de flujo, funciones, formularios y estado, incorporaremos PDO y MariaDB para conservar datos de manera estructurada y duradera.

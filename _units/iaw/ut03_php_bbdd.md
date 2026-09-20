@@ -38,7 +38,7 @@ tags:
 - seguridad
 - asir
 permalink: /docencia/asir/iaw/ut03/
-published: true
+published: false
 toc:
 - title: Persistencia y arquitectura
   id: persistencia
