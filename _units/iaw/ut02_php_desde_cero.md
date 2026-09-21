@@ -81,8 +81,6 @@ toc:
     id: fuentes
 ---
 
-# UT02 · Introducción a PHP: de los primeros programas a una aplicación web
-
 ## Qué aprenderás {#objetivos}
 
 Una página HTML es un documento que el navegador interpreta y muestra. Una aplicación web puede necesitar **calcular un precio, escoger qué contenido mostrar, procesar los datos de un formulario o recordar qué usuario ha iniciado sesión**. PHP permite desarrollar esa lógica en el servidor.
@@ -297,7 +295,7 @@ echo $total;
 
 La instrucción `=` se llama **asignación**: calcula el lado derecho y guarda el resultado en la variable del lado izquierdo. No equivale a plantear una igualdad matemática.
 
-![Cómo cambia el contenido de una variable al asignarle y actualizarle un valor]({{ '/assets/docencia/iaw/ut02/03_asignacion.svg' | relative_url }})
+![Cómo cambia el contenido de una variable al asignarle y actualizarle un valor]({{ '/assets/docencia/iaw/ut02/03_asignacion.png' | relative_url }})
 
 ### 3.2. Reasignación: el valor puede cambiar
 
@@ -554,7 +552,7 @@ El contenido representa el mismo número, pero **uno es entero y otro es texto**
 
 Hasta ahora los programas han ejecutado las instrucciones en el orden en el que están escritas. Pero una aplicación debe tomar decisiones: **¿hay que mostrar una alerta? ¿la prioridad es alta? ¿el divisor es válido?**
 
-![Evolución desde if simple a if/else y elseif]({{ '/assets/docencia/iaw/ut02/04_condicionales.svg' | relative_url }})
+![Evolución desde if simple a if/else y elseif]({{ '/assets/docencia/iaw/ut02/04_condicionales.png' | relative_url }})
 
 ### 5.1. Primero, un `if` simple
 
@@ -782,7 +780,7 @@ No es necesario introducir `switch` y `match` antes de dominar **`if` simple →
 
 Hasta ahora hemos elegido qué código ejecutar. En esta sección aprenderemos **cuántas veces repetirlo**. Antes de utilizar arrays, practicaremos con un simple contador.
 
-![Estructuras for y while: inicialización, condición, cuerpo y actualización]({{ '/assets/docencia/iaw/ut02/05_bucles.svg' | relative_url }})
+![Estructuras for y while: inicialización, condición, cuerpo y actualización]({{ '/assets/docencia/iaw/ut02/05_bucles.png' | relative_url }})
 
 ### 6.1. ¿Por qué no escribir diez veces lo mismo?
 
@@ -954,7 +952,7 @@ echo $prioridades[1]; // media
 echo $prioridades[2]; // alta
 ```
 
-![Array indexado con las posiciones cero, uno y dos]({{ '/assets/docencia/iaw/ut02/06_arrays.svg' | relative_url }})
+![Array indexado con las posiciones cero, uno y dos]({{ '/assets/docencia/iaw/ut02/06_arrays.png' | relative_url }})
 
 | Posición | Valor |
 |---:|---|
