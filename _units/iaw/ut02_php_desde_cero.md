@@ -89,7 +89,7 @@ En esta unidad aprenderemos PHP desde sus elementos más sencillos. No es necesa
 
 **Resultado de aprendizaje relacionado: RA5 — Genera documentos web utilizando lenguajes de guiones de servidor.** Los criterios de evaluación vinculados a la unidad se identifican en el frontmatter. La programación orientada a objetos se introduce aquí como una herramienta para comprender bibliotecas y aplicaciones PHP; no supone un resultado de aprendizaje adicional.
 
-![Camino de aprendizaje: primer PHP, datos, decisiones, bucles, colecciones, funciones, objetos y web]({{ '/assets/docencia/iaw/ut02/01_ruta_aprendizaje.svg' | relative_url }})
+![Camino de aprendizaje: primer PHP, datos, decisiones, bucles, colecciones, funciones, objetos y web]({{ '/assets/docencia/iaw/ut02/01_ruta_aprendizaje.png' | relative_url }})
 
 **Método de trabajo.** En cada apartado encontraremos una pregunta inicial, un ejemplo corto explicado línea a línea, una prueba de escritorio (predecir el resultado), ejercicios graduados y una comprobación de lo aprendido. Una vez dominados esos elementos los utilizaremos juntos para desarrollar una aplicación sencilla de gestión de incidencias, *IAW Desk*.
 
@@ -104,7 +104,7 @@ En esta unidad aprenderemos PHP desde sus elementos más sencillos. No es necesa
 
 Imagina que escribimos en el navegador la dirección de una página llamada `hola.php`. El navegador **no interpreta las instrucciones PHP**. Realiza una petición HTTP al servidor web; allí se ejecuta PHP, se genera una respuesta y el navegador muestra el contenido recibido.
 
-![Recorrido de una petición PHP, desde el navegador al servidor y de vuelta]({{ '/assets/docencia/iaw/ut02/02_peticion_php.svg' | relative_url }})
+![Recorrido de una petición PHP, desde el navegador al servidor y de vuelta]({{ '/assets/docencia/iaw/ut02/02_peticion_php.png' | relative_url }})
 
 | Elemento | Responsabilidad |
 |---|---|
@@ -1163,7 +1163,7 @@ Aquí sucede lo siguiente:
 3. `$resultado` recibe ese `9`.
 4. `echo $resultado;` lo muestra.
 
-![Función con parámetros y valor devuelto]({{ '/assets/docencia/iaw/ut02/07_funciones.svg' | relative_url }})
+![Función con parámetros y valor devuelto]({{ '/assets/docencia/iaw/ut02/07_funciones.png' | relative_url }})
 
 Esta separación será útil cuando una aplicación necesite mostrar una cantidad en pantalla, guardarla en un archivo o enviarla a otro sistema: **el cálculo no tiene por qué decidir cómo se presenta**.
 
@@ -1296,7 +1296,7 @@ En `templates/resultado.php`:
 </html>
 ```
 
-![Tres archivos y sus responsabilidades: entrada, lógica y presentación]({{ '/assets/docencia/iaw/ut02/08_modulos.svg' | relative_url }})
+![Tres archivos y sus responsabilidades: entrada, lógica y presentación]({{ '/assets/docencia/iaw/ut02/08_modulos.png' | relative_url }})
 
 **¿Qué ocurre en orden?** Apache solicita `public/index.php`; el PHP de entrada carga `src/calculos.php`; ejecuta `calcularImporte`; guarda el importe; y carga la plantilla que generará el HTML.
 
@@ -1323,7 +1323,7 @@ Hasta ahora hemos agrupado instrucciones en funciones. En aplicaciones mayores t
 
 Un ticket puede tener datos como `asunto` y `estado`, y comportamientos como `cerrar()`. La **clase** define el modelo; el **objeto** es una instancia concreta creada a partir de ese modelo.
 
-![Distinción entre clase Ticket y dos objetos con estados independientes]({{ '/assets/docencia/iaw/ut02/09_objetos.svg' | relative_url }})
+![Distinción entre clase Ticket y dos objetos con estados independientes]({{ '/assets/docencia/iaw/ut02/09_objetos.png' | relative_url }})
 
 Primero vamos a escribir una clase muy sencilla:
 
@@ -1452,7 +1452,7 @@ La propiedad `private` solo puede modificarse directamente desde la clase. El m�
 
 Ahora sí es el momento de utilizar el formulario creado en el repaso de HTML. Ya conocemos variables, arrays asociativos, condiciones, bucles, funciones y organización por archivos. Así podremos comprender **qué datos llegan, cómo comprobarlos y qué respuesta generar**.
 
-![Del campo name en HTML a la clave del array POST en PHP]({{ '/assets/docencia/iaw/ut02/10_formularios.svg' | relative_url }})
+![Del campo name en HTML a la clave del array POST en PHP]({{ '/assets/docencia/iaw/ut02/10_formularios.png' | relative_url }})
 
 ### 11.1. Un formulario muy pequeño
 
@@ -1643,7 +1643,7 @@ Una petición web no conserva automáticamente las variables PHP de una petició
 
 Este comportamiento plantea preguntas reales: ¿cómo recordar la preferencia de idioma?, ¿cómo reconocer que dos peticiones pertenecen al mismo navegador?, ¿cómo mantener una identidad autenticada?
 
-![Tres peticiones HTTP y relación entre cookie de sesión y datos en servidor]({{ '/assets/docencia/iaw/ut02/11_estado_http.svg' | relative_url }})
+![Tres peticiones HTTP y relación entre cookie de sesión y datos en servidor]({{ '/assets/docencia/iaw/ut02/11_estado_http.png' | relative_url }})
 
 ### 12.2. Primera pieza: una cookie de preferencia
 
