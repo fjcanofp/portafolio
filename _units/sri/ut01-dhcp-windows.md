@@ -1,40 +1,78 @@
 ---
-layout: default
-title: "UT01 · DHCP en Windows Server 2025 · laboratorio profesional"
-description: "Ruta práctica obligatoria: Windows Server 2025, DHCP GUI/PowerShell, ámbitos, exclusiones, reservas, relay, diagnóstico y comparación con Kea."
-module: "sri"
-module_title: "Servicios de Red e Internet"
-module_code: "0375"
-cycle: "asir"
-course: "2.º ASIR"
-unit: "UT01"
-unit_order: 1
+title: UT01 · DHCP en Windows Server 2025
+description: 'Segundo laboratorio obligatorio de DHCP: ámbitos, exclusiones, reservas, PowerShell, relay y diagnóstico
+  en Windows Server 2025.'
+summary: Administrar la misma política DHCP del RA2 con Windows Server, GUI y PowerShell.
+module_key: sri
+cycle_key: asir
+order: 1.1
+module_title: Servicios de Red e Internet
+module_code: '0375'
+cycle_title: Administración de Sistemas Informáticos en Red
+course: 2.º ASIR
+unit: UT01
 hours: 8
+level: intermedio
+authors:
+- fjcano
+reviewers:
+- fjcano
+rights: all-rights-reserved
+version: '2.0'
+last_reviewed: '2026-09-23'
+visibility: public
 ra:
-  - "RA2"
+- RA2
 ce:
-  - "RA2.a"
-  - "RA2.b"
-  - "RA2.c"
-  - "RA2.d"
-  - "RA2.e"
-  - "RA2.f"
-  - "RA2.g"
-permalink: "/docencia/asir/servicios-de-red-e-internet/ut01-dhcp-windows/"
+- RA2.a
+- RA2.b
+- RA2.c
+- RA2.d
+- RA2.e
+- RA2.f
+- RA2.g
+tags:
+- dhcp
+- windows-server
+- powershell
+- ambitos
+- reservas
+- relay
+- diagnostico
+permalink: /docencia/asir/sri/ut01-windows/
 published: true
+toc:
+- title: Por qué Windows y Kea
+  id: comparacion
+- title: Instalación y NIC
+  id: instalacion
+- title: Variante individual
+  id: individualizacion
+- title: Rol DHCP
+  id: rol
+- title: Ámbito y reserva
+  id: ambito-gui
+- title: PowerShell
+  id: powershell
+- title: Clientes y DORA
+  id: clientes
+- title: Relay (ampliación)
+  id: relay
+- title: Copia y diagnóstico
+  id: operacion
+- title: Cierre y Moodle
+  id: consolidacion
 ---
 
-# UT01 · DHCP en Windows Server 2025
+> **Segundo laboratorio obligatorio de la misma UT01 (RA2) · 2.º ASIR.** Aquí no se cambia el protocolo ni la competencia: cambia la plataforma de administración. Usaremos primero la consola DHCP para entender el modelo de objetos de Windows y después **PowerShell para construirlo, inventariarlo y operarlo de forma reproducible**.
 
-> **Segundo laboratorio obligatorio de UT01 · 2.º ASIR.** Aquí no se cambia el protocolo ni la competencia: cambia la plataforma de administración. Usaremos primero la consola DHCP para entender el modelo de objetos de Windows y después **PowerShell para construirlo, inventariarlo y operarlo de forma reproducible**.
+Regresa a [UT01 · Kea y fundamentos DHCP]({{ "/docencia/asir/sri/ut01/" | relative_url }}). La UT02 del curso será DNS; por tanto, en esta primera pasada no suponemos DNS interno ya operativo.
 
-Regresa a [UT01 · Kea y fundamentos de DHCP]({{ '/docencia/asir/servicios-de-red-e-internet/ut01-dhcp/' | relative_url }}). La UT02 del curso será DNS; por tanto, en esta primera pasada no suponemos DNS interno ya operativo.
-
-## 1. Qué vas a demostrar (RA2)
+## 1. Qué vas a demostrar (RA2) {#objetivos}
 
 **RA2 oficial:** Administra servicios de configuración automática, identificándolos y verificando la correcta asignación de los parámetros.
 
-| CE | Qué debe poder verse en la entrega Windows |
+| CE | Qué se debe comprender y verificar |
 |---|---|
 | **a)** | Comparación de configuración manual y automática, ventajas y riesgos |
 | **b)** | PCAP DORA y tiempos interpretados; explicación de renovación |
@@ -44,7 +82,7 @@ Regresa a [UT01 · Kea y fundamentos de DHCP]({{ '/docencia/asir/servicios-de-re
 | **f)** | Opciones entregadas y segunda subred mediante relay |
 | **g)** | Inventario, comandos, copia, tickets y procedimiento de recuperación |
 
-## 2. Por qué dos plataformas
+## 2. Por qué dos plataformas {#comparacion}
 
 | Misma necesidad | Debian + Kea | Windows Server |
 |---|---|---|
@@ -57,7 +95,7 @@ Regresa a [UT01 · Kea y fundamentos de DHCP]({{ '/docencia/asir/servicios-de-re
 
 **No confundas diferencias de implementación con diferencias de protocolo.** DORA y los puertos UDP 67/68 son los mismos.
 
-## 3. Requisitos y descarga
+## 3. Requisitos y descarga {#requisitos}
 
 - **Windows Server 2025 Standard Evaluation con Desktop Experience** (o licencia de centro compatible). No instales *Server Core* si se va a evaluar también GUI; *Core* se ofrece como ampliación PowerShell.
 - VirtualBox compatible y virtualización por hardware habilitada.
@@ -71,7 +109,9 @@ Regresa a [UT01 · Kea y fundamentos de DHCP]({{ '/docencia/asir/servicios-de-re
 
 **Nunca conectes una NIC que sirva DHCP al modo puente de la red del centro.** La VM Windows tiene NIC1 NAT opcional para actualizaciones y NIC2 **Red Interna** `SRI-W-Pxx`, aislada de la red Linux `SRI-Pxx`. Desconecta NAT durante las capturas si no se necesita.
 
-## 4. Variante Windows (misma dificultad, red distinta)
+![Dos implementaciones DHCP en redes internas separadas]({{ "/assets/docencia/sri/ut01-windows/01_redes_separadas.svg" | relative_url }})
+
+## 4. Variante Windows (misma dificultad, red distinta) {#individualizacion}
 
 - `P` = puesto 1–40; `L` = inicial normalizada A=1…Z=26, como UT00.
 - Servidor Windows: `wdhcp-pXX-lYY` (nombre NetBIOS corto).
@@ -90,11 +130,13 @@ Regresa a [UT01 · Kea y fundamentos de DHCP]({{ '/docencia/asir/servicios-de-re
 | Relay LAN A / LAN B | `10.39.P.254` / `10.40.P.254` |
 | Pool LAN B | `. (100+P)` a `. (129+P)` |
 
+![Ámbito total, rango dinámico, exclusión y reserva en Windows]({{ "/assets/docencia/sri/ut01-windows/02_ambito_exclusion_reserva.svg" | relative_url }})
+
 **Ejemplo P07-L03:** servidor `10.39.7.23/24`; ámbito `.107–.183`; exclusión `.137–.183`; reserva `.183`; distribución dinámica `.107–.136`; lease 1980 s; LAN B `10.40.7.0/24`.
 
 > **Detalle técnico que debes entender:** Windows Server requiere que la IP reservada esté dentro del intervalo total del ámbito; admite que quede dentro de un tramo excluido de asignación dinámica. Por tanto, no crees el ámbito únicamente `.107–.136` e intentes reservar `.183`: fallará. Esta diferencia es una parte evaluable de la práctica. [Explicación oficial de Microsoft](https://learn.microsoft.com/en-us/troubleshoot/windows-server/networking/cant-add-dhcp-reservation).
 
-## 5. Puesta a punto de Windows Server, paso a paso
+## 5. Puesta a punto de Windows Server, paso a paso {#instalacion}
 
 1. Crea la VM con la ISO oficial. Selecciona **Desktop Experience** para disponer de consola gráfica.
 2. Asigna NIC 1 NAT y NIC 2 **Red Interna `SRI-W-Pxx`**.
@@ -123,7 +165,7 @@ Get-NetIPAddress -InterfaceAlias "SRI-LAN" -AddressFamily IPv4
 
 Si el adaptador tenía previamente una IPv4 manual, inventaría y retira *solo esa configuración incorrecta* antes de añadir la nueva; no elimines indiscriminadamente IPs de otras NIC. Si el adaptador aparece gestionado por DHCP, revisa su estado antes de invocar `New-NetIPAddress`.
 
-## 6. Instalar el rol por GUI y comprobarlo por PowerShell
+## 6. Instalar el rol por GUI y comprobarlo por PowerShell {#rol}
 
 Ruta gráfica: **Administrador del servidor → Administrar → Agregar roles y características → Instalación basada en roles → Servidor DHCP → incluir herramientas de administración → Instalar**.
 
@@ -151,14 +193,14 @@ No confundas deshabilitar el *binding del rol DHCP* con desconectar la NIC del s
 - **Ruta base:** servidor independiente en red aislada, sin AD DS. **No ejecutes `Add-DhcpServerInDC`** ni intentes crear un dominio solo para esta primera práctica.
 - **Ruta corporativa ampliada:** cuando exista un AD DS de laboratorio y el servidor esté unido al dominio, se autorizará expresamente con privilegios adecuados y se comprobará la autorización; un servidor unido a dominio pero no autorizado puede dejar de conceder. [Microsoft: autorización DHCP](https://learn.microsoft.com/en-us/troubleshoot/windows-server/networking/troubleshooting-guide-dhcp-authorization-failures).
 
-## 7. Construye tu ámbito con GUI (obligatorio)
+## 7. Construye tu ámbito con GUI (obligatorio) {#ambito-gui}
 
 En **Herramientas → DHCP → IPv4 → Nuevo ámbito**:
 
 1. Nombre: `SRI-W-Pxx-Lyy`.
 2. Inicio: `. (100+P)`; final: `. (180+L)`; máscara `255.255.255.0`.
 3. Exclusión: `. (130+P)` a `. (180+L)`.
-4. Lease: `1800+60×L` segundos. **La GUI permite días, horas y minutos; si tu variante necesita precisión en segundos, termina el ajuste con PowerShell.**
+4. Lease: `1800+60×L` segundos. **La GUI puede no exponer la precisión en segundos que exige la variante; aplica el tiempo exacto con PowerShell y compruébalo después.**
 5. Gateway: **no anunciar opción 3** en una red que no tiene router.
 6. DNS: **no anunciar opción 6 inventada** antes de UT02 DNS.
 7. Puedes entregar el sufijo `pXX-lYY.sri.test` (opción 15) sin prometer que ya resuelve.
@@ -168,7 +210,7 @@ En **Herramientas → DHCP → IPv4 → Nuevo ámbito**:
 
 Obtén la dirección física REAL del cliente de reservas con `ipconfig /all`. En **Reservations → New Reservation**, crea `. (180+L)` con esa identidad. Aunque está dentro de la exclusión, Windows puede concedérsela al cliente reservado. La IP no debe asignarse a cualquier cliente.
 
-## 8. Reproduce la implantación con PowerShell (obligatorio)
+## 8. Reproduce la implantación con PowerShell (obligatorio) {#powershell}
 
 El siguiente ejemplo se ejecuta en una VM/snapshot limpia o tras eliminar el ámbito de ensayo de forma controlada. **No lo ejecutes encima del ámbito ya existente para crear duplicados.** Es referencia docente `P07-L03`; sustituye fórmulas por tu variante.
 
@@ -223,7 +265,7 @@ Get-Service DHCPServer
 
 `Get-DhcpServerv4Lease` no sustituye a la PCAP: la base de concesiones y el protocolo se corroboran mutuamente.
 
-## 9. Pruebas desde Linux y Windows
+## 9. Pruebas desde Linux y Windows {#clientes}
 
 1. Conecta los clientes a `SRI-W-Pxx` y selecciona IPv4 automática; no conserves la IP manual de UT00.
 2. Comprueba que un cliente **no reservado** obtiene dirección `.100+P … .129+P`.
@@ -236,7 +278,7 @@ Get-Service DHCPServer
 
 **No asumas igualdad exacta de T1/T2 entre implementaciones:** Kea permite fijarlos explícitamente. En Windows Server configuramos la duración de concesión y **medimos** los valores efectivos de renovación/rebinding en la captura, explicando la política concreta de la plataforma.
 
-## 10. Segunda subred y relay Windows (ruta evaluable)
+## 10. Segunda subred y relay Windows (ruta evaluable) {#relay}
 
 ```text
 ws-dhcp (Windows) ── SRI-W-Pxx ── relay ── SRI-WB-Pxx ── cliente B
@@ -282,7 +324,7 @@ No sustituye a configurar y comprobar las direcciones estáticas de ambas NIC. U
 
 Para el segundo ámbito no hace falta reserva exterior: puede crearse directamente con el rango dinámico de treinta direcciones. **Importante:** la IP de router `.254` debe existir y la ruta de retorno debe comprobarse. Puedes utilizar, como ampliación, un Windows Server independiente con rol **Remote Access / RRAS** como relay en lugar de Debian; [tutorial oficial de Microsoft](https://learn.microsoft.com/es-es/windows-server/networking/technologies/dhcp/dhcp-deploy-relay-agent).
 
-## 11. Logs, copia y vuelta atrás
+## 11. Logs, copia y vuelta atrás {#operacion}
 
 Comprobaciones:
 
@@ -304,37 +346,26 @@ Export-DhcpServer -File 'C:\SRI-Backup\dhcp-export.xml' -Leases -Force
 
 La snapshot permite revertir el laboratorio; las copias de DHCP permiten documentar y ensayar una recuperación específica del servicio. No restaures un backup antiguo **sobre concesiones activas** sin un plan que contemple a los clientes.
 
-## 12. Tareas evaluables y entregas
+## 12. Consolidación y Moodle {#consolidacion}
 
-| Actividad | Horas | Entrega mínima |
-|---|---:|---|
-| **W01** Arquitectura e inventario | 1 | VM, NIC, IP, aislamiento, variante y snapshot |
-| **W02** Ámbito por GUI | 1 | captura comentada de rango/exclusión/lease y diseño |
-| **W03** Reserva y heterogeneidad | 1 | concesión dinámica Windows + Linux, reserva y DHCP server ID |
-| **W04** PowerShell reproducible | 1 | comandos empleados, consultas del estado final y explicación de la exclusión |
-| **W05** DORA + observabilidad | 1 | PCAP analizada, leases, log y diferencias T1/T2 |
-| **W06** Relay LAN B | 2 | diagrama, ruta retorno, segundo ámbito, captura con `giaddr` |
-| **W07** Tickets, backup y defensa | 1 | 2 tickets + copia/export + tabla comparativa Kea/Windows |
+Antes de dar por cerrada la implementación, el alumnado debe poder **interpretar** su ámbito, exclusiones, reserva, opción realmente recibida, DORA, lease, ruta de retorno y procedimiento de recuperación.
 
-Cada ticket contiene **síntoma, dos hipótesis, prueba que las discrimine, evidencia antes/después, cambio mínimo, retest y rollback**. La tarea es individualizada por `Pxx-Lyy`. No publicar capturas reales de equipos ajenos, MAC personales ni credenciales.
+Las consignas W01–W07, entregas, incidencias individuales, defensa y rúbrica están en el **aula virtual**, no en esta página ni en el repositorio público. Aquí se conserva la explicación y el laboratorio guiado.
 
-### Incidencias modelo (sin soluciones)
+### Comparación de cierre
 
-- WS-01: el cliente no recibe lease aunque el rol está instalado; ¿ámbito inactivo o binding de NIC incorrecto?
-- WS-02: crear la reserva fuera del intervalo `.100+P… .129+P` devuelve error; ¿cómo se reconcilian intervalo total y exclusión?
-- WS-03: el cliente B ve Discover pero nunca Offer; correlaciona relay, `giaddr`, segundo ámbito y ruta de retorno.
-- WS-04: Windows entrega IP correcta pero el cliente no resuelve nombres; ¿es DHCP, DNS o se está anunciando un servicio inexistente?
-- WS-05: la reserva de un clon no coincide; explica MAC/ClientId y su relación con la VM.
+| Pregunta | Kea | Windows |
+|---|---|---|
+| ¿Dónde se declara el pool? | `subnet4` / `pools` | Ámbito / exclusiones |
+| ¿Cómo se reserva? | `reservations` | Reserva por ClientId |
+| ¿Dónde se observa la concesión? | CSV + logs | `Get-DhcpServerv4Lease` + eventos |
+| ¿Cómo compruebo un cambio? | Validar + servicio + cliente | Cmdlets + servicio + cliente |
 
-## 13. Guía de evaluación/defensa
-
-Demuestra que puedes: construir el mismo diseño con los objetos de Windows, explicar la reserva dentro de la exclusión, comprobar dos clientes, observar una transacción, diagnosticar la LAN B y mantener separadas las redes Kea/Windows. La defensa pregunta una variable calculada de tu variante, una prueba de red y un fallo concreto. **Una captura de la consola no sustituye la prueba cliente+servidor+PCAP.**
-
-## 14. Enlace con la siguiente unidad: DNS
+## 13. Enlace con la siguiente unidad: DNS {#dns}
 
 Al terminar **UT02 DNS**, volveremos a los ámbitos Windows para poner **Option 6** a los servidores DNS realmente instalados y verificar una consulta funcional. Solo entonces tendrá sentido la integración de actualizaciones DNS dinámicas con Active Directory/BIND, tratada como extensión con sus propios requisitos y autorizaciones.
 
-## 15. Referencias oficiales
+## 14. Referencias oficiales {#referencias}
 
 - [Evaluación Windows Server 2025](https://www.microsoft.com/es-es/evalcenter/evaluate-windows-server-2025)
 - [Instalar y configurar DHCP en Windows Server](https://learn.microsoft.com/es-es/windows-server/networking/technologies/dhcp/quickstart-install-configure-dhcp-server)

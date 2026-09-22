@@ -1,25 +1,63 @@
 ---
-layout: default
-title: "UT00 · Entorno profesional, laboratorio y método de diagnóstico"
-description: "Puesta a punto de SRI: VirtualBox, Debian 13, IP estática persistente, red interna, evidencias y diagnóstico antes de DHCP."
-module: "sri"
-module_title: "Servicios de Red e Internet"
-module_code: "0375"
-cycle: "asir"
-course: "2.º ASIR"
-unit: "UT00"
-unit_order: 0
+title: UT00 · Entorno profesional, laboratorio y diagnóstico
+description: 'VirtualBox y Debian 13: laboratorio individual, NAT y red interna, IP fija persistente, cliente y diagnóstico
+  reproducible.'
+summary: 'Preparar servidor y cliente de SRI antes de instalar Kea: IP fija, redes aisladas y pruebas verificables.'
+module_key: sri
+cycle_key: asir
+order: 0
+module_title: Servicios de Red e Internet
+module_code: '0375'
+cycle_title: Administración de Sistemas Informáticos en Red
+course: 2.º ASIR
+unit: UT00
+hours: 6
+level: iniciacion
+authors:
+- fjcano
+reviewers:
+- fjcano
+rights: all-rights-reserved
+version: '2.0'
+last_reviewed: '2026-09-23'
+visibility: public
 ra:
-  - "Transversal a RA1–RA8"
-permalink: "/docencia/asir/servicios-de-red-e-internet/ut00/"
+- Transversal a RA1–RA8
+tags:
+- debian
+- virtualbox
+- redes
+- ip-estatica
+- diagnostico
+- laboratorio
+permalink: /docencia/asir/sri/ut00/
 published: true
+toc:
+- title: Introducción
+  id: introduccion
+- title: Laboratorio
+  id: objetivos
+- title: Individualización
+  id: individualizacion
+- title: Topología
+  id: topologia
+- title: Inventario
+  id: inventario
+- title: IP fija
+  id: ip-estatica
+- title: Cliente
+  id: cliente
+- title: Pruebas y diagnóstico
+  id: evidencias
+- title: 'Siguiente: DHCP'
+  id: siguiente
 ---
 
-# UT00 · Entorno profesional, laboratorio y método de diagnóstico
+## Introducción {#introduccion}
 
 > **Objetivo:** dejar preparado un laboratorio individual, reproducible y seguro para comenzar **UT01 · DHCP/Kea**. La UT00 no añade un RA nuevo: prepara herramientas y método que reutilizaremos en todos los RA.
 
-## 1. Qué debe quedar preparado
+## 1. Qué debe quedar preparado {#objetivos}
 
 Al cerrar UT00 cada alumno debe disponer de:
 
@@ -27,14 +65,14 @@ Al cerrar UT00 cada alumno debe disponer de:
 - servidor Debian 13 `srv-pXX-lYY`;
 - NIC 1 NAT, usada solo cuando haga falta instalar/actualizar;
 - NIC 2 en Red Interna `SRI-Pxx`;
-- snapshot `00_BASE` y snapshot `10_RED_OK`;
+- snapshot `00_BASE` (plantilla) y snapshot `10_RED_OK` (servidor SRI);
 - IP estática persistente de la NIC interna;
 - cliente de pruebas en la misma red interna;
 - conectividad IP servidor ↔ cliente;
 - un servicio HTTP temporal probado desde cliente;
 - inventario, evidencias y un ticket de diagnóstico básico.
 
-## 2. Variante individual
+## 2. Variante individual {#individualizacion}
 
 - `P`: número de puesto (01–40).
 - `L`: inicial normalizada del primer apellido: A=01 … Z=26.
@@ -50,29 +88,15 @@ Al cerrar UT00 cada alumno debe disponer de:
 
 Ejemplo docente `P07-L03`: servidor `10.37.7.23/24`, cliente `10.37.7.123/24`, puerto `8007`.
 
-## 3. Topología
+## 3. Topología {#topologia}
 
-```text
-                         INTERNET
-                            ▲
-                            │ NIC 1 · NAT (solo paquetes)
-                    ┌───────┴────────┐
-                    │ srv-pXX-lYY     │
-                    │ Debian 13       │
-                    └───────┬────────┘
-                            │ NIC 2 · SRI-Pxx
-                            │ IP estática
-                    ────────┼──────── red interna
-                            │
-                    ┌───────┴────────┐
-                    │ cli-pXX-lYY     │
-                    │ Linux/Windows   │
-                    └────────────────┘
-```
+![Topología base del laboratorio SRI]({{ '/assets/docencia/sri/ut00/01_topologia_sri_lab.svg' | relative_url }})
 
 **Nunca uses modo puente para un servidor DHCP de laboratorio.**
 
-## 4. Inventario antes de configurar
+![Funciones de la NIC NAT y de la NIC interna]({{ '/assets/docencia/sri/ut00/02_nic_nat_vs_interna.svg' | relative_url }})
+
+## 4. Inventario antes de configurar {#inventario}
 
 ```bash
 hostnamectl
@@ -84,13 +108,18 @@ systemctl is-active systemd-networkd
 ls -l /etc/network/interfaces
 ```
 
-No edites un fichero de red hasta identificar qué componente administra realmente la NIC.
+No edites un fichero de red hasta identificar qué componente administra realmente la NIC. En Debian mínimo, un servicio `NetworkManager` o `systemd-networkd` inactivo **no significa** que la red esté rota: comprueba `networking` e `ifupdown` antes de instalar otro gestor.
 
-## 5. Configurar la IP estática del servidor
+```bash
+systemctl is-active networking
+dpkg -l ifupdown 2>/dev/null | grep ^ii
+```
+
+## 5. Configurar la IP estática del servidor {#ip-estatica}
 
 ### 5.1 Regla
 
-La NIC **interna** recibe la IP calculada. No configuramos gateway en esa NIC: si hay salida a Internet corresponde a la NIC NAT.
+La NIC **interna** recibe la IP calculada. No configuramos gateway en esa NIC: si hay salida a Internet corresponde a la NIC NAT. Identifica las interfaces por su MAC en VirtualBox; `enp0s3` y `enp0s8` son **ejemplos**, no nombres universales.
 
 ### 5.2 Ruta A · ifupdown (`/etc/network/interfaces`)
 
@@ -109,7 +138,7 @@ Antes de cambiar:
 sudo cp /etc/network/interfaces /etc/network/interfaces.bak-ut00
 ```
 
-Aplica desde consola local o reinicia la VM tras guardar snapshot. Verifica después con `ip -br a` e `ip route`.
+Aplica desde **la consola local** (no cortes tu sesión SSH al reiniciar networking) y comprueba: `sudo systemctl restart networking`, `ip -br a`, `ip route`. Si un servicio `networking` no está disponible, revisa si tienes realmente ifupdown y utiliza el gestor que administra esa NIC. En VM de laboratorio también puedes reiniciar después de guardar snapshot.
 
 ### 5.3 Ruta B · NetworkManager
 
@@ -152,9 +181,9 @@ ip route
 
 Reinicia la VM y repite la comprobación. **Si la IP desaparece tras reiniciar, la tarea no está terminada.**
 
-## 6. Configurar el cliente de prueba
+## 6. Configurar el cliente de prueba {#cliente}
 
-En UT00 el cliente puede usar una IP manual para validar la red. En UT01 la quitaremos y pasará a **IPv4 automática** para probar DHCP.
+En UT00 el cliente puede usar una IP manual para validar la red. En UT01 la quitaremos y pasará a **IPv4 automática** para probar DHCP. La IP manual `120+L` **puede quedar dentro del futuro pool DHCP** en algunas variantes: no la conserves cuando actives Kea.
 
 Ejemplo docente P07-L03: `10.37.7.123/24`, sin gateway en la NIC interna.
 
@@ -164,7 +193,7 @@ Comprobar:
 ping -c 3 10.37.7.23
 ```
 
-## 7. Servicio temporal y evidencias
+## 7. Servicio temporal y evidencias {#evidencias}
 
 En servidor:
 
@@ -189,35 +218,34 @@ curl -v http://10.37.7.23:8007/
 
 Detén el proceso y repite `curl`. Explica por qué la conectividad IP puede seguir funcionando aunque HTTP ya no responda.
 
-## 8. Entrega UT00
+![Evidencias técnicas para validar el laboratorio]({{ '/assets/docencia/sri/ut00/04_evidencias_ut00.svg' | relative_url }})
 
-Entrega un único `UT00_Pxx-Lyy.zip` con:
 
-1. `01_inventario.md`: SO, hostname, NIC, MAC, gestor de red, IP y rutas.
-2. `02_topologia.pdf`: NAT + red interna + servidor + cliente.
-3. `03_red_servidor.md`: procedimiento usado para hacer persistente la IP y prueba tras reinicio.
-4. `04_evidencias.pdf`: IP/ruta, ping, socket, curl positivo y curl negativo.
-5. `05_ticket.md`: una incidencia resuelta con síntoma → hipótesis → prueba → causa → cambio → retest.
+## 8. Método de diagnóstico {#diagnostico}
 
-## 9. Criterios de aceptación UT00
+Cuando algo falle, evita cambiar varias cosas a la vez. Sigue una secuencia reproducible:
 
-- La red interna tiene el nombre correcto para la variante.
-- La IP del servidor coincide con la fórmula y persiste tras reinicio.
-- La NIC interna no introduce una ruta por defecto falsa.
-- Cliente y servidor se comunican por IP.
-- El servicio temporal se demuestra desde **otro equipo**, no solo desde localhost.
-- La prueba negativa está interpretada.
-- Existe snapshot `10_RED_OK` antes de comenzar DHCP.
+1. describe el **síntoma** sin interpretar;
+2. identifica la **capa** probable;
+3. formula una **hipótesis**;
+4. elige una **prueba discriminante**;
+5. observa el **dato**;
+6. aplica el **cambio mínimo**;
+7. repite la prueba y documenta el resultado.
 
-## 10. Siguiente unidad
+![Flujo profesional de diagnóstico]({{ '/assets/docencia/sri/ut00/03_flujo_diagnostico.svg' | relative_url }})
+
+> Las instrucciones concretas de entrega, archivos y criterios de evaluación se gestionan en el aula virtual. La web pública conserva el procedimiento de aprendizaje y las evidencias técnicas necesarias para entenderlo.
+
+## 9. Siguiente unidad {#siguiente}
 
 > **UT01 · Configuración automática profesional: DHCP con Kea**
 
 El primer cambio será deliberado: el cliente dejará de tener IP manual y pasará a solicitar su configuración al servidor.
 
+### Dos plataformas, una misma UT01
 
-## Preparación de la segunda plataforma para UT01 · Windows Server
+Primero trabajaremos **DHCP con Kea en Debian 13**. Cuando el núcleo esté consolidado, realizaremos la **segunda implementación obligatoria en Windows Server 2025**, en una red VirtualBox diferente (`SRI-W-Pxx`). No se pide instalar Windows Server en esta UT00; si el equipo es justo de memoria, usa las VM por turnos.
 
-**No se pide instalar Windows Server dentro de UT00.** La entrega de UT00 sigue siendo Debian + cliente + IP persistente + prueba HTTP. Durante UT01 se creará la segunda plataforma en una red **independiente** `SRI-W-Pxx`: Windows Server 2025 con IP `10.39.P.(20+L)/24` y rol DHCP. Si tu equipo tiene poca RAM, ejecuta cada laboratorio por separado usando snapshots, no arranques todas las VM a la vez.
-
-[Ir al laboratorio Windows Server de UT01]({{ '/docencia/asir/servicios-de-red-e-internet/ut01-dhcp-windows/' | relative_url }}).
+- [Continuar a UT01 · DHCP con Kea]({{ "/docencia/asir/sri/ut01/" | relative_url }}).
+- [Ir al segundo laboratorio de UT01 · Windows Server 2025]({{ "/docencia/asir/sri/ut01-windows/" | relative_url }}).
