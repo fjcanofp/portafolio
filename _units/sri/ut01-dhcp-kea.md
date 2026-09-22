@@ -1,5 +1,5 @@
 ---
-title: 'UT01 · Configuración automática profesional: DHCP con Kea'
+title: 'UT01 · Configuración automática de IPs: DHCP con Kea'
 description: 'DHCPv4 con Kea en Debian 13: DORA, pools, reservas, leases, captura y diagnóstico; Windows Server como
   segundo laboratorio obligatorio.'
 summary: Diseño, implantación y diagnóstico de DHCP con Kea; después la misma competencia en Windows Server 2025.

@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 920 260" role="img" aria-labelledby="title desc">
+<title id="title">Dos laboratorios DHCP aislados</title><desc id="desc">Debian Kea en red SRI-Pxx y Windows Server en SRI-W-Pxx, sin compartir su red interna</desc>
+<rect width="920" height="260" rx="18" fill="#101a28"/>
+<text x="30" y="39" fill="#e7f1fc" font-size="23" font-family="sans-serif">Un protocolo DHCP · dos plataformas · redes distintas</text>
+<rect x="25" y="62" width="415" height="159" rx="15" fill="#163c47" stroke="#39d1aa"/>
+<rect x="480" y="62" width="415" height="159" rx="15" fill="#25314e" stroke="#73aafa"/>
+<g fill="#f0f7ff" font-family="sans-serif" font-size="20"><text x="44" y="97">Debian 13 · Kea DHCP4</text><text x="500" y="97">Windows Server 2025 · DHCP</text></g>
+<g fill="#b8d0e6" font-family="monospace" font-size="17"><text x="44" y="132">SRI-Pxx</text><text x="44" y="163">10.37.P.0/24</text><text x="44" y="194">Kea: 10.37.P.(20+L)</text><text x="500" y="132">SRI-W-Pxx</text><text x="500" y="163">10.39.P.0/24</text><text x="500" y="194">DHCP: 10.39.P.(20+L)</text></g>
+<text x="30" y="247" fill="#b8d0e6" font-size="15" font-family="sans-serif">Red interna VirtualBox: nunca conectar DHCP experimental a la red real del centro</text>
+</svg>

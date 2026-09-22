@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 920 265" role="img" aria-labelledby="title desc">
+<title id="title">Ámbito, exclusión y reserva DHCP Windows</title><desc id="desc">Ejemplo P07-L03: intervalo total 107 a 183, dinámico 107 a 136, exclusión 137 a 183, reserva 183</desc>
+<rect width="920" height="265" rx="18" fill="#101a28"/>
+<text x="30" y="38" fill="#e6f4ff" font-size="22" font-family="sans-serif">Windows Server · P07-L03 · 10.39.7.0/24</text>
+<text x="30" y="72" fill="#b6c9dd" font-size="17" font-family="sans-serif">Intervalo total del ámbito: .107 – .183</text>
+<rect x="32" y="92" width="385" height="95" rx="9" fill="#185c52" stroke="#36d1a6"/>
+<rect x="425" y="92" width="460" height="95" rx="9" fill="#303d55" stroke="#9baac0"/>
+<rect x="842" y="97" width="37" height="85" rx="6" fill="#a58439"/>
+<g font-family="sans-serif"><text x="52" y="124" fill="#ecfff7" font-size="18">Rango dinámico</text><text x="52" y="160" fill="#c2fce8" font-size="23">.107 – .136</text><text x="446" y="124" fill="#e7f1fc" font-size="18">Exclusión</text><text x="446" y="160" fill="#e7f1fc" font-size="23">.137 – .183</text><text x="758" y="220" fill="#ffe3a0" font-size="18">Reserva .183</text><text x="30" y="250" fill="#b6c9dd" font-size="17">Kea: reserva fuera del pool · Windows: dentro del intervalo total del ámbito</text></g>
+<path d="M860 188 V205 H754" fill="none" stroke="#ffe3a0" stroke-width="2"/>
+</svg>
