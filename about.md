@@ -10,7 +10,7 @@ description: "Conoce a Fco. Javier Cano Granado: docencia de FP, desarrollo, sis
     <div class="about-v2-hero terminal-card">
       <div class="about-v2-photo-wrap">
         <img class="about-v2-photo"
-             "
+             src="{{ '/assets/img/profile/fjcano-profesional.jpg' | relative_url }}"
              alt="Fco. Javier Cano Granado, fotografía de perfil"
              width="800" height="1200" fetchpriority="high">
         <span class="about-v2-photo-tag">fjcanogra.es · 2026</span>

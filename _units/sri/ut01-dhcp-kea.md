@@ -139,24 +139,17 @@ Cada alumno trabaja con valores propios.
 - `L`: inicial normalizada del primer apellido (`A=01 … Z=26`).
 
 | Dato | Fórmula | Ejemplo `P07-L03` |
-
 |---|---|---|
-
 | Red LAN A | `10.37.P.0/24` | `10.37.7.0/24` |
-
 | Servidor Kea | `10.37.P.(20+L)` | `10.37.7.23` |
-
-| Pool dinámico | `10.37.P.(100+P) – 10.37.P.(129+P)` | `10.37.7.107 – 10.37.7.136` |
-
-| Reserva | `10.37.P.(180+L)` | `10.37.7.183` |
-
-| Lease / T1 / T2 | `1800+60×L / floor(valid/2) / floor(valid×7/8)` | `1980 / 990 / 1732 s` |
-
-| Red LAN B | `10.38.P.0/24` | `10.38.7.0/24` |
-
-| Relay NIC A | `10.37.P.254` | `10.37.7.254` |
-
-| Relay NIC B | `10.38.P.254` | `10.38.7.254` |
+| Pool dinámico | `10.37.P.(100+P)` a `10.37.P.(129+P)` | `10.37.7.107` a `10.37.7.136` |
+| Reserva DHCP | `10.37.P.(180+L)` | `10.37.7.183` |
+| Duración de concesión | `1800+60×L` segundos | `1980 s` |
+| T1 · Renovación | `floor(valid/2)` | `990 s` |
+| T2 · Rebinding | `floor(valid×7/8)` | `1732 s` |
+| Red LAN B (ampliación) | `10.38.P.0/24` | `10.38.7.0/24` |
+| Relay · NIC A | `10.37.P.254` | `10.37.7.254` |
+| Relay · NIC B | `10.38.P.254` | `10.38.7.254` |
 
 ### ¿Qué significa esto en lenguaje sencillo?
 - El **servidor** tiene una IP fija.
