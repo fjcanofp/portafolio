@@ -292,7 +292,9 @@ sudo nano /etc/kea/kea-dhcp4.conf
 }
 ```
 
+
 ### Paso 3 · ¿qué significa cada parte?
+
 | Bloque de Kea | Significado |
 |---|---|
 | `interfaces-config` | Indica en qué interfaces de red debe atender Kea las solicitudes DHCP. |
