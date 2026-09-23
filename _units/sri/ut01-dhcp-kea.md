@@ -92,7 +92,7 @@ toc:
 > No saltes al relay, a clases o a HA si el núcleo básico todavía no funciona.  
 > Primero: **LAN A + un pool + un cliente + ACK correcto**.
 
-![Topología base del laboratorio DHCP con Kea](./assets/01_topologia_base.svg)
+![Topología base del laboratorio DHCP con Kea](./assets/docencia/sri/01_topologia_base.svg)
 
 ---
 
@@ -178,7 +178,7 @@ DHCPv4 suele resumirse como **DORA**:
 3. **Request** → el cliente contesta “acepto esa IP”.
 4. **ACK** → el servidor confirma “queda concedida”.
 
-![Diagrama DORA](./assets/02_dora.svg)
+![Diagrama DORA](./assets/docencia/sri/02_dora.svg)
 
 ### ¿Qué debes saber observar?
 
@@ -396,7 +396,7 @@ El servidor no “adivina” quién es el cliente. Necesita una **identidad**.
 
 La más habitual en nuestras prácticas es la **MAC** (`hw-address`).
 
-![Reserva DHCP por identidad](./assets/03_reserva.svg)
+![Reserva DHCP por identidad](./assets/docencia/sri/docencia/sri/03_reserva.svg)
 
 ### Paso 1 · averiguar la MAC del cliente
 
@@ -474,7 +474,7 @@ Aquí entra en juego el **relay**.
 > Es un intermediario.  
 > Escucha la petición broadcast del cliente en LAN B y la reenvía al servidor Kea de LAN A.
 
-![Relay DHCP entre dos subredes](./assets/04_relay.svg)
+![Relay DHCP entre dos subredes](./assets/docencia/sri/docencia/sri/04_relay.svg)
 
 ### ¿Por qué hace falta una tercera VM?
 
@@ -643,7 +643,7 @@ Ejemplo didáctico:
 - los equipos **DOCENTES** reciben direcciones de un pool;
 - los equipos **ALUMNADO** reciben direcciones de otro.
 
-![Clasificación de clientes](./assets/05_clases.svg)
+![Clasificación de clientes](./assets/docencia/sri/05_clases.svg)
 
 ### ¿Hay que aprender esto ya de memoria?
 
@@ -682,7 +682,7 @@ La **alta disponibilidad** resuelve otro problema distinto del relay:
 
 > **si el servidor principal cae, cómo mantener el servicio**.
 
-![Alta disponibilidad con Kea](./assets/06_ha.svg)
+![Alta disponibilidad con Kea](./assets/docencia/sri/06_ha.svg)
 
 ### Relay y HA no son lo mismo
 
