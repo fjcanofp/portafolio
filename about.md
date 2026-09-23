@@ -1,116 +1,88 @@
 ---
 layout: default
-title: Sobre mí
+title: "Sobre mí"
 permalink: /sobre-mi/
-description: Sobre Fco. Javier Cano Granado.
+description: "Conoce a Fco. Javier Cano Granado: docencia de FP, desarrollo, sistemas y tecnología aplicada al aprendizaje."
 ---
 
-<section class="about-page">
+<section class="about-page about-v2">
   <div class="container narrow">
-    <div class="about-hero terminal-card">
-      <div class="about-photo-frame">
-        <img
-          class="about-photo"
-          src="{{ '/assets/img/profile/fjcanogra.jpg' | relative_url }}"
-          alt="Fotografía de Fco. Javier Cano Granado"
-        >
+    <div class="about-v2-hero terminal-card">
+      <div class="about-v2-photo-wrap">
+        <img class="about-v2-photo"
+             src="{{ '/assets/img/profile/fjcano-profesional.jpg' | relative_url }}"
+             alt="Fco. Javier Cano Granado, fotografía de perfil"
+             width="800" height="1200" fetchpriority="high">
+        <span class="about-v2-photo-tag">fjcanogra.es · 2026</span>
       </div>
-
-      <div class="about-intro">
+      <div class="about-v2-intro">
+        <p class="about-v2-eyebrow lang-block lang-es">DOCENCIA · DESARROLLO · TECNOLOGÍA</p>
+        <p class="about-v2-eyebrow lang-block lang-en">TEACHING · DEVELOPMENT · TECHNOLOGY</p>
         <div class="lang-block lang-es">
-          <h1>Sobre mí</h1>
-          <p class="lead">
-            Soy <strong>Fco. Javier Cano Granado</strong>, profesor de Informática de Formación Profesional. Trabajo entre el aula, la documentación técnica y el diseño de materiales que sean claros, útiles y reutilizables.
-          </p>
+          <h1>Hola, soy <span>Javier Cano.</span></h1>
+          <p class="about-v2-role">Docente de FP · Desarrollador · Mentor</p>
+          <p class="about-v2-lead">Soy Fco. Javier Cano Granado, ingeniero informático y profesor de Formación Profesional. Me gusta convertir problemas técnicos reales en experiencias de aprendizaje que se puedan entender, practicar y explicar.</p>
+          <p>Trabajo entre el aula, la administración de sistemas, el desarrollo de aplicaciones y la creación de recursos docentes. Comparto aquí materiales que evolucionan con la práctica de clase y con los proyectos que voy desarrollando.</p>
         </div>
-
         <div class="lang-block lang-en">
-          <h1>About me</h1>
-          <p class="lead">
-            I am <strong>Fco. Javier Cano Granado</strong>, a Vocational Education Computer Science teacher. My work sits between the classroom, technical documentation and the design of clear, useful and reusable teaching materials.
-          </p>
+          <h1>Hi, I'm <span>Javier Cano.</span></h1>
+          <p class="about-v2-role">Vocational Education Teacher · Developer · Mentor</p>
+          <p class="about-v2-lead">I'm Fco. Javier Cano Granado, a computer engineer and vocational education teacher. I enjoy turning real technical problems into learning experiences people can understand, practise and explain.</p>
+          <p>My work combines teaching, systems administration, application development and the creation of technical learning resources. This site is where I share material shaped by real classes and projects.</p>
+        </div>
+        <div class="about-v2-actions">
+          <a class="about-v2-action about-v2-action-primary" href="{{ '/docencia/' | relative_url }}">
+            <span class="lang-block lang-es">Explorar mi docencia →</span><span class="lang-block lang-en">Explore my teaching →</span>
+          </a>
+          <a class="about-v2-action" href="mailto:{{ site.email }}">
+            <span class="lang-block lang-es">Contactar ↗</span><span class="lang-block lang-en">Get in touch ↗</span>
+          </a>
+        </div>
+        <div class="about-v2-profiles">
+          <a href="{{ site.social.linkedin }}" target="_blank" rel="noopener noreferrer">LinkedIn ↗</a>
+          <a href="{{ site.social.github }}" target="_blank" rel="noopener noreferrer">GitHub ↗</a>
+          <span class="about-v2-cv-pending lang-block lang-es">CV PDF · en preparación</span>
+          <span class="about-v2-cv-pending lang-block lang-en">PDF résumé · coming soon</span>
         </div>
       </div>
     </div>
 
-    <div class="about-content prose terminal-card">
-      <div class="lang-block lang-es">
-        <h2>Qué hago</h2>
-        <p>
-          Mi foco principal está en la docencia de Informática en Formación Profesional, especialmente en programación, bases de datos, redes, sistemas y herramientas aplicadas al aula.
-        </p>
-        <p>
-          Me interesa convertir contenidos técnicos complejos en materiales bien estructurados, prácticos y visualmente cuidados, útiles tanto para el alumnado como para profesorado o formación externa.
-        </p>
-
-        <h2>Cómo entiendo este portfolio</h2>
-        <p>
-          Esta web no pretende ser un currículum largo. Pretende mostrar con claridad cómo trabajo: qué enseño, cómo diseño materiales, qué temas desarrollo y qué tipo de criterio técnico y docente aplico en cada proyecto.
-        </p>
-
-        <h2>Contacto y perfiles profesionales</h2>
-        <div class="about-socials" aria-label="Contacto y perfiles profesionales">
-          <a class="about-social" href="{{ site.social.linkedin }}" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn" title="LinkedIn">
-            <svg viewBox="0 0 24 24" aria-hidden="true">
-              <path d="M6.94 8.5H3.56V20h3.38V8.5Zm.22-3.55c0-1.12-.84-1.95-1.91-1.95-1.08 0-1.91.83-1.91 1.95 0 1.1.83 1.95 1.88 1.95h.03c1.1 0 1.91-.85 1.91-1.95ZM20 13.02C20 9.5 18.12 7.86 15.62 7.86c-2.02 0-2.93 1.11-3.44 1.89V8.5H8.81c.04.83 0 11.5 0 11.5h3.38v-6.42c0-.34.02-.68.12-.92.27-.67.88-1.37 1.9-1.37 1.34 0 1.88 1.03 1.88 2.54V20H20v-6.98Z" fill="currentColor"/>
-            </svg>
-            <span class="sr-only">LinkedIn</span>
-          </a>
-
-          <a class="about-social" href="{{ site.social.github }}" target="_blank" rel="noopener noreferrer" aria-label="GitHub" title="GitHub">
-            <svg viewBox="0 0 24 24" aria-hidden="true">
-              <path d="M12 2C6.48 2 2 6.58 2 12.22c0 4.5 2.87 8.32 6.84 9.66.5.1.68-.22.68-.49 0-.24-.01-1.03-.01-1.87-2.78.62-3.37-1.21-3.37-1.21-.45-1.18-1.11-1.49-1.11-1.49-.91-.64.07-.63.07-.63 1 .07 1.53 1.06 1.53 1.06.9 1.57 2.35 1.12 2.92.86.09-.67.35-1.12.64-1.38-2.22-.26-4.55-1.14-4.55-5.06 0-1.12.39-2.03 1.03-2.75-.1-.26-.45-1.31.1-2.73 0 0 .85-.28 2.78 1.05A9.45 9.45 0 0 1 12 6.84c.85 0 1.7.12 2.5.37 1.92-1.33 2.77-1.05 2.77-1.05.55 1.42.21 2.47.11 2.73.64.72 1.03 1.63 1.03 2.75 0 3.93-2.33 4.79-4.56 5.05.36.32.68.95.68 1.91 0 1.38-.01 2.5-.01 2.84 0 .27.18.59.69.49A10.23 10.23 0 0 0 22 12.22C22 6.58 17.52 2 12 2Z" fill="currentColor"/>
-            </svg>
-            <span class="sr-only">GitHub</span>
-          </a>
-
-          <a class="about-social" href="mailto:{{ site.email }}"  aria-label="Correo electrónico"  title="{{ site.email }}">
-            <svg viewBox="0 0 24 24" aria-hidden="true">
-              <path d="M4 6.75A2.75 2.75 0 0 1 6.75 4h10.5A2.75 2.75 0 0 1 20 6.75v10.5A2.75 2.75 0 0 1 17.25 20H6.75A2.75 2.75 0 0 1 4 17.25V6.75Zm2.2-.25 5.8 4.83 5.8-4.83H6.2Zm11.3 2.04-4.86 4.05a1 1 0 0 1-1.28 0L6.5 8.54v8.71c0 .14.11.25.25.25h10.5c.14 0 .25-.11.25-.25V8.54Z" fill="currentColor"/>
-            </svg>
-            <span class="sr-only">Correo electrónico</span>
-          </a>
-        </div>
+    <div class="lang-block lang-es">
+      <header class="about-v2-section-head"><span>01 / QUÉ APORTO</span><h2>Tres formas de crear valor</h2></header>
+      <div class="about-v2-cards">
+        <article class="about-v2-card terminal-card"><span class="about-v2-card-icon" aria-hidden="true">01</span><h3>Docencia</h3><p>Enseño informática en Formación Profesional. Diseño itinerarios que parten de los fundamentos y terminan en infraestructuras y aplicaciones comprobables.</p></article>
+        <article class="about-v2-card terminal-card"><span class="about-v2-card-icon" aria-hidden="true">02</span><h3>Desarrollo</h3><p>Conecto programación, bases de datos y despliegue para que el código no se quede en un ejercicio: tiene que funcionar, poder mantenerse y resolver un problema.</p></article>
+        <article class="about-v2-card terminal-card"><span class="about-v2-card-icon" aria-hidden="true">03</span><h3>Acompañamiento</h3><p>Me interesa explicar bien, documentar con claridad y ayudar a que otras personas ganen autonomía técnica y confianza en su proceso de aprendizaje.</p></article>
       </div>
-
-      <div class="lang-block lang-en">
-        <h2>What I do</h2>
-        <p>
-          My main focus is teaching Computer Science in Vocational Education, especially programming, databases, networks, systems and classroom-oriented technical tools.
-        </p>
-        <p>
-          I am interested in turning complex technical content into structured, practical and visually polished materials that are useful both for students and for teachers or external training.
-        </p>
-
-        <h2>How I see this portfolio</h2>
-        <p>
-          This site is not meant to be a long résumé. It is meant to show clearly how I work: what I teach, how I design materials, which topics I develop and what kind of technical and teaching criteria I apply in each project.
-        </p>
-
-        <h2>Contact and professional profiles</h2>
-        <div class="about-socials" aria-label="Contact and professional profiles">
-          <a class="about-social" href="{{ site.social.linkedin }}" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn" title="LinkedIn">
-            <svg viewBox="0 0 24 24" aria-hidden="true">
-              <path d="M6.94 8.5H3.56V20h3.38V8.5Zm.22-3.55c0-1.12-.84-1.95-1.91-1.95-1.08 0-1.91.83-1.91 1.95 0 1.1.83 1.95 1.88 1.95h.03c1.1 0 1.91-.85 1.91-1.95ZM20 13.02C20 9.5 18.12 7.86 15.62 7.86c-2.02 0-2.93 1.11-3.44 1.89V8.5H8.81c.04.83 0 11.5 0 11.5h3.38v-6.42c0-.34.02-.68.12-.92.27-.67.88-1.37 1.9-1.37 1.34 0 1.88 1.03 1.88 2.54V20H20v-6.98Z" fill="currentColor"/>
-            </svg>
-            <span class="sr-only">LinkedIn</span>
-          </a>
-
-          <a class="about-social" href="{{ site.social.github }}" target="_blank" rel="noopener noreferrer" aria-label="GitHub" title="GitHub">
-            <svg viewBox="0 0 24 24" aria-hidden="true">
-              <path d="M12 2C6.48 2 2 6.58 2 12.22c0 4.5 2.87 8.32 6.84 9.66.5.1.68-.22.68-.49 0-.24-.01-1.03-.01-1.87-2.78.62-3.37-1.21-3.37-1.21-.45-1.18-1.11-1.49-1.11-1.49-.91-.64.07-.63.07-.63 1 .07 1.53 1.06 1.53 1.06.9 1.57 2.35 1.12 2.92.86.09-.67.35-1.12.64-1.38-2.22-.26-4.55-1.14-4.55-5.06 0-1.12.39-2.03 1.03-2.75-.1-.26-.45-1.31.1-2.73 0 0 .85-.28 2.78 1.05A9.45 9.45 0 0 1 12 6.84c.85 0 1.7.12 2.5.37 1.92-1.33 2.77-1.05 2.77-1.05.55 1.42.21 2.47.11 2.73.64.72 1.03 1.63 1.03 2.75 0 3.93-2.33 4.79-4.56 5.05.36.32.68.95.68 1.91 0 1.38-.01 2.5-.01 2.84 0 .27.18.59.69.49A10.23 10.23 0 0 0 22 12.22C22 6.58 17.52 2 12 2Z" fill="currentColor"/>
-            </svg>
-            <span class="sr-only">GitHub</span>
-          </a>
-
-          <a  class="about-social"   href="mailto:{{ site.email }}"   aria-label="Correo electrónico"  title="{{ site.email }}">
-            <svg viewBox="0 0 24 24" aria-hidden="true">
-              <path d="M4 6.75A2.75 2.75 0 0 1 6.75 4h10.5A2.75 2.75 0 0 1 20 6.75v10.5A2.75 2.75 0 0 1 17.25 20H6.75A2.75 2.75 0 0 1 4 17.25V6.75Zm2.2-.25 5.8 4.83 5.8-4.83H6.2Zm11.3 2.04-4.86 4.05a1 1 0 0 1-1.28 0L6.5 8.54v8.71c0 .14.11.25.25.25h10.5c.14 0 .25-.11.25-.25V8.54Z" fill="currentColor"/>
-            </svg>
-            <span class="sr-only">Email</span>
-          </a>
-        </div>
+      <header class="about-v2-section-head"><span>02 / EN QUÉ TRABAJO</span><h2>Tecnologías y especialidades</h2></header>
+      <div class="about-v2-tags" aria-label="Tecnologías y áreas de trabajo"><span>Linux y servicios de red</span><span>Programación</span><span>PHP y aplicaciones web</span><span>Bases de datos</span><span>Virtualización</span><span>Despliegue</span><span>Documentación técnica</span><span>IA aplicada a la enseñanza</span></div>
+      <header class="about-v2-section-head"><span>03 / CÓMO ENSEÑO</span><h2>Mi forma de trabajar</h2></header>
+      <div class="about-v2-method terminal-card"><p><strong>Comprender → construir → comprobar → explicar.</strong> Primero entendemos la necesidad; después configuramos o programamos; verificamos el resultado con evidencias y, finalmente, documentamos qué ha ocurrido y por qué.</p><p>Por eso en mis materiales encontrarás diagramas, laboratorios guiados, problemas individualizados y diagnóstico de errores. La finalidad no es memorizar comandos: es aprender a tomar decisiones técnicas con criterio.</p></div>
+      <header class="about-v2-section-head"><span>04 / MÁS ALLÁ DEL AULA</span><h2>También se aprende fuera de la pantalla</h2></header>
+      <div class="about-v2-gallery">
+        <figure><img src="{{ '/assets/img/profile/fjcano-trail.jpg' | relative_url }}" alt="Javier durante una carrera por la naturaleza" width="1200" height="800" loading="lazy"><figcaption>Deporte y naturaleza · constancia y nuevos retos.</figcaption></figure>
+        <figure><img src="{{ '/assets/img/profile/fjcano-egipto.jpg' | relative_url }}" alt="Javier ante las pirámides de Guiza al atardecer" width="1200" height="800" loading="lazy"><figcaption>Viajar y descubrir · otras formas de mirar el mundo.</figcaption></figure>
       </div>
+      <div class="about-v2-end terminal-card"><h2>Este portfolio es un proyecto vivo.</h2><p>Los materiales y proyectos que ves aquí no son una colección cerrada: los reviso, amplío y mejoro a partir del trabajo real. Si compartimos intereses docentes o técnicos, podemos hablar.</p><a class="about-v2-action about-v2-action-primary" href="mailto:{{ site.email }}">Hablemos →</a></div>
+    </div>
+
+    <div class="lang-block lang-en">
+      <header class="about-v2-section-head"><span>01 / WHAT I DO</span><h2>Three ways I contribute</h2></header>
+      <div class="about-v2-cards">
+        <article class="about-v2-card terminal-card"><span class="about-v2-card-icon" aria-hidden="true">01</span><h3>Teaching</h3><p>I teach computing in vocational education, building a path from fundamentals to working applications and infrastructure.</p></article>
+        <article class="about-v2-card terminal-card"><span class="about-v2-card-icon" aria-hidden="true">02</span><h3>Development</h3><p>I connect programming, databases and deployment so that code becomes a maintainable solution, not just an isolated exercise.</p></article>
+        <article class="about-v2-card terminal-card"><span class="about-v2-card-icon" aria-hidden="true">03</span><h3>Mentoring</h3><p>I value clear explanations and technical documentation that help people become more independent and confident.</p></article>
+      </div>
+      <header class="about-v2-section-head"><span>02 / FOCUS AREAS</span><h2>Technologies and interests</h2></header>
+      <div class="about-v2-tags" aria-label="Technologies and areas"><span>Linux and networking</span><span>Programming</span><span>PHP and web applications</span><span>Databases</span><span>Virtualisation</span><span>Deployment</span><span>Technical documentation</span><span>AI in education</span></div>
+      <header class="about-v2-section-head"><span>03 / MY APPROACH</span><h2>How I work</h2></header>
+      <div class="about-v2-method terminal-card"><p><strong>Understand → build → verify → explain.</strong> We identify the problem, implement a solution, test it with evidence, then document what happened and why.</p><p>That is why my learning resources include diagrams, guided labs, individualised scenarios and troubleshooting exercises.</p></div>
+      <header class="about-v2-section-head"><span>04 / BEYOND THE CLASSROOM</span><h2>Learning beyond the screen</h2></header>
+      <div class="about-v2-gallery">
+        <figure><img src="{{ '/assets/img/profile/fjcano-trail.jpg' | relative_url }}" alt="Javier taking part in a trail race" width="1200" height="800" loading="lazy"><figcaption>Sport and nature · persistence and new challenges.</figcaption></figure>
+        <figure><img src="{{ '/assets/img/profile/fjcano-egipto.jpg' | relative_url }}" alt="Javier near the Giza pyramids at sunset" width="1200" height="800" loading="lazy"><figcaption>Travel and curiosity · new perspectives.</figcaption></figure>
+      </div>
+      <div class="about-v2-end terminal-card"><h2>A portfolio in progress.</h2><p>I keep reviewing and expanding these resources as I learn from classrooms and real projects. If our teaching or technical interests overlap, let's connect.</p><a class="about-v2-action about-v2-action-primary" href="mailto:{{ site.email }}">Let's talk →</a></div>
     </div>
   </div>
 </section>
