@@ -77,9 +77,7 @@ toc:
 > **Secuencia de SRI:** tras el bloque Debian/Kea haremos también [DHCP en Windows Server 2025](/docencia/asir/sri/ut01-windows/) como segunda implementación obligatoria de la misma UT01. DNS vendrá en UT02.
 **Misión.** Transformar el laboratorio estático de UT00 en una infraestructura donde los clientes reciban **configuración IPv4 automática** mediante **Kea DHCPv4**, y donde podamos demostrar qué ha ocurrido mediante **DORA, leases, logs y pruebas cliente-servidor**.
 
-> **Idea clave de esta unidad**
-
-> No se trata de “copiar un JSON”. Se trata de entender **qué problema resuelve DHCP**, **qué hace el servidor**, **qué ve el cliente** y **cómo demuestras que funciona**.
+> **Idea clave de esta unidad:** No se trata de “copiar un JSON”. Se trata de entender **qué problema resuelve DHCP**, **qué hace el servidor**, **qué ve el cliente** y **cómo demuestras que funciona**.
 
 ### Ruta de aprendizaje recomendada
 1. **Núcleo obligatorio**: Kea básico en una sola LAN con **2 VMs**.
@@ -91,12 +89,6 @@ toc:
 4. **Clases de clientes**: distintas políticas para distintos grupos.
 
 5. **HA**: continuidad del servicio cuando un servidor falla.
-
-> **Consejo docente y de estudio**
-
-> No saltes al relay, a clases o a HA si el núcleo básico todavía no funciona.
-
-> Primero: **LAN A + un pool + un cliente + ACK correcto**.
 
 ![Topología base del laboratorio DHCP con Kea](/assets/docencia/sri/ut01/01_topologia_base.svg)
 
@@ -218,9 +210,7 @@ DHCPv4 suele resumirse como **DORA**:
 ---
 
 ## Instalación de Kea {#instalacion}
-> A partir de aquí ya estamos en el laboratorio guiado.
-
-> Sigue los pasos en orden y **comprueba el resultado de cada bloque antes de pasar al siguiente**.
+> Vamos a empezar el proceso de creación del laboratorio, por lo tanto, sigue los pasos en orden y **comprueba el resultado de cada bloque antes de pasar al siguiente**.
 
 ### Paso 1 · comprobar la IP fija del servidor
 En el servidor Debian:
@@ -258,12 +248,6 @@ En Debian 13 el fichero habitual es:
 ```bash
 sudo cp /etc/kea/kea-dhcp4.conf /etc/kea/kea-dhcp4.conf.bak-ut01
 ```
-
-> **Muy importante**
-
-> No empieces mezclando configuración mínima, reservas, relay y HA en el mismo fichero.
-
-> Primero deja un **núcleo funcional**.
 
 ---
 
@@ -316,21 +300,17 @@ sudo nano /etc/kea/kea-dhcp4.conf
 ```
 
 ### Paso 3 · ¿qué significa cada parte?
-| Bloque | Significado |
-
+| Bloque de Kea | Significado |
 |---|---|
-
-| `interfaces-config` | por qué NIC escucha Kea |
-
-| `lease-database` | dónde guarda las concesiones |
-
-| `renew-timer` / `rebind-timer` / `valid-lifetime` | tiempos T1, T2 y lease |
-
-| `subnet4` | red a la que va a servir |
-
-| `pools` | rango de IPs dinámicas |
-
-| `option-data` | parámetros que recibirán los clientes |
+| `interfaces-config` | Indica en qué interfaces de red debe atender Kea las solicitudes DHCP. |
+| `lease-database` | Define cómo y dónde se almacenan las concesiones DHCP (*leases*). |
+| `valid-lifetime` | Establece la duración de una concesión DHCP. |
+| `renew-timer` | Establece T1: momento en el que el cliente comienza a intentar renovar su concesión. |
+| `rebind-timer` | Establece T2: momento en el que el cliente intenta renovar con cualquier servidor DHCP disponible. |
+| `subnet4` | Define las subredes IPv4 que administra el servidor. |
+| `pools` | Define los rangos de direcciones IP que pueden asignarse dinámicamente dentro de una subred. |
+| `option-data` | Define parámetros adicionales que se entregarán al cliente, como puerta de enlace, DNS o dominio. |
+| `reservations` | Permite asignar una dirección IP concreta a un cliente identificado, por ejemplo, mediante su MAC. |
 
 ### Paso 4 · validar la sintaxis
 
@@ -493,11 +473,9 @@ Pero si el cliente está en **otra subred**, su `DHCPDISCOVER` inicial es **broa
 
 Aquí entra en juego el **relay**.
 
-> **Qué es un relay, dicho fácil**
+> **¿Qué es un relay?**
 
-> Es un intermediario.
-
-> Escucha la petición broadcast del cliente en LAN B y la reenvía al servidor Kea de LAN A.
+> Es un intermediario, es decir, escucha la petición broadcast del cliente en LAN B y la reenvía al servidor Kea de LAN A.
 
 ![Relay DHCP entre dos subredes](/assets/docencia/sri/ut01/04_relay.svg)
 
@@ -651,17 +629,15 @@ sudo systemctl status isc-dhcp-relay --no-pager
 ```
 
 ### Errores típicos
-| Síntoma | Posible causa |
-
+| Síntoma | Posibles causas o comprobaciones |
 |---|---|
-
-| El cliente no recibe nada | servicio Kea parado, NIC incorrecta, cliente en otra red |
-
-| El test `-t` falla | revisar sintaxis, fichero, permisos y registro del error; no asumir que siempre es JSON |
-
-| El cliente recibe una IP del pool y no la reserva | MAC incorrecta |
-
-| El cliente B no recibe IP | relay mal configurado o subred B no añadida en Kea |
+| El cliente no recibe ninguna IP | Kea detenido, NIC incorrecta, cliente conectado a otra red interna, pool mal configurado o agotado. |
+| El test `kea-dhcp4 -t` falla | Revisar sintaxis, fichero, permisos y mensaje de error. No asumir que siempre es un problema de JSON. |
+| El cliente recibe una IP del pool en lugar de la reservada | MAC o identificador de cliente incorrecto, reserva mal ubicada o concesión anterior todavía vigente. |
+| El cliente de LAN B no recibe IP | Relay mal configurado, segunda subred ausente en Kea, interfaces incorrectas o falta de ruta de retorno. |
+| Kea aparece activo, pero el cliente no recibe una concesión | Revisar logs, configuración de la interfaz, tráfico DORA y correspondencia entre subred y pool. |
+| `ss` no muestra UDP/67 | No concluir que Kea está detenido: puede utilizar sockets RAW. Comprobar servicio, logs y tráfico DHCP real. |
+| El cliente recibe IP, pero no tiene Internet | Revisar si se ha anunciado una puerta de enlace, si existe realmente un router y si hay conectividad hacia el exterior. |
 
 ---
 
@@ -721,16 +697,13 @@ La **alta disponibilidad** resuelve otro problema distinto del relay:
 ![Alta disponibilidad con Kea](/assets/docencia/sri/ut01/06_ha.svg)
 
 ### Relay y HA no son lo mismo
-| Relay | HA |
-
-|---|---|
-
-| Un servidor puede servir clientes de otra LAN | Otro servidor puede mantener el servicio si falla uno |
-
-| 3 VMs: Kea, relay y cliente B | 3 VMs: Kea primario, Kea standby, cliente |
-
-| Se analiza `giaddr` y elección de subred | Se analiza sincronización de leases y recuperación |
-
+| Aspecto | DHCP Relay | Alta disponibilidad (HA) |
+|---|---|---|
+| Objetivo | Permitir que un servidor DHCP atienda clientes de otras subredes | Mantener el servicio DHCP disponible si falla un servidor |
+| Problema que resuelve | Los broadcasts DHCP no atraviesan normalmente los routers | La caída del servidor DHCP principal puede impedir nuevas concesiones o renovaciones |
+| Laboratorio | 3 VMs: servidor Kea, relay/router y cliente de LAN B | 3 VMs: Kea primario, Kea secundario y cliente |
+| Elemento clave | Agente relay y campo `giaddr` | Dos servidores Kea coordinados mediante HA |
+| Qué analizamos | Reenvío de solicitudes y selección de la subred correcta | Sincronización de concesiones y recuperación ante fallos |
 ### Lo que debes recordar
 - **Relay** soluciona el problema de **otra subred**.
 
@@ -754,17 +727,15 @@ Muchos materiales antiguos están escritos para **ISC DHCP**.
 
 Kea no usa la misma sintaxis, aunque el problema que resuelve sea el mismo.
 
-| Idea | ISC DHCP | Kea |
-
+| Concepto | ISC DHCP (`dhcpd.conf`) | Kea DHCPv4 (`kea-dhcp4.conf`) |
 |---|---|---|
-
-| Declarar una subred | `subnet ... {}` | objeto dentro de `subnet4` |
-
-| Declarar un rango | `range ...` | `pools` |
-
-| Reserva | `host ...` | `reservations` |
-
-| Opciones | `option routers ...` | `option-data` |
+| Declarar una subred | `subnet ... netmask ... { }` | Objeto dentro de `subnet4` |
+| Definir un rango dinámico | `range IP_INICIO IP_FIN;` | `pools` → `pool` |
+| Crear una reserva DHCP | `host ... { hardware ethernet ...; fixed-address ...; }` | `reservations` → `hw-address` e `ip-address` |
+| Configurar puerta de enlace | `option routers IP;` | `option-data` → `routers` |
+| Configurar servidores DNS | `option domain-name-servers IP;` | `option-data` → `domain-name-servers` |
+| Establecer duración de concesión | `default-lease-time` y `max-lease-time` | `valid-lifetime` |
+| Configurar T1 y T2 | Política y opciones de renovación/rebinding | `renew-timer` y `rebind-timer` |
 
 ### ¿Qué debe aprender el alumno?
 No memorizar dos sintaxis completas, sino reconocer que:
@@ -778,7 +749,7 @@ No memorizar dos sintaxis completas, sino reconocer que:
 ---
 
 ## Cierre y Moodle {#cierre}
-### Qué debes saber hacer al terminar el núcleo
+### Qué debes saber hacer al terminar esta parte
 - explicar qué problema resuelve DHCP;
 
 - describir DORA;
@@ -796,19 +767,6 @@ No memorizar dos sintaxis completas, sino reconocer que:
 - explicar por qué relay necesita una tercera VM;
 
 - distinguir relay de HA.
-
-### Checklist final
-```text
-[ ] Mi servidor Kea tiene IP fija y hostname correcto.
-[ ] He instalado kea-dhcp4-server.
-[ ] He validado el fichero con kea-dhcp4 -t.
-[ ] El servicio arranca sin errores.
-[ ] Un cliente en LAN A recibe una IP del pool.
-[ ] Sé localizar las leases y los logs.
-[ ] He creado una reserva por MAC.
-[ ] Entiendo por qué relay necesita 3 VMs.
-[ ] Entiendo que HA no es lo mismo que relay.
-```
 
 ### Trabajo evaluable en el aula virtual
 Salvo que el aula virtual indique otra cosa, cada práctica debería incluir:
