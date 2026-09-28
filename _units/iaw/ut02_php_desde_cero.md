@@ -1,7 +1,7 @@
 ---
 title: "UT02 · Introducción a PHP: de los primeros programas a una aplicación web"
-description: "PHP desde cero: ejecución en servidor, variables, tipos, operadores, condiciones, bucles, arrays, funciones, modularidad, POO, formularios, cookies y sesiones."
-summary: "Aprender a razonar, escribir, ejecutar y comprobar pequeños programas PHP antes de construir una aplicación web con estado."
+description: "PHP desde cero: ejecución en servidor, variables, tipos, operadores, condiciones, bucles, arrays, funciones, modularidad, persistencia ligera con ficheros, POO, formularios, cookies y sesiones."
+summary: "Aprender a razonar, escribir, ejecutar y comprobar pequeños programas PHP, conservar datos sencillos en ficheros y construir después una aplicación web con estado."
 
 module_key: iaw
 cycle_key: asir
@@ -18,8 +18,8 @@ authors:
 reviewers:
   - fjcano
 rights: all-rights-reserved
-version: "3.0"
-last_reviewed: 2026-09-21
+version: "3.1"
+last_reviewed: 2026-09-29
 visibility: public
 
 ra:
@@ -40,6 +40,8 @@ tags:
   - programacion-estructurada
   - funciones
   - poo
+  - ficheros
+  - persistencia
   - formularios
   - sesiones
   - asir
@@ -67,6 +69,8 @@ toc:
     id: funciones
   - title: Organizar varios archivos
     id: modularidad
+  - title: Persistencia con ficheros y logs
+    id: ficheros
   - title: Primeros objetos
     id: poo
   - title: Formularios y PHP
@@ -81,6 +85,8 @@ toc:
     id: fuentes
 ---
 
+# UT02 · Introducción a PHP: de los primeros programas a una aplicación web
+
 ## Qué aprenderás {#objetivos}
 
 Una página HTML es un documento que el navegador interpreta y muestra. Una aplicación web puede necesitar **calcular un precio, escoger qué contenido mostrar, procesar los datos de un formulario o recordar qué usuario ha iniciado sesión**. PHP permite desarrollar esa lógica en el servidor.
@@ -89,7 +95,7 @@ En esta unidad aprenderemos PHP desde sus elementos más sencillos. No es necesa
 
 **Resultado de aprendizaje relacionado: RA5 — Genera documentos web utilizando lenguajes de guiones de servidor.** Los criterios de evaluación vinculados a la unidad se identifican en el frontmatter. La programación orientada a objetos se introduce aquí como una herramienta para comprender bibliotecas y aplicaciones PHP; no supone un resultado de aprendizaje adicional.
 
-![Camino de aprendizaje: primer PHP, datos, decisiones, bucles, colecciones, funciones, objetos y web]({{ '/assets/docencia/iaw/ut02/01_ruta_aprendizaje.png' | relative_url }})
+![Camino de aprendizaje: primer PHP, datos, decisiones, bucles, colecciones, funciones, objetos y web]({{ '/assets/docencia/iaw/ut02/01_ruta_aprendizaje.svg' | relative_url }})
 
 **Método de trabajo.** En cada apartado encontraremos una pregunta inicial, un ejemplo corto explicado línea a línea, una prueba de escritorio (predecir el resultado), ejercicios graduados y una comprobación de lo aprendido. Una vez dominados esos elementos los utilizaremos juntos para desarrollar una aplicación sencilla de gestión de incidencias, *IAW Desk*.
 
@@ -104,7 +110,7 @@ En esta unidad aprenderemos PHP desde sus elementos más sencillos. No es necesa
 
 Imagina que escribimos en el navegador la dirección de una página llamada `hola.php`. El navegador **no interpreta las instrucciones PHP**. Realiza una petición HTTP al servidor web; allí se ejecuta PHP, se genera una respuesta y el navegador muestra el contenido recibido.
 
-![Recorrido de una petición PHP, desde el navegador al servidor y de vuelta]({{ '/assets/docencia/iaw/ut02/02_peticion_php.png' | relative_url }})
+![Recorrido de una petición PHP, desde el navegador al servidor y de vuelta]({{ '/assets/docencia/iaw/ut02/02_peticion_php.svg' | relative_url }})
 
 | Elemento | Responsabilidad |
 |---|---|
@@ -295,7 +301,7 @@ echo $total;
 
 La instrucción `=` se llama **asignación**: calcula el lado derecho y guarda el resultado en la variable del lado izquierdo. No equivale a plantear una igualdad matemática.
 
-![Cómo cambia el contenido de una variable al asignarle y actualizarle un valor]({{ '/assets/docencia/iaw/ut02/03_asignacion.png' | relative_url }})
+![Cómo cambia el contenido de una variable al asignarle y actualizarle un valor]({{ '/assets/docencia/iaw/ut02/03_asignacion.svg' | relative_url }})
 
 ### 3.2. Reasignación: el valor puede cambiar
 
@@ -544,6 +550,163 @@ var_dump($numero === $texto); // bool(false)
 
 El contenido representa el mismo número, pero **uno es entero y otro es texto**. En estos apuntes utilizaremos preferentemente comparación estricta cuando importe distinguir valores y tipos. `=` es asignación; `==` y `===` son comparaciones.
 
+### 4.6. Operadores lógicos: AND, OR y NOT
+
+Los operadores relacionales anteriores permiten formular preguntas sencillas: «¿la nota es al menos 5?», «¿la temperatura supera 35?» o «¿dos valores son idénticos?». Muchas decisiones reales necesitan **combinar varias preguntas**. Para eso utilizamos operadores lógicos.
+
+| Idea lógica | Operador que usaremos | También existe | Resultado verdadero cuando… |
+|---|---|---|---|
+| AND (Y) | `&&` | `and` | **Todas** las condiciones combinadas son verdaderas. |
+| OR (O) | `||` | `or` | **Al menos una** de las condiciones es verdadera. |
+| NOT (NO) | `!` | — | Invierte un booleano: `true` pasa a `false` y viceversa. |
+
+En estos apuntes utilizaremos normalmente `&&`, `||` y `!`. PHP también permite escribir `and` y `or`, pero **no tienen la misma precedencia que `&&` y `||`** cuando se mezclan con otras operaciones, especialmente con asignaciones. Para empezar es más seguro mantener una única forma y usar paréntesis cuando una expresión pueda resultar ambigua.
+
+#### AND: todas las condiciones deben cumplirse
+
+```php
+<?php
+
+$edad = 19;
+$autorizado = true;
+
+var_dump($edad >= 18);          // bool(true)
+var_dump($autorizado === true); // bool(true)
+var_dump($edad >= 18 && $autorizado === true); // bool(true)
+```
+
+La última expresión puede leerse así: **«la edad es al menos 18 Y además está autorizado»**. Si cualquiera de las dos partes fuese falsa, el resultado completo sería `false`.
+
+| Primera condición | Segunda condición | `&&` |
+|---|---|---|
+| `true` | `true` | `true` |
+| `true` | `false` | `false` |
+| `false` | `true` | `false` |
+| `false` | `false` | `false` |
+
+#### OR: basta con que se cumpla una condición
+
+```php
+<?php
+
+$prioridadAlta = true;
+$servicioCaido = false;
+
+var_dump($prioridadAlta || $servicioCaido); // bool(true)
+```
+
+Se lee: **«la prioridad es alta O el servicio está caído»**. Como la primera parte ya es verdadera, toda la expresión resulta verdadera.
+
+| Primera condición | Segunda condición | `||` |
+|---|---|---|
+| `true` | `true` | `true` |
+| `true` | `false` | `true` |
+| `false` | `true` | `true` |
+| `false` | `false` | `false` |
+
+#### NOT: invertir una condición
+
+```php
+<?php
+
+$activo = false;
+
+var_dump($activo);  // bool(false)
+var_dump(!$activo); // bool(true)
+```
+
+`!$activo` significa **«NO está activo»**. Conviene que el nombre de las variables booleanas permita leer la condición de forma natural.
+
+### 4.7. Precedencia lógica y uso de paréntesis
+
+Cuando una expresión contiene varios operadores, PHP no los evalúa simplemente de izquierda a derecha. Cada operador tiene una **precedencia**. Para las expresiones que estamos aprendiendo, recuerda esta simplificación útil:
+
+1. Los paréntesis `()` fuerzan primero la evaluación de su contenido.
+2. `!` se aplica antes que `&&` y `||`.
+3. Las comparaciones como `===`, `>`, `<`, `>=` o `<=` producen los booleanos que después combinaremos.
+4. `&&` se evalúa antes que `||`.
+
+> **Importante:** los corchetes `[]` **no se utilizan para agrupar condiciones**. Más adelante los usaremos para acceder a posiciones o claves de arrays. Para controlar el orden lógico utilizamos paréntesis `()`.
+{: .notice--info}
+
+Compara estos dos casos:
+
+```php
+<?php
+
+var_dump(true || false && false);   // bool(true)
+var_dump((true || false) && false); // bool(false)
+```
+
+En la primera expresión, `&&` tiene prioridad sobre `||`, por lo que PHP interpreta la operación de forma equivalente a:
+
+```text
+true || (false && false)
+true || false
+true
+```
+
+En la segunda expresión, los paréntesis obligan a resolver primero `true || false`:
+
+```text
+(true || false) && false
+true && false
+false
+```
+
+#### Ejemplo profesional: una regla de acceso
+
+Supongamos que una operación requiere que la cuenta esté activa y que el usuario tenga uno de dos perfiles permitidos. Todavía no necesitamos arrays ni sesiones para razonar la condición; utilizaremos valores fijos:
+
+```php
+<?php
+
+$activo = true;
+$esAdministrador = false;
+$esTecnico = true;
+
+$puedeAcceder = $activo && ($esAdministrador || $esTecnico);
+
+var_dump($puedeAcceder); // bool(true)
+```
+
+Los paréntesis expresan exactamente la regla: **debe estar activo Y, además, ser administrador O técnico**. Sin esos paréntesis, la lectura sería menos clara y podría no representar la intención de negocio.
+
+#### Otro ejemplo: negar un grupo completo
+
+```php
+<?php
+
+$esFestivo = false;
+$esFinDeSemana = true;
+
+$esLaborable = !($esFestivo || $esFinDeSemana);
+
+var_dump($esLaborable); // bool(false)
+```
+
+Primero se calcula si es festivo **o** fin de semana; después `!` invierte ese resultado. No equivale a negar solo una de las dos condiciones.
+
+#### `&&` / `||` frente a `and` / `or`
+
+Observa esta diferencia, que explica por qué usaremos preferentemente los operadores simbólicos:
+
+```php
+<?php
+
+$a = true && false;
+$b = true and false;
+
+var_dump($a); // bool(false)
+var_dump($b); // bool(true)
+```
+
+La segunda línea sorprende porque `=` tiene mayor precedencia que `and`: primero se asigna `true` a `$b` y después se evalúa el `and`. **No necesitamos memorizar toda la tabla de precedencias**; sí necesitamos saber que mezclar formas sin comprenderlas puede cambiar el resultado. En nuestras condiciones utilizaremos `&&`, `||`, `!` y paréntesis explícitos.
+
+**Cortocircuito.** Con `&&`, si la primera parte ya es falsa, PHP no necesita evaluar la segunda para saber que el resultado será falso. Con `||`, si la primera parte ya es verdadera, tampoco necesita evaluar la segunda. Esta propiedad será útil más adelante para comprobar valores antes de realizar otras operaciones.
+
+**Ejercicios 4.10–4.15.** Predice y comprueba las cuatro combinaciones posibles de `&&`; repite con `||`; invierte cinco booleanos con `!`; determina el resultado de `true || false && false` antes de ejecutarlo; añade paréntesis para obtener el resultado contrario; expresa con variables booleanas la regla «activo y (administrador o técnico)» y prueba al menos tres combinaciones distintas.
+
 **Ejercicios 4.1–4.9.** Calcula el área de rectángulo y círculo; transforma Celsius a Fahrenheit; calcula el porcentaje de ocupación de un aula; convierte segundos a horas/minutos/segundos; calcula el importe de horas extraordinarias partiendo de valores fijos; demuestra la diferencia entre concatenar y sumar; predice cinco comparaciones con `var_dump`; modifica una factura mediante `+=` y `-=`; comprueba qué ocurre con `/` y `%` en casos distintos de cero.
 
 ---
@@ -552,7 +715,7 @@ El contenido representa el mismo número, pero **uno es entero y otro es texto**
 
 Hasta ahora los programas han ejecutado las instrucciones en el orden en el que están escritas. Pero una aplicación debe tomar decisiones: **¿hay que mostrar una alerta? ¿la prioridad es alta? ¿el divisor es válido?**
 
-![Evolución desde if simple a if/else y elseif]({{ '/assets/docencia/iaw/ut02/04_condicionales.png' | relative_url }})
+![Evolución desde if simple a if/else y elseif]({{ '/assets/docencia/iaw/ut02/04_condicionales.svg' | relative_url }})
 
 ### 5.1. Primero, un `if` simple
 
@@ -635,57 +798,7 @@ Con `$nota = 8`, primero se comprueba `8 < 5` (falso); después `8 < 7` (falso);
 
 **Prueba de escritorio:** repite el recorrido para `4`, `5`, `6`, `7` y `10` antes de ejecutar. Anota qué condiciones se consultan realmente en cada caso.
 
-### 5.4. Operadores lógicos: combinar condiciones
-
-A veces una decisión exige comprobar **varias condiciones simultáneamente**:
-
-| Operador | Se lee | Resultado verdadero cuando… |
-|---|---|---|
-| `&&` | Y | Ambas condiciones son verdaderas. |
-| `||` | O | Al menos una es verdadera. |
-| `!` | NO | Se invierte el resultado booleano. |
-
-Ejemplo con `&&`:
-
-```php
-<?php
-
-$edad = 19;
-$autorizado = true;
-
-if ($edad >= 18 && $autorizado === true) {
-    echo 'Acceso permitido';
-}
-```
-
-Ejemplo con `||`:
-
-```php
-<?php
-
-$prioridad = 'alta';
-$servicioCaido = false;
-
-if ($prioridad === 'alta' || $servicioCaido === true) {
-    echo 'Revisar inmediatamente';
-}
-```
-
-Ejemplo con `!`:
-
-```php
-<?php
-
-$activo = false;
-
-if (!$activo) {
-    echo 'Cuenta desactivada';
-}
-```
-
-**Cortocircuito:** con `&&`, si la primera condición ya es falsa, PHP no necesita evaluar la segunda para decidir el resultado. Con `||`, si la primera ya es verdadera, tampoco necesita comprobar la segunda.
-
-### 5.5. Solo ahora: un `if` anidado
+### 5.4. Solo ahora: un `if` anidado
 
 Anidar significa poner **una condición dentro del bloque de otra**. Primero debe cumplirse la condición externa; después se evalúa la interna.
 
@@ -716,7 +829,7 @@ Para entenderlo, sigue los niveles:
 
 En este ejemplo, también podría utilizarse una condición lógica para un resultado más sencillo. Los anidamientos son útiles cuando queremos realizar varias acciones dentro de un caso, pero demasiados niveles hacen difícil comprender el programa.
 
-### 5.6. Comprobación práctica: evitar dividir entre cero
+### 5.5. Comprobación práctica: evitar dividir entre cero
 
 ```php
 <?php
@@ -733,7 +846,7 @@ if ($divisor === 0) {
 
 No se ejecuta la división si el divisor vale cero. Esta comprobación **no exige todavía formularios ni funciones**: estamos aprendiendo a decidir con valores previamente definidos.
 
-### 5.7. `switch` y `match`: opciones para más adelante
+### 5.6. `switch` y `match`: opciones para más adelante
 
 Cuando una variable puede tomar varios valores concretos, `switch` permite agrupar casos:
 
@@ -780,7 +893,7 @@ No es necesario introducir `switch` y `match` antes de dominar **`if` simple →
 
 Hasta ahora hemos elegido qué código ejecutar. En esta sección aprenderemos **cuántas veces repetirlo**. Antes de utilizar arrays, practicaremos con un simple contador.
 
-![Estructuras for y while: inicialización, condición, cuerpo y actualización]({{ '/assets/docencia/iaw/ut02/05_bucles.png' | relative_url }})
+![Estructuras for y while: inicialización, condición, cuerpo y actualización]({{ '/assets/docencia/iaw/ut02/05_bucles.svg' | relative_url }})
 
 ### 6.1. ¿Por qué no escribir diez veces lo mismo?
 
@@ -952,7 +1065,7 @@ echo $prioridades[1]; // media
 echo $prioridades[2]; // alta
 ```
 
-![Array indexado con las posiciones cero, uno y dos]({{ '/assets/docencia/iaw/ut02/06_arrays.png' | relative_url }})
+![Array indexado con las posiciones cero, uno y dos]({{ '/assets/docencia/iaw/ut02/06_arrays.svg' | relative_url }})
 
 | Posición | Valor |
 |---:|---|
@@ -1163,7 +1276,7 @@ Aquí sucede lo siguiente:
 3. `$resultado` recibe ese `9`.
 4. `echo $resultado;` lo muestra.
 
-![Función con parámetros y valor devuelto]({{ '/assets/docencia/iaw/ut02/07_funciones.png' | relative_url }})
+![Función con parámetros y valor devuelto]({{ '/assets/docencia/iaw/ut02/07_funciones.svg' | relative_url }})
 
 Esta separación será útil cuando una aplicación necesite mostrar una cantidad en pantalla, guardarla en un archivo o enviarla a otro sistema: **el cálculo no tiene por qué decidir cómo se presenta**.
 
@@ -1296,7 +1409,7 @@ En `templates/resultado.php`:
 </html>
 ```
 
-![Tres archivos y sus responsabilidades: entrada, lógica y presentación]({{ '/assets/docencia/iaw/ut02/08_modulos.png' | relative_url }})
+![Tres archivos y sus responsabilidades: entrada, lógica y presentación]({{ '/assets/docencia/iaw/ut02/08_modulos.svg' | relative_url }})
 
 **¿Qué ocurre en orden?** Apache solicita `public/index.php`; el PHP de entrada carga `src/calculos.php`; ejecuta `calcularImporte`; guarda el importe; y carga la plantilla que generará el HTML.
 
@@ -1315,15 +1428,253 @@ Para las funciones indispensables del proyecto usaremos normalmente `require_onc
 
 ---
 
-## 10. Primeros pasos en programación orientada a objetos {#poo}
+## 10. Persistencia ligera con ficheros y logs {#ficheros}
+
+Hasta ahora, las variables existen mientras se ejecuta una petición. Cuando termina el script, una variable normal desaparece. Antes de introducir MariaDB conviene conocer una forma de **persistencia sencilla**: guardar datos en el sistema de ficheros del servidor.
+
+Un fichero puede ser útil para un registro de actividad, una configuración sencilla, una exportación o una pequeña colección de datos. No sustituye a una base de datos cuando necesitamos consultas complejas, relaciones, muchos accesos concurrentes o transacciones. Precisamente por eso resulta útil estudiarlo primero: nos permite distinguir **memoria, fichero, sesión y base de datos**.
+
+| Mecanismo | ¿Sobrevive a otra petición? | ¿Dónde vive principalmente? | Uso didáctico |
+|---|---|---|---|
+| Variable PHP normal | No | Memoria del proceso durante la petición | Cálculos temporales |
+| Fichero | Sí, mientras el almacenamiento permanezca | Disco del servidor | Logs, JSON, CSV, datos sencillos |
+| Sesión | Sí, entre peticiones de una sesión | Servidor + identificador en cliente | Estado de navegación e identidad |
+| Base de datos | Sí | SGBD | Datos estructurados y concurrentes |
+
+### 10.1. Dónde guardar datos que no deben ser públicos
+
+No escribiremos logs ni datos internos dentro del `DocumentRoot`. Amplía la estructura del proyecto:
+
+```text
+/srv/iaw/php/
+├── public/
+│   └── index.php        ← accesible por HTTP
+├── src/
+├── templates/
+└── var/                 ← NO accesible directamente por HTTP
+    ├── data/
+    └── logs/
+```
+
+En el laboratorio, el administrador puede preparar las carpetas con permisos de escritura para el usuario de desarrollo y para el grupo utilizado por el servicio web, sin recurrir a `chmod 777`:
+
+```bash
+sudo install -d -m 2770 -o "$USER" -g www-data /srv/iaw/php/var
+sudo install -d -m 2770 -o "$USER" -g www-data /srv/iaw/php/var/data
+sudo install -d -m 2770 -o "$USER" -g www-data /srv/iaw/php/var/logs
+```
+
+Después comprueba las rutas y permisos con `namei -l` y `ls -ld`. Si PHP-FPM no puede escribir, no abras los permisos a todo el sistema: identifica qué usuario/grupo ejecuta el proceso y corrige la propiedad o los permisos necesarios.
+
+### 10.2. Primer fichero: escribir una línea
+
+`file_put_contents()` permite escribir una cadena completa en un fichero. Empezaremos con un registro muy pequeño:
+
+```php
+<?php
+
+$ruta = __DIR__ . '/../var/logs/app.log';
+$linea = date('c') . " inicio_aplicacion\n";
+
+$resultado = file_put_contents($ruta, $linea);
+
+if ($resultado === false) {
+    echo 'No se pudo escribir el log';
+}
+```
+
+`date('c')` genera una fecha y hora en formato ISO 8601. `__DIR__` representa la carpeta del archivo PHP actual; al partir de un script situado en `public/`, `../var/logs/app.log` apunta fuera de la carpeta publicada.
+
+**Atención:** sin opciones adicionales, `file_put_contents()` reemplaza el contenido anterior del fichero. Para un log normalmente queremos **añadir**, no borrar.
+
+### 10.3. Añadir al final: un log acumulativo
+
+```php
+<?php
+
+$ruta = __DIR__ . '/../var/logs/app.log';
+$codigo = 'IAW-07';
+$linea = date('c') . " ticket=$codigo accion=consulta\n";
+
+$resultado = file_put_contents(
+    $ruta,
+    $linea,
+    FILE_APPEND | LOCK_EX
+);
+
+if ($resultado === false) {
+    http_response_code(500);
+    echo 'No se pudo registrar la operación';
+}
+```
+
+- `FILE_APPEND` añade la cadena al final en lugar de truncar el fichero.
+- `LOCK_EX` solicita un bloqueo exclusivo durante la escritura para reducir problemas cuando dos escrituras coinciden.
+- El valor devuelto es el número de bytes escritos o `false` si la operación falla.
+
+Un bloqueo de fichero **no convierte un archivo de texto en una base de datos transaccional**. Sirve para un caso pequeño y controlado; después compararemos sus límites con MariaDB.
+
+### 10.4. Leer un fichero de texto
+
+`file_get_contents()` devuelve el contenido completo como cadena o `false` si no puede leerlo:
+
+```php
+<?php
+
+$ruta = __DIR__ . '/../var/logs/app.log';
+$contenido = file_get_contents($ruta);
+
+if ($contenido === false) {
+    http_response_code(500);
+    exit('No se pudo leer el log');
+}
+
+echo '<pre>' . htmlspecialchars(
+    $contenido,
+    ENT_QUOTES | ENT_SUBSTITUTE,
+    'UTF-8'
+) . '</pre>';
+```
+
+Escapamos el texto antes de mostrarlo en HTML. Un log puede contener caracteres enviados por usuarios o por otros sistemas; no debemos convertir accidentalmente esas cadenas en marcado ejecutable.
+
+### 10.5. Datos estructurados sencillos con JSON
+
+Un log es una sucesión de líneas. Para conservar una pequeña estructura de datos podemos serializar un array como JSON. Supongamos que todavía no existe MariaDB y queremos guardar dos tickets de prueba:
+
+```php
+<?php
+
+$tickets = [
+    [
+        'codigo' => 'IAW-07',
+        'asunto' => 'Apache no responde',
+        'estado' => 'abierto',
+    ],
+    [
+        'codigo' => 'IAW-08',
+        'asunto' => 'Error de acceso',
+        'estado' => 'cerrado',
+    ],
+];
+
+$json = json_encode(
+    $tickets,
+    JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE
+);
+
+if ($json === false) {
+    exit('No se pudieron convertir los datos a JSON');
+}
+
+$ruta = __DIR__ . '/../var/data/tickets.json';
+
+if (file_put_contents($ruta, $json, LOCK_EX) === false) {
+    exit('No se pudieron guardar los datos');
+}
+```
+
+`json_encode()` transforma el array PHP en texto JSON. Guardar ese texto permite recuperarlo en otra petición. Para leerlo:
+
+```php
+<?php
+
+$ruta = __DIR__ . '/../var/data/tickets.json';
+$contenido = file_get_contents($ruta);
+
+if ($contenido === false) {
+    exit('No se pudo leer el fichero de datos');
+}
+
+$tickets = json_decode($contenido, true);
+
+if (!is_array($tickets)) {
+    exit('El JSON no contiene la estructura esperada');
+}
+
+foreach ($tickets as $ticket) {
+    echo htmlspecialchars(
+        (string) ($ticket['codigo'] ?? 'sin-codigo'),
+        ENT_QUOTES | ENT_SUBSTITUTE,
+        'UTF-8'
+    ) . '<br>';
+}
+```
+
+El segundo argumento `true` de `json_decode()` pide arrays asociativos. Aquí reutilizamos arrays y `foreach`: la persistencia no introduce otra forma de programar, sino otra **fuente y destino de los datos**.
+
+### 10.6. `fopen`, modos de apertura y escritura por flujo
+
+Las funciones anteriores resuelven muchos casos sencillos. Cuando necesitamos más control podemos abrir explícitamente un recurso con `fopen()`. Los modos básicos que conviene reconocer son:
+
+| Modo | Significado | Riesgo principal |
+|---|---|---|
+| `r` | Solo lectura; el fichero debe existir | Falla si no existe |
+| `w` | Escritura desde el principio | **Trunca** el contenido anterior |
+| `a` | Escritura al final | Siempre añade |
+
+Ejemplo equivalente de log con apertura en modo de anexado:
+
+```php
+<?php
+
+$ruta = __DIR__ . '/../var/logs/app.log';
+$recurso = fopen($ruta, 'a');
+
+if ($recurso === false) {
+    exit('No se pudo abrir el log');
+}
+
+fwrite($recurso, date('c') . " accion=prueba\n");
+fclose($recurso);
+```
+
+Abrir, utilizar y cerrar explícitamente ayuda a comprender el ciclo de trabajo con un fichero. Para operaciones pequeñas preferiremos la solución más simple que permita controlar correctamente los errores.
+
+### 10.7. Log de aplicación y log de errores no son lo mismo
+
+Un **log de aplicación** puede registrar hechos previstos: creación de un ticket, cambio de estado o una importación. Un **log de errores** registra problemas técnicos que interesa diagnosticar. PHP ofrece `error_log()` para enviar un mensaje al mecanismo de registro configurado por el entorno:
+
+```php
+<?php
+
+$ok = false;
+
+if (!$ok) {
+    error_log('IAW Desk: fallo controlado durante una prueba');
+}
+```
+
+En nuestro laboratorio, según la configuración de Apache y PHP-FPM, esos mensajes podrán aparecer en los logs del sitio o del servicio. No debemos mostrar al usuario una traza interna completa cuando la aplicación está en un entorno de producción.
+
+**Nunca registres contraseñas, cookies de sesión, claves API ni secretos de base de datos.** Un log también es un dato que debe protegerse, limitarse y rotarse cuando crece.
+
+### 10.8. ¿Cuándo deja de ser buena idea un fichero?
+
+Los ficheros son apropiados para aprender persistencia ligera y para algunos usos reales, especialmente logs, exportaciones y configuraciones. Empiezan a resultar incómodos cuando necesitamos:
+
+- buscar y filtrar muchos registros;
+- relacionar usuarios, tickets y estados;
+- evitar actualizaciones concurrentes conflictivas;
+- imponer restricciones como claves únicas;
+- ejecutar varias operaciones como una unidad atómica;
+- mantener índices, consultas y permisos de datos de forma estructurada.
+
+Ese problema prepara la siguiente unidad: **UT03 introduce PDO y MariaDB**. No sustituimos un fichero porque sea «malo»; elegimos otro mecanismo porque cambian los requisitos.
+
+**Ejercicios 10.1–10.8.** Escribe una línea con fecha en `app.log`; añade cinco operaciones sin borrar las anteriores; muestra el log escapado en una página; crea un contador persistente en un fichero; guarda un array de tickets en JSON; léelo y genera una lista HTML; provoca un JSON incorrecto y controla el fallo; explica qué datos guardarías en variable, fichero, sesión o base de datos y justifica cada decisión.
+
+---
+
+## 11. Primeros pasos en programación orientada a objetos {#poo}
 
 Hasta ahora hemos agrupado instrucciones en funciones. En aplicaciones mayores también puede ser útil reunir **datos y operaciones relacionadas** en un mismo tipo de objeto. Lo estudiaremos con un ejemplo pequeño, sin comenzar directamente por herencia o interfaces.
 
-### 10.1. De un ticket descrito con variables a una clase
+### 11.1. De un ticket descrito con variables a una clase
 
 Un ticket puede tener datos como `asunto` y `estado`, y comportamientos como `cerrar()`. La **clase** define el modelo; el **objeto** es una instancia concreta creada a partir de ese modelo.
 
-![Distinción entre clase Ticket y dos objetos con estados independientes]({{ '/assets/docencia/iaw/ut02/09_objetos.png' | relative_url }})
+![Distinción entre clase Ticket y dos objetos con estados independientes]({{ '/assets/docencia/iaw/ut02/09_objetos.svg' | relative_url }})
 
 Primero vamos a escribir una clase muy sencilla:
 
@@ -1352,7 +1703,7 @@ echo $ticket1->asunto; // No carga Apache
 
 Aunque ambos objetos pertenecen a la clase `Ticket`, **cada uno tiene su propio asunto**.
 
-### 10.2. Métodos: una acción que puede realizar el objeto
+### 11.2. Métodos: una acción que puede realizar el objeto
 
 ```php
 <?php
@@ -1373,7 +1724,7 @@ echo $ticket->mostrarResumen();
 
 `$this` representa **el objeto concreto cuyo método se está ejecutando**. Si existen dos objetos, `$this->asunto` puede contener un valor distinto en cada uno.
 
-### 10.3. Constructor: datos al crear el objeto
+### 11.3. Constructor: datos al crear el objeto
 
 No queremos crear primero un ticket vacío y después recordar que hay que asignarle siempre su asunto. Un **constructor** permite establecer sus valores iniciales:
 
@@ -1400,7 +1751,7 @@ echo $ticket->resumen(); // Apache no responde (abierto)
 
 El constructor recibe el argumento `$asunto` y **lo guarda en la propiedad del mismo nombre de este objeto** mediante `$this->asunto = $asunto;`. Observa que **el parámetro `$asunto` y la propiedad `$this->asunto` no son lo mismo**: la variable del parámetro existe durante la llamada, mientras la propiedad pertenece al objeto. El segundo argumento es opcional porque tiene un valor por defecto. PHP también ofrece una sintaxis más corta llamada *promoción de propiedades*; conviene conocer primero esta versión explícita.
 
-### 10.4. Encapsulación: no permitir cualquier cambio
+### 11.4. Encapsulación: no permitir cualquier cambio
 
 Si un programa puede cambiar libremente `$estado` a `'volando'`, el objeto representará una situación sin sentido. Podemos ocultar la propiedad y ofrecer métodos controlados:
 
@@ -1431,7 +1782,7 @@ echo $ticket->resumen(); // Error de acceso (cerrado)
 
 La propiedad `private` solo puede modificarse directamente desde la clase. El método público `cerrar()` expresa una acción reconocible. **Encapsular** no significa esconder todo sin criterio: significa exponer operaciones que conserven las reglas del objeto.
 
-### 10.5. Antes de añadir más POO, comprueba estos conceptos
+### 11.5. Antes de añadir más POO, comprueba estos conceptos
 
 | Concepto | Pregunta que debes poder responder |
 |---|---|
@@ -1445,16 +1796,16 @@ La propiedad `private` solo puede modificarse directamente desde la clase. El m�
 
 **Ampliación de lectura.** La herencia con `extends` permite especializar una clase; una interfaz con `implements` define operaciones que distintas clases deben proporcionar. Las veremos cuando tengamos una necesidad concreta, no antes de comprender la clase anterior. Composer y los frameworks aparecerán después: son herramientas para organizar aplicaciones, no sustitutos de la comprensión del lenguaje.
 
-**Ejercicios 10.1–10.8.** Crea dos objetos `Modulo`; añade una propiedad y un método; crea un `Ticket` con asunto obligatorio; implementa `cerrar()` y `reabrir()`; prueba dos objetos que cambian independientemente; sustituye una propiedad pública por una privada; crea un método de resumen sin HTML; explica por qué una clase `Ticket` no debería encargarse también de configurar Apache.
+**Ejercicios 11.1–11.8.** Crea dos objetos `Modulo`; añade una propiedad y un método; crea un `Ticket` con asunto obligatorio; implementa `cerrar()` y `reabrir()`; prueba dos objetos que cambian independientemente; sustituye una propiedad pública por una privada; crea un método de resumen sin HTML; explica por qué una clase `Ticket` no debería encargarse también de configurar Apache.
 
 ---
-## 11. Recuperamos el formulario HTML: PHP recibe datos {#formularios}
+## 12. Recuperamos el formulario HTML: PHP recibe datos {#formularios}
 
 Ahora sí es el momento de utilizar el formulario creado en el repaso de HTML. Ya conocemos variables, arrays asociativos, condiciones, bucles, funciones y organización por archivos. Así podremos comprender **qué datos llegan, cómo comprobarlos y qué respuesta generar**.
 
-![Del campo name en HTML a la clave del array POST en PHP]({{ '/assets/docencia/iaw/ut02/10_formularios.png' | relative_url }})
+![Del campo name en HTML a la clave del array POST en PHP]({{ '/assets/docencia/iaw/ut02/10_formularios.svg' | relative_url }})
 
-### 11.1. Un formulario muy pequeño
+### 12.1. Un formulario muy pequeño
 
 Crea `public/formulario.html`:
 
@@ -1485,7 +1836,7 @@ Distingue tres atributos:
 
 `method="post"` indica el método HTTP utilizado para enviar los datos. **No cifra por sí mismo el contenido**: para proteger el transporte de información sensible se utiliza HTTPS.
 
-### 11.2. PHP recibe el valor mediante `$_POST`
+### 12.2. PHP recibe el valor mediante `$_POST`
 
 Crea `public/procesar.php`:
 
@@ -1511,7 +1862,7 @@ echo 'Hola, ' . htmlspecialchars(
 
 El operador `?? ''` evita asumir que la clave existe: utiliza una cadena vacía si falta o es nula. Una entrada HTTP no debe considerarse automáticamente correcta o segura.
 
-### 11.3. GET y POST: dos formas de enviar valores
+### 12.3. GET y POST: dos formas de enviar valores
 
 Cambia **temporalmente** el método del formulario a `get`, envía `Ana` y observa la URL:
 
@@ -1530,7 +1881,7 @@ Con `method="get"`, el programa consultaría `$_GET['nombre']`. Con `method="pos
 
 **Experimento:** utiliza las herramientas del navegador → *Network* → selecciona la petición y compara `Request Method`, URL y los datos enviados. Vuelve después a POST y adapta `procesar.php` a `$_POST`.
 
-### 11.4. Validación paso a paso
+### 12.4. Validación paso a paso
 
 En el formulario podemos escribir `required`, pero el navegador no es una frontera de confianza. Un usuario puede modificar HTML, desactivar validaciones o enviar peticiones construidas por otros medios.
 
@@ -1567,7 +1918,7 @@ echo 'Hola, ' . htmlspecialchars(
 
 **Recorrido:** (1) comprobar el método; (2) leer la clave; (3) comprobar el tipo; (4) eliminar espacios iniciales y finales; (5) rechazar contenido vacío; (6) mostrar el texto como HTML seguro. Con `name="nombre[]"` podría llegar un array en lugar de una cadena, por lo que no conviene llamar a `trim()` sin comprobar el tipo de un valor externo.
 
-### 11.5. Un formulario de tickets con varios campos
+### 12.5. Un formulario de tickets con varios campos
 
 Cuando el primer formulario funcione, añade `asunto`, `prioridad` y `descripcion`. La prioridad debe seleccionarse entre las opciones admitidas:
 
@@ -1595,11 +1946,11 @@ $acepta = ($_POST['acepta'] ?? '') === 'si';
 
 En HTML es conveniente declarar expresamente `value="si"` para que el valor esperado sea conocido.
 
-### 11.6. Validar, escapar y almacenar son tres responsabilidades distintas
+### 12.6. Validar, escapar y almacenar son tres responsabilidades distintas
 
 - **Validar:** ¿el asunto no está vacío?, ¿la prioridad pertenece a las opciones?, ¿el email tiene el formato requerido?
 - **Escapar al mostrar HTML:** ¿el asunto enviado se representará como texto aunque contenga etiquetas?
-- **Almacenar:** ¿dónde permanecerá el ticket cuando otra petición lo necesite? Esto se desarrollará en la UT03 mediante PDO y MariaDB.
+- **Almacenar:** ¿dónde permanecerá el ticket cuando otra petición lo necesite? Para datos sencillos ya hemos practicado ficheros y JSON; cuando necesitemos relaciones, consultas y concurrencia utilizaremos PDO y MariaDB en la UT03.
 
 Ejemplo de salida HTML segura:
 
@@ -1617,7 +1968,7 @@ echo htmlspecialchars(
 
 El navegador mostrará literalmente `<b>Problema de acceso</b>` como texto, en lugar de interpretarlo como una etiqueta del usuario. `htmlspecialchars` sirve para **escapar en un contexto HTML apropiado**; no valida una dirección de correo ni sustituye las consultas preparadas SQL.
 
-### 11.7. Qué hacer después de un POST correcto
+### 12.7. Qué hacer después de un POST correcto
 
 Una aplicación que recibe un formulario puede redirigir al navegador a una página de confirmación para evitar que actualizar la página reenvíe accidentalmente el mismo POST. El patrón se conoce como **POST/Redirect/GET (PRG)**.
 
@@ -1631,21 +1982,21 @@ exit;
 
 `header()` debe ejecutarse **antes de enviar contenido** que comprometa las cabeceras HTTP; después de enviar la redirección, `exit` impide continuar la ejecución. No pondremos este fragmento en el primer formulario hasta entender sus pasos previos.
 
-**Ejercicios 11.1–11.10.** Procesa un nombre; explica `id` frente a `name`; compara GET y POST; procesa un número entero válido; calcula un área a partir de formulario; valida la nota 0…10; comprueba casilla marcada/desmarcada; rechaza una prioridad inventada; recupera los valores de un formulario tras un error; procesa un ticket con nombre, asunto y prioridad mostrando los datos escapados. **No utilizaremos aún una base de datos.**
+**Ejercicios 12.1–12.10.** Procesa un nombre; explica `id` frente a `name`; compara GET y POST; procesa un número entero válido; calcula un área a partir de formulario; valida la nota 0…10; comprueba casilla marcada/desmarcada; rechaza una prioridad inventada; recupera los valores de un formulario tras un error; procesa un ticket con nombre, asunto y prioridad mostrando los datos escapados. **No utilizaremos aún una base de datos.**
 
 ---
 
-## 12. Estado entre peticiones: cookies y sesiones {#estado}
+## 13. Estado entre peticiones: cookies y sesiones {#estado}
 
-### 12.1. ¿Qué ocurre cuando visitamos otra página?
+### 13.1. ¿Qué ocurre cuando visitamos otra página?
 
 Una petición web no conserva automáticamente las variables PHP de una petición anterior. Por ejemplo, si un script ejecuta `$visitas = 1;` en cada petición, el valor vuelve a empezar cuando se solicita otra vez la página.
 
 Este comportamiento plantea preguntas reales: ¿cómo recordar la preferencia de idioma?, ¿cómo reconocer que dos peticiones pertenecen al mismo navegador?, ¿cómo mantener una identidad autenticada?
 
-![Tres peticiones HTTP y relación entre cookie de sesión y datos en servidor]({{ '/assets/docencia/iaw/ut02/11_estado_http.png' | relative_url }})
+![Tres peticiones HTTP y relación entre cookie de sesión y datos en servidor]({{ '/assets/docencia/iaw/ut02/11_estado_http.svg' | relative_url }})
 
-### 12.2. Primera pieza: una cookie de preferencia
+### 13.2. Primera pieza: una cookie de preferencia
 
 Una cookie es un pequeño dato que el servidor solicita guardar al navegador y que este puede devolver en peticiones posteriores, de acuerdo con sus políticas y configuración.
 
@@ -1682,7 +2033,7 @@ echo 'Tema: ' . htmlspecialchars(
 
 En una web pública con HTTPS, deberá valorarse además la opción `'secure' => true` para cookies que solo deban viajar por conexiones cifradas. Los navegadores pueden eliminar cookies antes de su caducidad prevista. **Nunca guardes contraseñas ni hashes de contraseña en cookies de preferencias.**
 
-### 12.3. Segunda pieza: una sesión en el servidor
+### 13.3. Segunda pieza: una sesión en el servidor
 
 PHP proporciona `$_SESSION`, un array donde podemos conservar datos entre peticiones pertenecientes a la misma sesión.
 
@@ -1702,7 +2053,7 @@ echo 'Número de visitas de esta sesión: ' . $_SESSION['visitas'];
 
 El identificador de sesión viaja normalmente en una cookie, mientras que los datos de `$_SESSION` se conservan del lado servidor según el almacenamiento configurado. **Una sesión no es una base de datos duradera ni equivale por sí sola a una cuenta autenticada.**
 
-### 12.4. Dos páginas que comparten una sesión
+### 13.4. Dos páginas que comparten una sesión
 
 Archivo `public/guardar.php`:
 
@@ -1734,7 +2085,7 @@ echo htmlspecialchars(
 
 Observa que ambos archivos llaman a `session_start()` porque cada petición necesita abrir o recuperar la sesión. Pruébalo también en una ventana privada: normalmente utilizará cookies separadas.
 
-### 12.5. Inicio de sesión, autorización y cierre
+### 13.5. Inicio de sesión, autorización y cierre
 
 Una aplicación puede utilizar una sesión para recordar la identidad **después de comprobar las credenciales**. Debemos diferenciar:
 
@@ -1759,11 +2110,11 @@ Para almacenar y verificar contraseñas cuando llegue el bloque de persistencia 
 
 Para cerrar la sesión de forma completa habrá que eliminar sus datos, invalidarla y tratar adecuadamente su cookie de identificación. `session_destroy()` elimina los datos de sesión del almacenamiento, pero no borra automáticamente todas las variables ya presentes en memoria ni la cookie del navegador. El cierre completo se practicará como una operación diferenciada.
 
-**Ejercicios 12.1–12.7.** Crea un contador; compara la primera y segunda visita; abre otra ventana privada; guarda el nombre de un módulo y recupéralo en otra página; implementa una preferencia visual sin guardar datos sensibles; explica qué ocurre cuando no llega la cookie; distingue autenticación de autorización en un supuesto de tickets de dos usuarios.
+**Ejercicios 13.1–13.7.** Crea un contador; compara la primera y segunda visita; abre otra ventana privada; guarda el nombre de un módulo y recupéralo en otra página; implementa una preferencia visual sin guardar datos sensibles; explica qué ocurre cuando no llega la cookie; distingue autenticación de autorización en un supuesto de tickets de dos usuarios.
 
 ---
 
-## 13. Banco de ejercicios progresivos {#ejercicios}
+## 14. Banco de ejercicios progresivos {#ejercicios}
 
 Los ejemplos resueltos de los apartados anteriores muestran **cómo razonar cada construcción**. Los ejercicios siguientes permiten practicar sin limitarse a copiar el ejemplo: primero realizan una modificación pequeña, después plantean una variación y finalmente integran varias técnicas conocidas.
 
@@ -1802,34 +2153,44 @@ Los ejemplos resueltos de los apartados anteriores muestran **cómo razonar cada
 23. Genera una tabla HTML a partir de ese array sin copiar y pegar filas.
 24. Identifica en un código dado un bucle que no termina y explica qué variable debe actualizarse.
 
-### Bloque D · Funciones, modularidad y objetos
+### Bloque D · Funciones, modularidad y ficheros
 
 25. Implementa `esPar(int $n): bool` y pruébala con valores pares e impares.
 26. Implementa `calcularImporte(float $horas, float $tarifa): float`.
 27. Implementa `contarAbiertos(array $tickets): int`.
 28. Separa dos funciones en `src/funciones.php` y utilízalas desde `public/index.php`.
 29. Extrae un fragmento repetido de HTML a `templates/cabecera.php`.
-30. Crea la clase `Ticket`; instancia dos objetos con asuntos diferentes.
-31. Añade un método que cierre un ticket sin dejar modificar libremente su estado.
-32. Explica mediante un esquema qué responsabilidad corresponde a cada archivo o clase.
+30. Crea `var/logs/app.log` y añade una línea con fecha, código `IAW-NN` y una acción de prueba.
+31. Añade varias líneas al log utilizando `FILE_APPEND | LOCK_EX` y demuestra que no se borra el contenido anterior.
+32. Lee el log y muéstralo dentro de `<pre>` escapando su contenido.
+33. Guarda un pequeño array de tickets en `var/data/tickets.json` y recupéralo en otra ejecución.
+34. Explica qué limitaciones tendría ese JSON si veinte usuarios intentasen actualizar tickets simultáneamente.
 
-### Bloque E · Formularios y estado
+### Bloque E · Primeros objetos
 
-33. Reutiliza el formulario HTML ya construido para enviar el asunto de una incidencia.
-34. Valida en PHP que el asunto no sea una cadena vacía ni un array.
-35. Añade prioridad y comprueba que pertenezca a la lista permitida.
-36. Realiza una petición GET de búsqueda y compara sus datos con el POST de creación.
-37. Muestra un asunto que contenga `<b>` y comprueba que aparece como texto.
-38. Crea un contador de sesión independiente de un contador local reiniciado en cada petición.
-39. Guarda y recupera una preferencia no sensible mediante cookie.
-40. Integra un formulario validado y una página de confirmación **sin** almacenar todavía el ticket en MariaDB.
+35. Crea la clase `Ticket`; instancia dos objetos con asuntos diferentes.
+36. Añade un método que cierre un ticket sin dejar modificar libremente su estado.
+37. Añade un constructor y demuestra que dos objetos conservan valores independientes.
+38. Explica mediante un esquema qué responsabilidad corresponde a cada archivo, fichero de datos o clase.
+
+### Bloque F · Formularios y estado
+
+39. Reutiliza el formulario HTML ya construido para enviar el asunto de una incidencia.
+40. Valida en PHP que el asunto no sea una cadena vacía ni un array.
+41. Añade prioridad y comprueba que pertenezca a la lista permitida.
+42. Realiza una petición GET de búsqueda y compara sus datos con el POST de creación.
+43. Muestra un asunto que contenga `<b>` y comprueba que aparece como texto.
+44. Registra en un log una operación de formulario válida sin guardar datos sensibles.
+45. Crea un contador de sesión independiente de un contador local reiniciado en cada petición.
+46. Guarda y recupera una preferencia no sensible mediante cookie.
+47. Integra un formulario validado y una página de confirmación **sin** almacenar todavía el ticket en MariaDB.
 
 > **Antes de entregar o publicar una aplicación:** comprueba al menos el caso esperado, el caso incorrecto y un valor límite; explica qué ocurre y por qué. No es suficiente obtener una captura de pantalla de un resultado casualmente correcto.
 {: .notice--info}
 
 ---
 
-## 14. Diagnóstico y buenas prácticas {#diagnostico}
+## 15. Diagnóstico y buenas prácticas {#diagnostico}
 
 Los errores proporcionan información sobre **qué capa** está fallando. No empieces a modificar PHP si todavía no has comprobado que la página correcta llega al servidor.
 
@@ -1863,7 +2224,7 @@ Los nombres de servicio y las rutas de registros pueden variar según la instala
 
 ---
 
-## 15. Glosario y referencias {#fuentes}
+## 16. Glosario y referencias {#fuentes}
 
 | Término | Significado breve |
 |---|---|
@@ -1880,6 +2241,9 @@ Los nombres de servicio y las rutas de registros pueden variar según la instala
 | Clase / objeto | Modelo y una instancia concreta de ese modelo. |
 | GET / POST | Métodos de petición HTTP con usos distintos. |
 | Cookie | Dato gestionado por el navegador y enviado bajo ciertas condiciones. |
+| Fichero persistente | Archivo del servidor que conserva información entre ejecuciones mientras permanezca el almacenamiento. |
+| Log | Registro cronológico de eventos o errores utilizado para operación y diagnóstico. |
+| JSON | Formato textual estructurado que puede representar arrays y objetos simples. |
 | Sesión | Estado asociado a peticiones relacionadas, administrado por el servidor. |
 
 **Documentación para ampliar y contrastar ejemplos:**
