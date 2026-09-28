@@ -1,0 +1,51 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1400 730" role="img" aria-labelledby="title desc">
+<title id="title">Diferencia conceptual entre una obligación periódica y sus ejecuciones históricas</title>
+<desc id="desc">Diferencia conceptual entre una obligación periódica y sus ejecuciones históricas</desc>
+<defs>
+  <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+    <feDropShadow dx="0" dy="10" stdDeviation="12" flood-opacity=".18"/>
+  </filter>
+  <marker id="arrow" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto">
+    <path d="M0,0 L12,6 L0,12 z" fill="#60a5fa"/>
+  </marker>
+  <marker id="arrowg" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto">
+    <path d="M0,0 L12,6 L0,12 z" fill="#34d399"/>
+  </marker>
+</defs>
+<rect width="100%" height="100%" rx="30" fill="#0b1220"/>
+
+<text x="700" y="70" fill="#f8fafc" text-anchor="middle" font-family="Arial, sans-serif" font-size="34" font-weight="700">
+  Una regla y un hecho no son la misma cosa
+</text>
+<text x="700" y="108" fill="#94a3b8" text-anchor="middle" font-family="Arial, sans-serif" font-size="20">
+  Separarlos evita perder el histórico al actualizar datos
+</text>
+
+<rect x="90" y="190" width="420" height="330" rx="28" fill="#172033" stroke="#60a5fa" stroke-width="3" filter="url(#shadow)"/>
+<text x="300" y="245" fill="#93c5fd" text-anchor="middle" font-family="Arial, sans-serif" font-size="26" font-weight="700">OBLIGACIÓN</text>
+<text x="300" y="290" fill="#fff" text-anchor="middle" font-family="Arial, sans-serif" font-size="21">“Debe realizarse cada 12 meses”</text>
+<line x1="140" y1="330" x2="460" y2="330" stroke="#334155"/>
+<text x="150" y="375" fill="#cbd5e1" font-family="Arial, sans-serif" font-size="19">periodicidad</text>
+<text x="150" y="415" fill="#cbd5e1" font-family="Arial, sans-serif" font-size="19">próxima fecha</text>
+<text x="150" y="455" fill="#cbd5e1" font-family="Arial, sans-serif" font-size="19">días de aviso</text>
+
+<rect x="890" y="190" width="420" height="330" rx="28" fill="#13261f" stroke="#34d399" stroke-width="3" filter="url(#shadow)"/>
+<text x="1100" y="245" fill="#6ee7b7" text-anchor="middle" font-family="Arial, sans-serif" font-size="26" font-weight="700">EJECUCIONES</text>
+<text x="1100" y="290" fill="#fff" text-anchor="middle" font-family="Arial, sans-serif" font-size="21">“Se realizó en esta fecha”</text>
+<line x1="940" y1="330" x2="1260" y2="330" stroke="#334155"/>
+<text x="950" y="375" fill="#d1fae5" font-family="Arial, sans-serif" font-size="19">2026 · realizado</text>
+<text x="950" y="415" fill="#d1fae5" font-family="Arial, sans-serif" font-size="19">2027 · realizado</text>
+<text x="950" y="455" fill="#d1fae5" font-family="Arial, sans-serif" font-size="19">2028 · ...</text>
+
+<path d="M510 355 C650 280 760 280 890 355" fill="none" stroke="#34d399" stroke-width="5" marker-end="url(#arrowg)"/>
+<text x="700" y="300" fill="#d1fae5" text-anchor="middle" font-family="Arial, sans-serif" font-size="20">genera hechos</text>
+
+<rect x="410" y="580" width="580" height="95" rx="22" fill="#111827" stroke="#334155"/>
+<text x="700" y="622" fill="#f8fafc" text-anchor="middle" font-family="Arial, sans-serif" font-size="22" font-weight="700">
+  Actualizar la próxima fecha no debe borrar lo que ya ocurrió
+</text>
+<text x="700" y="652" fill="#94a3b8" text-anchor="middle" font-family="Arial, sans-serif" font-size="17">
+  El histórico merece una entidad propia
+</text>
+
+</svg>
