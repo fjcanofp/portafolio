@@ -1,427 +1,269 @@
 ---
 layout: post
-title: "La IA puede escribir tu SQL, pero primero tienes que entender el problema"
-description: "Diseño de bases de datos con IA: cómo pasar de requisitos ambiguos a entidades, relaciones, PK, FK, restricciones, datos derivados y un modelo que represente de verdad el dominio."
+title: "Una base de datos puede funcionar y estar mal diseñada"
+description: "Qué cambia cuando dejamos de pensar en tablas y empezamos a modelar el dominio: una comparación antes/después sobre relaciones, redundancia, histórico, datos derivados y reglas de negocio."
 date: 2026-09-28
 categories:
   - Bases de Datos
   - Ingeniería del Software
 tags:
   - bases-de-datos
-  - sql
-  - postgresql
-  - supabase
-  - inteligencia-artificial
   - modelado
+  - diseño-relacional
+  - sql
+  - inteligencia-artificial
   - ingenieria-del-software
 ---
 
-Las herramientas actuales permiten construir aplicaciones a una velocidad que hace pocos años habría resultado difícil de imaginar. Podemos describir una necesidad a una inteligencia artificial, obtener SQL, crear las tablas en PostgreSQL y conectar una interfaz *low-code* en muy poco tiempo.
+Hace unos días volví a comprobar algo que en bases de datos resulta fácil olvidar: **que un modelo funcione no significa que esté bien diseñado**.
 
-Eso es una ventaja enorme.
+Una base de datos puede aceptar registros, devolver consultas y no mostrar ningún error evidente. Incluso sus tablas pueden tener claves primarias y claves foráneas perfectamente válidas. Y, sin embargo, representar mal el problema.
 
-Pero también puede producir una falsa sensación de seguridad:
+El cambio importante aparece cuando dejamos de preguntar:
 
-> **Que una base de datos acepte nuestros datos no significa que represente correctamente nuestro problema.**
+> «¿Qué columnas necesito guardar?»
 
-Este artículo parte de un caso práctico simplificado: una aplicación que debe gestionar empresas, elementos y obligaciones periódicas, mostrando un semáforo con lo vencido, lo próximo a vencer y lo que está al día. El ejemplo es deliberadamente pequeño, porque lo importante no es la aplicación concreta, sino **el proceso de razonamiento que existe antes de escribir SQL**.
+y empezamos a preguntar:
 
-## Qué aprenderás
+> **«¿Qué significa realmente cada dato y qué regla del mundo real estoy intentando representar?»**
 
-Al terminar deberías ser capaz de:
+Ese paso es el que separa, muchas veces, una estructura que simplemente almacena información de un modelo de datos que puede mantenerse, crecer y seguir siendo comprensible con el tiempo.
 
-- distinguir requisitos de interfaz y requisitos de datos;
-- identificar entidades, relaciones y cardinalidades;
-- explicar qué aportan una PK y una FK más allá de su sintaxis;
-- decidir qué datos conviene almacenar y cuáles es mejor calcular;
-- modelar correctamente hechos repetidos en el tiempo;
-- utilizar restricciones para proteger reglas del dominio;
-- decidir qué lógica pertenece a la base de datos y cuál a la aplicación;
-- utilizar una IA como apoyo al análisis, no solo como generador de código.
+![Del diseño desordenado a un modelo coherente](/assets/img/blog/modelado-bbdd/01-antes-despues.png)
+
+*La diferencia no está solo en tener más o menos tablas: está en que cada entidad, relación y atributo tenga un significado claro.*
 
 ---
 
-## 1. El diseño empieza antes del SQL
+## El primer diseño no parecía estar mal
 
-Antes de crear una tabla deberíamos ser capaces de explicar **qué representa**.
+Imaginemos un sistema genérico que debe gestionar empresas, elementos asociados a ellas y ciertas obligaciones que deben realizarse periódicamente.
 
-Supongamos que en los requisitos aparece una «tarea» o una «obligación». Antes de decidir columnas conviene preguntar:
+Un primer modelo podría contener tablas equivalentes a:
 
-- ¿se realiza una sola vez o se repite?;
-- ¿tiene fecha de vencimiento?;
-- ¿tiene un responsable?;
-- ¿puede cambiar de responsable?;
-- ¿pertenece directamente a una empresa o a un elemento de esa empresa?;
-- ¿necesitamos saber quién la realizó?;
-- ¿necesitamos conservar un histórico?;
-- ¿el siguiente vencimiento depende de la fecha prevista o de la fecha real de realización?;
-- ¿qué ocurre si se realiza con retraso?;
-- ¿qué ocurre si todavía no tiene fecha configurada?;
-- ¿puede haber más de una persona responsable?;
-- ¿qué debe ocurrir al eliminar la empresa o el elemento relacionado?
+- empresa;
+- elemento;
+- obligación;
+- realización.
 
-Hasta responder a estas preguntas no tenemos realmente un modelo.
+Hasta aquí no hay nada especialmente extraño.
 
-Tenemos una idea.
+También podríamos encontrar identificadores, referencias entre tablas, fechas y campos destinados a saber quién es responsable de cada cosa.
 
-Si a una IA únicamente le pedimos:
+Visto rápidamente, el diseño parece razonable.
 
-> «Créame una base de datos para gestionar tareas»
+El problema aparece cuando empezamos a hacer preguntas.
 
-tendrá que completar todo lo que no le hemos explicado. Puede generar SQL perfectamente válido y, sin embargo, estar resolviendo **un problema diferente al nuestro**.
+Si una obligación pertenece a un elemento y ese elemento ya pertenece a una empresa:
 
-> **Pausa didáctica:** antes de pedir a la IA una solución, pídele que enumere las preguntas que necesita resolver para comprender el dominio.
+**¿necesita también la obligación guardar otra vez `empresa_id`?**
+
+Si una realización pertenece a una obligación, y podemos llegar desde esa obligación hasta el elemento y desde el elemento hasta la empresa:
+
+**¿qué aporta volver a guardar `empresa_id` en la realización?**
+
+Y si encontramos un campo llamado:
+
+```text
+responsable_id
+```
+
+¿significa la persona responsable de que algo se realice o la persona que efectivamente lo realizó?
+
+Aquí comienza el verdadero diseño.
+
+No estamos discutiendo nombres de columnas. Estamos intentando descubrir **qué significa el dominio**.
 
 ---
 
-## 2. Del lenguaje del usuario al modelo de datos
+## Antes y después: el modelo cambia cuando entendemos el problema
 
-Un usuario puede explicar perfectamente lo que quiere ver:
+La siguiente imagen resume uno de los cambios fundamentales.
 
-> «Quiero ver en rojo lo que tengo vencido, en amarillo lo que vence pronto y en verde lo que está al día.»
+![Comparación entre el modelo inicial y el modelo revisado](/assets/img/blog/modelado-bbdd/02-modelo-antes-despues.svg)
 
-Eso describe muy bien una **necesidad de interfaz**.
+En el modelo inicial podían aparecer datos repetidos en varias tablas porque parecían útiles o cómodos.
 
-Todavía no describe por completo el modelo de datos.
-
-El analista tiene que transformar esa frase en preguntas concretas:
-
-- ¿qué significa «vence pronto»?;
-- ¿14 días, 30 días o un valor configurable?;
-- ¿es igual para todas las obligaciones?;
-- ¿qué fecha determina el vencimiento?;
-- ¿qué sucede cuando se marca una obligación como realizada?;
-- ¿el color debe almacenarse o calcularse?;
-- ¿qué estado tiene algo que todavía no dispone de fecha?
-
-El proceso es más parecido a esto:
-
-```text
-NECESIDAD DEL USUARIO
-        ↓
-PREGUNTAS Y ACLARACIONES
-        ↓
-CONCEPTOS DEL DOMINIO
-        ↓
-ENTIDADES + RELACIONES + REGLAS
-        ↓
-MODELO RELACIONAL
-        ↓
-SQL
-        ↓
-INTERFAZ
-```
-
-Saltarse las preguntas no elimina la ambigüedad. Solo la desplaza hacia las tablas.
-
----
-
-## 3. Primero el dominio: entidades y relaciones
-
-Para nuestro ejemplo podrían aparecer cuatro conceptos principales:
-
-```text
-EMPRESA
-   │
-   └── tiene → ELEMENTOS
-                   │
-                   └── tienen → OBLIGACIONES
-                                      │
-                                      └── generan → EJECUCIONES
-```
-
-Una interpretación posible sería:
-
-- **Empresa**: organización sobre la que gestionamos información.
-- **Elemento**: vehículo, instalación, máquina, contrato u otro objeto gestionado.
-- **Obligación**: regla que indica algo que debe realizarse, cuándo y con qué periodicidad.
-- **Ejecución**: hecho real que registra que una obligación se realizó en una fecha concreta.
-
-Las cardinalidades básicas podrían expresarse así:
-
-```text
-EMPRESA      1 ───── N ELEMENTO
-ELEMENTO     1 ───── N OBLIGACION
-OBLIGACION   1 ───── N EJECUCION
-```
-
-Esto ya nos obliga a pensar.
-
-¿Una obligación pertenece siempre a un único elemento?  
-¿Puede existir una obligación general de empresa?  
-¿Puede una misma obligación tener varios responsables?
-
-Si la respuesta cambia, el modelo también.
-
-### ¿Y si una obligación tiene varios responsables?
-
-Una FK `responsable_id` solo permite representar cómodamente **un responsable**.
-
-Si una obligación puede asignarse a varias personas y una persona puede participar en varias obligaciones, tenemos una relación **N:M** y probablemente necesitaremos una tabla intermedia:
-
-```text
-OBLIGACION
-    │
-    N
-    │
-OBLIGACION_TRABAJADOR
-    │
-    N
-    │
-TRABAJADOR
-```
-
-La cardinalidad no es un detalle de implementación. Es una afirmación sobre el mundo que estamos modelando.
-
----
-
-## 4. PK y FK: identidad y relaciones
-
-Dos conceptos fundamentales del modelo relacional son la **clave primaria** y la **clave foránea**.
-
-### Clave primaria — PK
-
-Una *Primary Key* identifica de forma única una fila:
-
-```text
-EMPRESA
-
-id                                     nombre
-------------------------------------   ----------------
-6e64...                                Empresa A
-a12f...                                Empresa B
-```
-
-El `id` no es solo «un UUID».
-
-Representa la **identidad** de esa entidad dentro del sistema.
-
-### Clave foránea — FK
-
-Una *Foreign Key* expresa una relación:
-
-```text
-ELEMENTO
-
-id        empresa_id    nombre
---------  ------------  ----------------
-e501...   6e64...       Vehículo A
-e502...   6e64...       Vehículo B
-```
-
-`empresa_id = 6e64...` significa:
-
-> Este elemento pertenece a esa empresa.
-
-La FK permite además que PostgreSQL compruebe que la empresa referenciada exista.
-
-Eso es **integridad referencial**.
-
-### Un UUID válido no implica una relación válida
-
-Este UUID puede ser sintácticamente correcto:
-
-```text
-550e8400-e29b-41d4-a716-446655440000
-```
-
-Pero si no existe ninguna empresa con ese identificador, utilizarlo como `empresa_id` no crea mágicamente una relación válida.
-
-```text
-UUID válido ≠ relación válida
-```
-
-La sintaxis del dato y su significado son problemas distintos.
-
----
-
-## 5. Los tipos de datos también describen el problema
-
-No elegimos un tipo únicamente porque «el dato cabe».
-
-Elegimos un tipo porque **representa una determinada semántica**.
+En el modelo revisado intentamos que cada hecho tenga **un único lugar natural**.
 
 Por ejemplo:
 
 ```text
-12:30
+EMPRESA
+   ↓
+ELEMENTO
+   ↓
+OBLIGACIÓN
+   ↓
+EJECUCIÓN
 ```
 
-no significa lo mismo que:
+La relación ya nos permite recorrer el modelo.
+
+Si una obligación pertenece a un elemento y el elemento pertenece a una empresa, almacenar también la empresa en la obligación introduce una segunda forma de expresar el mismo hecho.
+
+Y eso abre la puerta a algo peligroso:
 
 ```text
-2026-09-28
+elemento.empresa_id   = Empresa A
+obligacion.empresa_id = Empresa B
 ```
 
-ni que:
+La base de datos podría acabar diciendo dos cosas distintas sobre una misma relación.
 
-```text
-2026-09-28 12:30:00+02
-```
+La redundancia no es únicamente «gastar espacio».
 
-En PostgreSQL podríamos utilizar:
-
-| Necesidad | Tipo orientativo | Motivo |
-|---|---|---|
-| Fecha de vencimiento sin hora | `date` | Nos interesa el día |
-| Momento exacto de una ejecución | `timestamptz` | Conserva un instante temporal con zona horaria |
-| Cantidad de días de aviso | `integer` | Es una magnitud numérica |
-| Nombre o descripción | `text` | Contenido textual |
-| Identificador | `uuid` | Identidad técnica del registro |
-| Activado/desactivado | `boolean` | Dos estados lógicos |
-
-Elegir mal los tipos acaba apareciendo después en filtros, ordenación, comparaciones, validación y automatización.
+Puede significar **tener dos versiones de la verdad**.
 
 ---
 
-## 6. No todo lo que se muestra debe almacenarse
+## Una clave foránea no sirve solo para conectar tablas
 
-Volvamos al semáforo:
+Cuando empezamos a estudiar bases de datos es fácil aprender una definición parecida a esta:
 
-```text
-🔴 Vencida
-🟡 Próxima
-🟢 Vigente
-```
+> Una clave foránea es un campo que referencia la clave primaria de otra tabla.
 
-Una primera idea podría ser guardar:
+Es correcto.
 
-```text
-estado = "verde"
-```
+Pero es una definición incompleta desde el punto de vista del diseño.
 
-Pero el tiempo avanza aunque nadie modifique la fila.
+Una FK expresa una afirmación sobre el dominio.
 
-Una obligación puede pasar de verde a amarillo y después a rojo simplemente porque cambia la fecha actual.
-
-Por eso el color suele ser mejor candidato a **dato derivado**.
-
-Podríamos almacenar:
+Si tenemos:
 
 ```text
-fecha_proxima
-dias_aviso
+elemento.empresa_id
 ```
 
-y calcular el estado:
+realmente estamos diciendo:
 
-| Condición | Estado |
-|---|---|
-| `fecha_proxima IS NULL` | Sin configurar |
-| `fecha_proxima < hoy` | 🔴 Vencida |
-| `fecha_proxima <= hoy + dias_aviso` | 🟡 Próxima |
-| En otro caso | 🟢 Vigente |
+> «Este elemento pertenece a esta empresa».
 
-La regla podría expresarse de forma aproximada en PostgreSQL:
-
-```sql
-CASE
-    WHEN fecha_proxima IS NULL THEN 'sin_configurar'
-    WHEN fecha_proxima < CURRENT_DATE THEN 'vencida'
-    WHEN fecha_proxima <= CURRENT_DATE + dias_aviso THEN 'proxima'
-    ELSE 'vigente'
-END
-```
-
-> **Idea clave:** si un valor puede obtenerse de manera fiable a partir de otros datos, antes de almacenarlo conviene preguntarse si realmente necesitamos duplicarlo.
-
-### Otro ejemplo: contadores
-
-Una interfaz puede mostrar:
+Y si tenemos:
 
 ```text
-KUBOTA
-3 obligaciones
+ejecucion.obligacion_id
 ```
 
-No necesariamente necesitamos una columna:
+estamos diciendo:
 
-```text
-numero_obligaciones = 3
-```
+> «Esta ejecución corresponde a esta obligación».
 
-Si la relación ya existe, PostgreSQL puede calcularlo:
+Por eso no basta con que el identificador tenga el formato correcto.
 
-```sql
-SELECT COUNT(*)
-FROM obligacion
-WHERE elemento_id = :id_elemento;
-```
+Una relación debe tener **sentido semántico**.
 
-Mañana añadimos una cuarta obligación y el contador cambia sin mantener otro dato manualmente.
+Podemos escribir un UUID sintácticamente perfecto y seguir representando una relación absurda.
 
 ---
 
-## 7. Una obligación y una ejecución son conceptos diferentes
+## El nombre de una columna también puede esconder un problema
 
-Esta separación es una de las decisiones más importantes del ejemplo.
-
-### Obligación
-
-Representa una regla:
-
-> «Esta inspección debe realizarse periódicamente.»
-
-### Ejecución
-
-Representa un hecho:
-
-> «Esta inspección se realizó el 28 de septiembre a las 10:42.»
-
-Si cada vez que realizamos una tarea sobrescribimos simplemente `fecha_proxima`, perdemos parte de la historia.
-
-Separando ambas entidades podemos conservar:
-
-- cuándo debía realizarse;
-- cuándo se realizó realmente;
-- cuántas veces se ha realizado;
-- observaciones;
-- documentación asociada;
-- quién la realizó, si el modelo lo requiere;
-- el retraso respecto a la fecha prevista.
-
-El patrón es:
+Pensemos de nuevo en:
 
 ```text
-OBLIGACION
-   │
-   ├── periodicidad
-   ├── fecha_proxima
-   └── regla de negocio
-          │
-          └───────────────┐
-                          ↓
-                     EJECUCION
-                     2026-09-28
-                     2027-09-30
-                     2028-09-27
+responsable_id
 ```
 
-Un buen modelo no intenta adivinar todas las funciones futuras.
+Parece bastante claro.
 
-Intenta **no destruir información que ya tiene significado en el presente**.
+Hasta que preguntamos:
+
+**¿responsable de qué?**
+
+Puede significar:
+
+1. la persona encargada habitualmente de una obligación;
+2. la persona que ejecutó una actuación concreta.
+
+No son la misma información.
+
+El responsable pertenece a la **regla organizativa**.
+
+La persona que realizó algo pertenece al **hecho histórico**.
+
+Una columna llamada `responsable_id` en ambos lugares puede ocultar esa diferencia.
+
+Un nombre más explícito, por ejemplo:
+
+```text
+realizada_por
+```
+
+en el registro histórico deja mucho menos espacio para interpretaciones.
+
+Una buena base de datos también se diseña eligiendo nombres que expliquen el modelo sin necesitar una conversación con quien lo creó.
 
 ---
 
-## 8. La periodicidad necesita estructura
+## Regla y hecho: obligación no es ejecución
 
-Para una persona pueden parecer equivalentes:
+Este fue otro cambio conceptual importante.
+
+Una obligación puede expresar:
+
+> «Esto debe realizarse cada doce meses».
+
+Una ejecución expresa:
+
+> «Esto se realizó el 18 de septiembre».
+
+Son dos cosas diferentes.
+
+![Obligación frente a ejecución](/assets/img/blog/modelado-bbdd/04-obligacion-ejecucion.svg)
+
+Si cada vez que algo se realiza simplemente sobrescribimos la próxima fecha, el sistema puede seguir funcionando.
+
+Pero perdemos historia.
+
+Después ya no podremos responder fácilmente:
+
+- ¿cuándo se realizó anteriormente?;
+- ¿cuántas veces se ha realizado?;
+- ¿se hizo antes o después de la fecha prevista?;
+- ¿quién lo hizo?;
+- ¿qué observaciones se registraron?;
+- ¿se está produciendo retraso de forma habitual?
+
+Separar obligación y ejecución permite conservar ambas dimensiones:
+
+**la regla que sigue vigente y los hechos que ya ocurrieron.**
+
+Este patrón aparece en muchísimos dominios:
+
+- una reserva y sus asistencias;
+- una factura y sus pagos;
+- un plan de mantenimiento y sus intervenciones;
+- un curso y sus matrículas;
+- una receta y sus dispensaciones.
+
+Cuando algo puede suceder varias veces, conviene preguntarse si estamos ante una entidad propia y no ante una columna que iremos sobrescribiendo.
+
+---
+
+## La periodicidad tampoco es solo texto
+
+Otro detalle aparentemente pequeño es cómo representar una periodicidad.
+
+Podríamos guardar:
 
 ```text
 anual
 cada año
-1 año
 12 meses
+1 año
 365 días
 ```
 
-Para una aplicación no lo son necesariamente.
+Una persona puede interpretar varias de esas expresiones como equivalentes.
 
-Una representación más estructurada puede ser:
+La base de datos no debería depender de esa interpretación.
+
+Podemos estructurar el dato:
 
 ```text
 periodicidad_valor  = 1
-periodicidad_unidad = anio
+periodicidad_unidad = año
 ```
 
 o:
@@ -431,394 +273,364 @@ periodicidad_valor  = 6
 periodicidad_unidad = mes
 ```
 
-Esto permite validar, filtrar y calcular.
+Pero incluso aquí aparece una regla importante:
 
-Además aparece una cuestión interesante:
-
-> ¿«1 año» significa exactamente «365 días»?
-
-No siempre. Atraviesa años bisiestos y meses con duraciones distintas. El modelo debe expresar la regla que realmente quiere el dominio, no una aproximación cómoda.
-
-### Un `CHECK` puede proteger esa regla
-
-```sql
-CHECK (periodicidad_valor > 0)
+```text
+valor = 6
+unidad = NULL
 ```
 
-Y podemos limitar las unidades admitidas:
+no tiene sentido.
 
-```sql
-CHECK (periodicidad_unidad IN ('dia', 'mes', 'anio'))
+Tampoco:
+
+```text
+valor = NULL
+unidad = mes
 ```
 
-Las restricciones no son obstáculos para el desarrollador.
+Por eso un buen modelo no solo decide qué columnas existen. También establece **qué combinaciones de valores son válidas**.
 
-Son **reglas que impiden almacenar estados imposibles**.
+Las restricciones forman parte del diseño.
+
+No están ahí para molestar cuando insertamos datos.
+
+Están ahí para impedir que almacenemos estados que el propio dominio considera imposibles.
 
 ---
 
-## 9. Del modelo al SQL: un ejemplo mínimo
+## Lo que vemos en pantalla no tiene por qué existir como columna
 
-El siguiente esquema es deliberadamente reducido. No pretende ser «el diseño universal correcto», sino mostrar cómo las decisiones conceptuales empiezan a aparecer en SQL.
+Esta idea suele costar al principio porque la interfaz nos condiciona mucho.
 
-```sql
-CREATE TABLE empresa (
-    id uuid PRIMARY KEY,
-    nombre text NOT NULL
-);
+Si una aplicación muestra:
 
-CREATE TABLE elemento (
-    id uuid PRIMARY KEY,
-    empresa_id uuid NOT NULL
-        REFERENCES empresa(id)
-        ON DELETE RESTRICT,
-    nombre text NOT NULL
-);
-
-CREATE TABLE obligacion (
-    id uuid PRIMARY KEY,
-    elemento_id uuid NOT NULL
-        REFERENCES elemento(id)
-        ON DELETE RESTRICT,
-    nombre text NOT NULL,
-    fecha_proxima date,
-    dias_aviso integer NOT NULL DEFAULT 30
-        CHECK (dias_aviso >= 0),
-    periodicidad_valor integer,
-    periodicidad_unidad text,
-    CHECK (
-        (periodicidad_valor IS NULL AND periodicidad_unidad IS NULL)
-        OR
-        (
-            periodicidad_valor > 0
-            AND periodicidad_unidad IN ('dia', 'mes', 'anio')
-        )
-    )
-);
-
-CREATE TABLE ejecucion (
-    id uuid PRIMARY KEY,
-    obligacion_id uuid NOT NULL
-        REFERENCES obligacion(id)
-        ON DELETE RESTRICT,
-    fecha_realizada timestamptz NOT NULL DEFAULT now(),
-    observaciones text
-);
+```text
+PENDIENTE
+URGENTE
+CORRECTO
 ```
 
-Hay varias decisiones detrás de estas pocas líneas:
+es tentador crear una columna:
 
-- una obligación pertenece a un elemento;
-- una ejecución pertenece a una obligación;
-- `dias_aviso` no puede ser negativo;
-- periodicidad y unidad aparecen juntas o no aparecen;
-- borrar una entidad referenciada no provoca una cascada automática.
+```text
+estado
+```
 
-### `ON DELETE` también es una decisión de negocio
+Pero primero deberíamos preguntar:
 
-Usar `CASCADE`, `RESTRICT` o `SET NULL` no debería decidirse «porque funciona».
+> ¿El estado es un hecho independiente o se obtiene a partir de otros hechos?
 
-Pregúntate qué significa borrar.
+El ejemplo clásico es la **edad**.
 
-Si desaparece una empresa:
+![La edad como dato derivado](/assets/img/blog/modelado-bbdd/03-dato-derivado-edad.svg)
 
-- ¿deben desaparecer sus elementos?;
-- ¿también sus obligaciones?;
-- ¿y el histórico de ejecuciones?;
-- ¿la legislación o el negocio exige conservarlo?
+Podríamos guardar:
 
-La respuesta pertenece al dominio.
+```text
+fecha_nacimiento = 15/04/1990
+edad = 36
+```
+
+Pero la edad cambia con el tiempo aunque nadie modifique la fila.
+
+Si almacenamos ambas cosas hemos creado dos datos que pueden contradecirse.
+
+Es mucho más estable guardar:
+
+```text
+fecha_nacimiento
+```
+
+y calcular la edad cuando sea necesaria.
+
+Lo mismo sucede con muchos datos habituales:
+
+- `importe_total` cuando puede calcularse a partir de líneas de detalle;
+- `dias_retraso` cuando depende de la fecha límite y de la fecha actual;
+- `numero_pedidos` cuando puede obtenerse contando registros relacionados;
+- `antiguedad` cuando depende de una fecha de alta;
+- un nivel de alerta cuando se calcula con fechas y márgenes configurados.
+
+Esto no significa que **nunca** debamos almacenar valores calculables. Hay casos de rendimiento, auditoría o necesidad histórica en los que puede ser razonable hacerlo.
+
+La cuestión didáctica importante es otra:
+
+> **No debemos guardar un dato solo porque aparezca en la interfaz.**
+
+Primero hay que preguntarse de dónde sale.
 
 ---
 
-## 10. Vistas, funciones y triggers: ¿dónde debe vivir la lógica?
+## Entonces, ¿qué debe almacenarse?
 
-PostgreSQL no es únicamente un almacén de filas. Puede ayudarnos a mantener reglas y reutilizar cálculos.
+Una forma útil de pensarlo es separar tres categorías.
 
-### Vista: buena candidata para datos derivados
+### 1. Hechos que queremos conservar
 
-Podemos encapsular el estado del semáforo en una vista:
-
-```sql
-CREATE VIEW v_obligacion_estado AS
-SELECT
-    o.*,
-    CASE
-        WHEN o.fecha_proxima IS NULL THEN 'sin_configurar'
-        WHEN o.fecha_proxima < CURRENT_DATE THEN 'vencida'
-        WHEN o.fecha_proxima <= CURRENT_DATE + o.dias_aviso THEN 'proxima'
-        ELSE 'vigente'
-    END AS estado
-FROM obligacion AS o;
-```
-
-El frontend consulta un estado coherente sin duplicarlo en cada cliente.
-
-### Función: útil para una operación con una regla clara
-
-Una función puede encapsular una operación como:
+Por ejemplo:
 
 ```text
-registrar ejecución
-        ↓
-validar datos
-        ↓
-insertar histórico
-        ↓
-calcular siguiente fecha
+fecha_nacimiento
+fecha_realizacion
+precio_unitario
+cantidad
 ```
 
-### Trigger: útil, pero no invisible por defecto
+### 2. Relaciones entre conceptos
 
-Un trigger puede reaccionar a un `INSERT`, `UPDATE` o `DELETE`.
+Por ejemplo:
 
-Es potente, pero conviene utilizarlo con intención. Si abusamos de triggers, parte del comportamiento queda escondido para quien solo está leyendo el código de la aplicación.
+```text
+elemento → empresa
+ejecución → obligación
+```
 
-Una regla práctica:
+### 3. Información que podemos obtener de lo anterior
 
-| Tipo de lógica | Lugar habitual |
-|---|---|
-| Integridad, FK, `CHECK`, `UNIQUE`, `NOT NULL` | Base de datos |
-| Cálculos derivados reutilizados por varios clientes | Vista o función |
-| Reacción automática imprescindible ante cambios de datos | Trigger, si aporta claridad |
-| Flujo de interfaz, navegación, presentación | Aplicación |
-| Procesos de negocio complejos con muchas integraciones | Servicio/aplicación, según arquitectura |
+Por ejemplo:
 
-La pregunta no es «¿base de datos o aplicación?».
+```text
+edad
+número de ejecuciones
+días de retraso
+importe de una línea
+```
 
-La pregunta es:
-
-> **¿Dónde puede esta regla mantenerse de forma más clara, consistente, comprobable y reutilizable?**
+No siempre la frontera es absoluta, pero hacerse esta pregunta mejora muchísimo un diseño.
 
 ---
 
-## 11. La IA entra después del problema, no antes
+## Conocer el dominio cambia incluso las cardinalidades
 
-La IA puede ser extraordinariamente útil durante todo este proceso.
-
-Puede ayudarnos a:
-
-- descubrir preguntas que no hemos hecho;
-- revisar cardinalidades;
-- detectar información redundante;
-- proponer restricciones;
-- comparar alternativas;
-- generar SQL;
-- preparar datos de prueba;
-- buscar casos límite;
-- revisar índices;
-- documentar decisiones.
-
-Pero necesita contexto.
-
-El ciclo útil es:
+Una de las preguntas más importantes de una relación es:
 
 ```text
-USUARIO
-   ↓ necesidades
-ANÁLISIS HUMANO
-   ↓ especificación
-IA
-   ↓ propuesta
-REVISIÓN TÉCNICA
-   ↓
-VALIDACIÓN CON EL USUARIO
-   ↺
+¿uno o muchos?
 ```
 
-Cada flecha es un lugar donde podemos perder información.
+Imaginemos que una obligación tiene un responsable.
 
-### Tres modelos mentales deben aproximarse
-
-Cuando trabajamos con IA existen, como mínimo:
+Podríamos crear:
 
 ```text
-1. Lo que el usuario necesita
-2. Lo que el desarrollador ha entendido
-3. Lo que la IA interpreta de la especificación
+obligacion.responsable_id
 ```
 
-El objetivo no es escribir el prompt más largo.
+Eso modela perfectamente una situación en la que cada obligación tiene como máximo una persona responsable.
 
-Es reducir la distancia entre esos tres modelos.
+Pero ¿qué ocurre si el dominio dice:
+
+> Una obligación puede tener varios responsables y una persona puede responsabilizarse de varias obligaciones.
+
+Ya no tenemos una relación 1:N sencilla.
+
+Tenemos una relación N:M y necesitaremos representar esa relación explícitamente.
+
+La base de datos no puede decidir esto por nosotros.
+
+Necesitamos conocer cómo funciona la realidad que estamos modelando.
+
+Ese es precisamente el tipo de decisión que una herramienta de IA tampoco puede resolver correctamente sin contexto.
+
+Puede proponernos ambas alternativas.
+
+Pero alguien debe saber cuál describe el problema real.
 
 ---
 
-## 12. Mejor que «genérame el SQL»: un prompt de análisis
+## Una IA puede generar un SQL perfecto para el problema equivocado
 
-Antes de pedir código, podemos utilizar un prompt como este:
+Aquí aparece una paradoja interesante de las herramientas actuales.
 
-```text
-Actúa como analista y diseñador de bases de datos.
-
-Todavía NO generes SQL.
-
-Necesito modelar un sistema que gestiona empresas, elementos y
-obligaciones periódicas. La interfaz mostrará un semáforo con
-obligaciones vencidas, próximas y vigentes.
-
-1. Enumera las ambigüedades de los requisitos.
-2. Hazme las preguntas que necesito responder antes de diseñar.
-3. Identifica posibles entidades y relaciones.
-4. Señala qué cardinalidades todavía no pueden decidirse.
-5. Distingue datos almacenados de datos derivados.
-6. Indica qué histórico podríamos perder con un diseño ingenuo.
-7. Propón restricciones del dominio que deberían protegerse.
-8. Expón claramente todos los supuestos que estés haciendo.
-
-No diseñes todavía la solución final hasta que respondamos
-las preguntas abiertas.
-```
-
-Después de aclarar el dominio, sí tiene sentido pedir:
-
-```text
-Ahora propone dos modelos alternativos, compara sus ventajas
-y riesgos y, finalmente, genera el DDL de PostgreSQL de la
-opción elegida.
-```
-
-Aquí la IA ya no es solamente una máquina de escribir SQL.
-
-Se convierte en un **segundo par de ojos para el análisis**.
-
----
-
-## 13. Actividad didáctica: diseña antes de ver la solución
-
-Una forma interesante de trabajar este caso en clase es **no enseñar inicialmente las tablas**.
-
-### Fase A · Solo requisitos
-
-Entrega al alumnado algo parecido a esto:
-
-> Una empresa quiere gestionar elementos que requieren obligaciones periódicas. Cada obligación puede tener una próxima fecha y unos días de aviso. Cuando se realiza debe quedar constancia. La aplicación mostrará en rojo lo vencido, en amarillo lo próximo y en verde lo vigente.
-
-Pídeles que respondan:
-
-1. ¿Qué entidades crearías?
-2. ¿Qué relación existe entre ellas?
-3. ¿Qué columnas serían PK?
-4. ¿Dónde aparecen las FK?
-5. ¿Guardarías el color?
-6. ¿Guardarías el número de obligaciones de cada elemento?
-7. ¿Cómo conservarías el histórico?
-8. ¿Qué preguntas faltan por hacer al usuario?
-
-### Fase B · Comparación de modelos
-
-Cada grupo explica su propuesta.
-
-No preguntamos todavía «¿cuál es correcta?».
-
-Preguntamos:
-
-- ¿qué situación real puede representar?;
-- ¿qué situación no puede representar?;
-- ¿qué datos podría perder?;
-- ¿qué inconsistencias permite?;
-- ¿qué ha supuesto sin preguntarlo?
-
-### Fase C · IA como revisor
-
-Ahora sí se entrega el modelo a una IA, pero con una instrucción concreta:
-
-```text
-No rediseñes todavía el modelo.
-Busca contradicciones, supuestos ocultos, datos redundantes
-y casos reales que este diseño no pueda representar.
-```
-
-### Fase D · SQL
-
-Solo cuando el modelo ha sobrevivido a la discusión pasamos a:
+Podemos explicar brevemente un sistema y obtener en segundos:
 
 - tablas;
-- PK y FK;
-- tipos;
-- `NOT NULL`;
-- `UNIQUE`;
-- `CHECK`;
-- reglas de borrado;
+- claves primarias;
+- claves foráneas;
+- restricciones;
+- consultas;
 - índices;
-- vistas y automatización.
+- documentación.
 
-Así SQL aparece como **la traducción de decisiones previas**, no como el punto de partida.
+El resultado puede parecer impecable.
+
+Pero una IA no conoce automáticamente qué significa una palabra como:
+
+```text
+elemento
+responsable
+ejecución
+vencimiento
+```
+
+Conoce patrones de diseño de bases de datos.
+
+No conoce nuestro dominio hasta que se lo explicamos.
+
+Si la especificación es ambigua, tendrá que asumir.
+
+Y una suposición incorrecta puede producir un modelo técnicamente elegante pero conceptualmente equivocado.
+
+Por eso a veces es mejor no comenzar diciendo:
+
+> «Genera las tablas».
+
+Puede ser mucho más útil empezar con:
+
+> «Hazme las preguntas que necesites antes de diseñar esta base de datos».
+
+O:
+
+> «Indica qué supuestos estás haciendo».
+
+O:
+
+> «Busca datos que estén representados más de una vez».
+
+O:
+
+> «¿Qué información perderíamos al actualizar estos registros?».
+
+Eso obliga a utilizar la IA como herramienta de análisis, no únicamente como generador de código.
 
 ---
 
-## 14. Checklist antes de crear una tabla
+## Qué cambió realmente entre el modelo inicial y el revisado
 
-Antes de ejecutar `CREATE TABLE`, intenta responder:
+Visto desde fuera, algunos cambios pueden parecer pequeños:
 
-- [ ] ¿Qué entidad o hecho representa esta tabla?
-- [ ] ¿Cuál es su identidad?
-- [ ] ¿Qué relaciones tiene?
-- [ ] ¿Las cardinalidades están claras?
-- [ ] ¿Qué columnas son obligatorias?
-- [ ] ¿Qué estados son imposibles y debe impedir la BBDD?
-- [ ] ¿Qué ocurrirá al borrar cada entidad relacionada?
-- [ ] ¿Estoy almacenando algo que podría derivarse?
-- [ ] ¿Estoy perdiendo histórico al sobrescribir datos?
-- [ ] ¿Los tipos de datos expresan la semántica correcta?
-- [ ] ¿Hay conceptos del dominio mezclados en una sola tabla?
-- [ ] ¿Qué supuestos he realizado sin confirmarlos?
-- [ ] ¿Qué deberá seguir siendo cierto aunque mañana cambie el frontend?
+| Antes | Después | Qué hemos ganado |
+|---|---|---|
+| La empresa aparecía en varios niveles | Se obtiene recorriendo las relaciones | Evitamos representar dos veces el mismo hecho |
+| `responsable_id` tenía un significado ambiguo | Diferenciamos responsabilidad y autoría de una ejecución | El modelo explica mejor el dominio |
+| Una actuación podía quedar absorbida por la actualización de la obligación | Cada ejecución se registra por separado | Conservamos histórico |
+| Algunos estados podían almacenarse directamente | Los estados temporales se calculan a partir de hechos | Evitamos información que envejece |
+| La periodicidad podía considerarse simplemente un valor | Valor y unidad forman una regla coherente | Podemos validar combinaciones |
+| Las tablas dictaban cómo entendíamos el problema | El dominio dicta qué tablas necesitamos | El modelo es consecuencia del análisis |
 
-Si varias respuestas son «no lo sé», todavía no necesitas más SQL.
+Esta última fila es, para mí, la más importante.
 
-Necesitas más análisis.
+No se trata de conseguir un diseño «con más normalización» porque sí.
+
+Se trata de que cada tabla tenga una razón de existir y cada relación pueda explicarse con una frase del mundo real.
+
+---
+
+## Una pequeña prueba para saber si entendemos el modelo
+
+Antes de escribir SQL, deberíamos poder explicar el diseño sin utilizar palabras de base de datos.
+
+En lugar de:
+
+> «Esta tabla tiene una FK a esta otra».
+
+deberíamos ser capaces de decir:
+
+> «Cada elemento pertenece a una empresa».
+
+En lugar de:
+
+> «Tenemos una relación 1:N».
+
+deberíamos decir:
+
+> «Una obligación puede generar muchas ejecuciones, pero cada ejecución corresponde a una única obligación».
+
+En lugar de:
+
+> «Este campo está normalizado».
+
+deberíamos decir:
+
+> «No necesitamos guardar aquí la empresa porque ya sabemos a qué empresa pertenece a través del elemento».
+
+Cuando podemos describirlo así, normalmente hemos entendido bastante mejor el dominio.
+
+Después ya podemos traducirlo a PK, FK, `UNIQUE`, `CHECK`, `NOT NULL` y demás herramientas del modelo relacional.
+
+---
+
+## Para trabajar este concepto en clase
+
+Una actividad sencilla consiste en dar únicamente los requisitos, sin mostrar las tablas.
+
+Por ejemplo:
+
+> Una organización gestiona distintos elementos. Algunos elementos tienen obligaciones periódicas. Cada vez que una obligación se realiza debe quedar constancia de cuándo ocurrió. La aplicación debe mostrar qué obligaciones necesitan atención.
+
+Y pedir al alumnado:
+
+1. identificar entidades;
+2. proponer relaciones;
+3. indicar sus cardinalidades;
+4. decidir qué datos almacenaría;
+5. señalar qué datos calcularía;
+6. explicar qué información histórica necesita conservar;
+7. proponer estados que nunca deberían poder almacenarse;
+8. escribir las preguntas que todavía necesitaría hacer al usuario.
+
+Solo después se comparan las propuestas.
+
+Normalmente aparecen varias soluciones aparentemente razonables.
+
+Y ese es precisamente el punto interesante: **diseñar no consiste en adivinar las tablas que tenía en mente el profesor**.
+
+Consiste en justificar qué realidad puede representar nuestro modelo y qué realidad no puede representar.
+
+---
+
+## Checklist antes de crear una tabla
+
+Antes de dar por bueno un modelo merece la pena revisar:
+
+- ¿Qué concepto real representa cada tabla?
+- ¿Cuál es su identidad?
+- ¿Qué significa cada relación?
+- ¿Las cardinalidades están claras?
+- ¿Estoy guardando el mismo hecho en dos lugares?
+- ¿Hay columnas con nombres ambiguos?
+- ¿Estoy almacenando datos que dependen del tiempo y podrían calcularse?
+- ¿Estoy sobrescribiendo información que debería formar parte del histórico?
+- ¿Qué combinaciones de valores deberían ser imposibles?
+- ¿Qué debería ocurrir al borrar una entidad relacionada?
+- ¿El modelo podría explicarse sin hablar de SQL?
+- ¿Qué suposiciones estoy haciendo porque todavía no conozco bien el dominio?
+
+Si varias respuestas son «no lo sé», probablemente todavía no necesitemos crear más tablas.
+
+Necesitamos hacer más preguntas.
 
 ---
 
 ## Conclusión
 
-PostgreSQL, Supabase, FlutterFlow y los asistentes de inteligencia artificial nos permiten construir mucho más rápido.
+El diseño de una base de datos no empieza con `CREATE TABLE`.
 
-Pero **velocidad de implementación no equivale a calidad del modelo**.
+Empieza cuando intentamos comprender el significado de palabras aparentemente sencillas como «responsable», «estado», «realización» o «periodicidad».
 
-Una IA puede generar una consulta impecable, una tabla sintácticamente perfecta o un trigger sofisticado. Si la especificación representa mal el dominio, estaremos automatizando con enorme eficiencia **el problema equivocado**.
+Un primer modelo puede funcionar y, sin embargo, contener redundancias, ambigüedades o pérdidas de información que solo aparecen cuando empezamos a pensar en casos reales.
 
-El cambio importante consiste en dejar de pensar:
+La mejora más importante no consiste necesariamente en añadir tablas.
 
-```text
-"Necesito guardar estos datos"
-```
-
-y empezar a pensar:
+Consiste en pasar de:
 
 ```text
-"Necesito representar estas entidades,
-relaciones, hechos y reglas"
+“¿Dónde guardo este dato?”
 ```
 
-Después vendrán las tablas.
+a:
 
-Después vendrá SQL.
+```text
+“¿Qué significa este dato dentro del problema?”
+```
 
-Y entonces la IA será realmente útil: no porque sustituya el análisis, sino porque puede ayudarnos a **preguntar mejor, comparar alternativas, detectar huecos y revisar decisiones**.
+Las herramientas de inteligencia artificial pueden acelerar muchísimo la parte técnica. Pueden proponer modelos, generar SQL, revisar restricciones y encontrar casos límite.
 
-> **La IA puede escribir nuestro SQL. Lo difícil sigue siendo entender qué debe significar ese SQL.**
+Pero no pueden conocer un dominio que todavía no hemos explicado.
 
----
+Por eso conocer los fundamentos de bases de datos sigue siendo importante.
 
-## Para seguir aprendiendo
+No para competir con una herramienta que escribe código más rápido.
 
-### PostgreSQL
-
-- [Constraints](https://www.postgresql.org/docs/current/ddl-constraints.html)
-- [Tipos de datos](https://www.postgresql.org/docs/current/datatype.html)
-- [CREATE VIEW](https://www.postgresql.org/docs/current/sql-createview.html)
-- [CREATE TRIGGER](https://www.postgresql.org/docs/current/sql-createtrigger.html)
-
-### Supabase
-
-- [Tables and Data](https://supabase.com/docs/guides/database/tables)
-- [Views](https://supabase.com/docs/guides/database/views)
-- [Postgres Triggers](https://supabase.com/docs/guides/database/postgres/triggers)
-- [Row Level Security](https://supabase.com/docs/guides/database/postgres/row-level-security)
-- [Managing User Data with Supabase Auth](https://supabase.com/docs/guides/auth/managing-user-data)
-
----
-
-*Artículo orientado a docencia, análisis y diseño de bases de datos. Los ejemplos se han simplificado deliberadamente para centrarse en el razonamiento del modelo y no en una implementación concreta.*
+Sino para poder decidir **si el código que ha escrito representa realmente el problema que queríamos resolver**.
