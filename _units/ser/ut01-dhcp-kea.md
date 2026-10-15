@@ -1,7 +1,7 @@
 ---
 title: "UT01 · Configuración dinámica: DHCP"
-description: "DHCPv4 desde el protocolo hasta una concesión verificable con Kea en Debian 13, clientes Linux/Windows, reservas, opciones y diagnóstico."
-summary: "DHCPv4 con Kea: DORA, diseño de pools, leases y reservas, opciones, clientes y diagnóstico basado en evidencias."
+description: "DHCPv4 desde el protocolo hasta una concesión verificable con Kea en Debian 13, clientes Linux/Windows, reservas, opciones, varias redes y diagnóstico."
+summary: "DHCPv4 con Kea: DORA, pools, leases, reservas, opciones, clientes, varias subredes sin relay y diagnóstico basado en evidencias."
 
 module_key: ser
 cycle_key: smr
@@ -22,8 +22,8 @@ reviewers:
   - fjcano
 
 rights: all-rights-reserved
-version: "1.1"
-last_reviewed: 2026-10-13
+version: "1.2"
+last_reviewed: 2026-10-16
 visibility: public
 
 ra:
@@ -47,6 +47,7 @@ tags:
   - leases
   - reservas
   - udp
+  - multired
   - diagnostico
 
 permalink: /docencia/smr/ser/ut01/
@@ -77,6 +78,10 @@ toc:
     id: diagnostico
   - title: Individualización
     id: individualizacion
+  - title: Varias redes sin relay
+    id: multired
+  - title: Prácticas guiadas
+    id: practicas
   - title: Casos resueltos
     id: casos
   - title: Chuleta
@@ -208,32 +213,27 @@ Con DHCP podemos actualizar la opción correspondiente en el servidor y hacer qu
 
 ---
 
-## 3. Por qué usamos Kea {#kea-contexto}
+## 3. Por qué usamos Kea
 
 El protocolo DHCP es estándar; **Kea es nuestra implementación de servidor**.
 
-En Debian 13 estable utilizaremos el paquete:
+En Debian 13 estable utilizaremos:
 
 ```text
 kea-dhcp4-server
 ```
 
-La versión estable empaquetada actualmente por Debian 13 es **2.6.3-1+deb13u1**.
+Kea permite trabajar con:
 
-Elegimos Kea porque:
+- interfaces;
+- subredes;
+- pools;
+- reservas;
+- opciones;
+- tiempos de concesión;
+- almacenamiento de leases.
 
-- es el servidor DHCP moderno mantenido por ISC;
-- está disponible directamente en Debian 13;
-- separa con claridad subredes, pools, reservas, opciones y backend de leases;
-- nos permite aprender conceptos transferibles a otros productos DHCP.
-
-Durante el curso también podremos comparar estos conceptos con Windows Server u otras implementaciones, pero **no aprenderemos DHCP como una lista de menús de un producto concreto**.
-
-> El antiguo ISC DHCP puede aparecer en documentación y sistemas heredados. Lo estudiaremos solo cuando ayude a interpretar configuraciones antiguas, no como plataforma principal de una instalación nueva.
-
-- [Debian 13 · paquete `kea-dhcp4-server`](https://packages.debian.org/trixie/kea-dhcp4-server)
-- [ISC · Kea DHCP](https://www.isc.org/kea/)
-- [ISC DHCP · estado del proyecto](https://www.isc.org/dhcp/)
+Durante el curso compararemos estos conceptos con otras implementaciones, pero el objetivo es aprender **DHCP**, no memorizar un producto concreto.
 
 ---
 
@@ -279,7 +279,7 @@ No culpes a DHCP de todo lo que ocurra después de obtener una IP.
 
 ---
 
-## 5. Asignación manual, dinámica y reserva {#asignaciones}
+## 5. Asignación manual, dinámica y reserva
 
 ### IP estática configurada en el cliente
 
@@ -327,8 +327,6 @@ Una impresora debe conservar siempre `192.168.50.80`, pero queremos administrar 
 
 **Mejor opción:** reserva DHCP.
 
-No escribiríamos necesariamente la IP manualmente en la impresora.
-
 ---
 
 ## PARTE I · LABORATORIO SEGURO {#laboratorio}
@@ -340,8 +338,6 @@ UT01 parte del laboratorio creado en UT00.
 ![Topología segura del laboratorio]({{ '/assets/docencia/ser/ut01/02_topologia_ser_lab.svg' | relative_url }})
 
 *Figura 2. El servidor y los clientes comparten una Red interna aislada.*
-
-#### Topología base
 
 | Equipo | SO | Interfaz SER-LAB | Función |
 |---|---|---|---|
@@ -356,8 +352,6 @@ La NIC de servicio se conecta a:
 ```text
 Red interna: SER-LAB
 ```
-
-#### Norma crítica
 
 > **Nunca conectes el servidor DHCP de prácticas en modo Puente a la red física del centro.**
 
@@ -388,7 +382,7 @@ No memorices `enp0s8`.
 
 Comprueba cuál es la interfaz real de tu VM.
 
-#### Prueba de ruta
+### Prueba de ruta
 
 ```bash
 ip route get 192.168.50.20
@@ -396,25 +390,23 @@ ip route get 192.168.50.20
 
 La salida debe utilizar la NIC interna.
 
-#### Ejercicio resuelto 3
+### Ejercicio resuelto 3
 
-`ip route get 192.168.50.20` indica:
+Si la salida indica:
 
 ```text
 via 10.0.2.2 dev enp0s3
 ```
 
-Eso no es lo esperado para un cliente de `SER-LAB`.
+para un destino de `SER-LAB`, revisa la topología antes de instalar DHCP.
 
-**Prioridad:** revisar la configuración de red antes de instalar DHCP.
-
-Kea no arregla una topología incorrecta.
+Kea no arregla una red virtual mal construida.
 
 ---
 
 ### 8. El cliente no debe tener IP fija en SER-LAB
 
-Antes de probar DHCP, la interfaz interna del cliente debe estar preparada para obtener configuración automáticamente.
+Antes de probar DHCP, la interfaz interna del cliente debe obtener configuración automáticamente.
 
 En Windows:
 
@@ -423,17 +415,15 @@ IPv4 → Obtener una dirección IP automáticamente
 DNS → Obtener la dirección del servidor DNS automáticamente
 ```
 
-En Debian, usa el gestor que realmente tenga instalado el cliente.
+En Debian, identifica primero el gestor real de la interfaz.
 
-No mezcles:
+No mezcles sin motivo:
 
 ```text
 NetworkManager
 ifupdown
 systemd-networkd
 ```
-
-sin saber cuál administra esa interfaz.
 
 ---
 
@@ -448,29 +438,9 @@ Servidor → UDP 67
 Cliente  → UDP 68
 ```
 
-Al principio el cliente todavía no conoce:
-
-- su IP definitiva;
-- el servidor;
-- la red completa.
+El cliente inicial todavía no conoce una dirección IPv4 válida ni qué servidor DHCP existe.
 
 Por eso la negociación inicial utiliza difusión.
-
-#### Idea importante
-
-Un cliente que todavía no tiene una dirección válida puede emitir un `DHCPDISCOVER`.
-
-Por eso:
-
-```text
-«no puedo hacer ping»
-```
-
-no implica necesariamente:
-
-```text
-«no puedo capturar DHCP»
-```
 
 ---
 
@@ -496,29 +466,21 @@ El cliente solicita la oferta elegida.
 
 El servidor confirma la concesión.
 
-#### Ejercicio resuelto 4
+### Ejercicio resuelto 4
 
-En una captura aparecen:
+En una captura aparecen dos `DHCPOFFER`.
 
-```text
-Discover
-Offer de 192.168.50.10
-Offer de 192.168.50.200
-Request
-ACK
-```
+No es imposible.
 
-¿Es imposible?
+Puede haber dos servidores respondiendo.
 
-No.
-
-Un cliente puede recibir más de una oferta.
-
-En nuestro laboratorio, dos servidores respondiendo deberían hacernos sospechar:
+En nuestro laboratorio eso debería hacernos revisar:
 
 - otro Kea;
 - DHCP de VirtualBox;
-- una red virtual incorrecta.
+- una Red NAT;
+- una red Solo-anfitrión;
+- una VM conectada al segmento equivocado.
 
 ---
 
@@ -533,15 +495,11 @@ También existen:
 - renovaciones;
 - retransmisiones.
 
-DORA es una ayuda para empezar a entender el protocolo, no una descripción completa de todos los estados.
+DORA es el punto de partida, no todo el protocolo.
 
 ---
 
 ### 12. Campos que merece la pena reconocer
-
-No necesitas memorizar la trama completa.
-
-Sí debes reconocer:
 
 | Campo | Para qué nos sirve |
 |---|---|
@@ -557,13 +515,9 @@ Sí debes reconocer:
 | Option 58 | T1 |
 | Option 59 | T2 |
 
-#### Ejercicio resuelto 5
+### Ejercicio resuelto 5
 
-Dos `DHCPOFFER` llegan al mismo cliente.
-
-¿Qué campo es especialmente útil para identificar qué servidor hizo cada oferta?
-
-**Option 54 · Server Identifier**.
+Si dos servidores envían ofertas al mismo cliente, **Option 54 · Server Identifier** ayuda a identificar quién respondió.
 
 ---
 
@@ -602,9 +556,9 @@ No entregues dinámicamente:
 
 Un `/24` no significa:
 
-> «tengo 254 direcciones para DHCP».
+> «Tengo 254 direcciones para DHCP».
 
-Parte del espacio puede estar reservado para:
+Parte del espacio puede reservarse para:
 
 ```text
 servidores
@@ -615,7 +569,7 @@ reservas
 crecimiento
 ```
 
-#### Ejercicio resuelto 6
+### Ejercicio resuelto 6
 
 Tenemos:
 
@@ -625,17 +579,13 @@ Tenemos:
 5 equipos de infraestructura
 ```
 
-¿Un pool de 10 direcciones es suficiente?
-
-No.
+Un pool de 10 direcciones no es suficiente.
 
 El pool debe cubrir el pico de clientes dinámicos con margen razonable.
 
 ---
 
 ### 15. Tiempo de concesión
-
-Una IP dinámica se presta durante un tiempo.
 
 ![Ciclo de concesión]({{ '/assets/docencia/ser/ut01/05_lease_tiempos.svg' | relative_url }})
 
@@ -661,8 +611,6 @@ No copies estos valores a producción sin analizar el escenario.
 
 ### 16. Opciones DHCP
 
-Algunas opciones habituales:
-
 | Opción | Contenido |
 |---|---|
 | 1 | máscara |
@@ -677,9 +625,9 @@ Algunas opciones habituales:
 
 #### En la ruta base de UT01
 
-No anunciaremos gateway en `SER-LAB`, porque nuestra red interna base no tiene una pasarela real.
+No anunciaremos gateway en `SER-LAB`, porque la red interna base no tiene una pasarela real.
 
-Tampoco debemos fingir que un DNS funciona si todavía no lo hemos implantado.
+Tampoco inventaremos un DNS que todavía no existe.
 
 Sí podemos observar:
 
@@ -689,95 +637,44 @@ Sí podemos observar:
 - T1/T2;
 - dominio de laboratorio.
 
-Más adelante, cuando exista una pasarela o DNS real, añadiremos sus opciones.
-
 ---
 
 ## PARTE IV · KEA EN DEBIAN 13 {#kea}
 
-### 17. Qué vamos a instalar
-
-En Debian 13 estable utilizaremos:
-
-```text
-kea-dhcp4-server
-```
-
-Debian 13 estable empaqueta actualmente `kea-dhcp4-server` **2.6.3-1+deb13u1**.
-
-El paquete proporciona:
-
-```text
-/usr/sbin/kea-dhcp4
-/etc/kea/kea-dhcp4.conf
-kea-dhcp4-server.service
-```
-
----
-
-### 18. Instalar Kea y herramientas de observación
-
-En `ser-ser01`:
+### 17. Instalar Kea y herramientas
 
 ```bash
 sudo apt update
 sudo apt install -y kea-dhcp4-server tcpdump nano
 ```
 
-Comprobar versión:
+Comprobar:
 
 ```bash
 apt policy kea-dhcp4-server
 kea-dhcp4 -V
-```
-
-Comprobar archivos instalados:
-
-```bash
-dpkg -L kea-dhcp4-server | less
-```
-
-#### Ejercicio resuelto 7
-
-`apt policy` muestra una versión candidata, pero:
-
-```bash
-systemctl status kea-dhcp4-server
-```
-
-dice que la unidad no existe.
-
-¿Qué revisarías?
-
-Primero confirma que el paquete está realmente instalado:
-
-```bash
 dpkg -l | grep kea-dhcp4-server
 ```
 
-Consultar un repositorio no equivale a instalar el paquete.
-
 ---
 
-### 19. Hacer copia antes de editar
+### 18. Copia de seguridad
 
 ```bash
 sudo cp -a /etc/kea/kea-dhcp4.conf /etc/kea/kea-dhcp4.conf.bak
 ```
 
-Edita la configuración:
+Editar:
 
 ```bash
 sudo nano /etc/kea/kea-dhcp4.conf
 ```
 
-`nano` se instala expresamente en el paso anterior para que todos los puestos utilicen la misma ruta de trabajo.
-
 ---
 
-### 20. Configuración base
+### 19. Configuración base
 
-> Sustituye `enp0s8` por la interfaz real de `SER-LAB`.
+Sustituye `enp0s8` por la interfaz real de `SER-LAB`.
 
 ```json
 {
@@ -818,7 +715,7 @@ sudo nano /etc/kea/kea-dhcp4.conf
 }
 ```
 
-#### Qué significa cada bloque
+### Qué significa cada bloque
 
 | Bloque | Función |
 |---|---|
@@ -834,15 +731,11 @@ sudo nano /etc/kea/kea-dhcp4.conf
 
 ---
 
-### 21. Validar antes de aplicar
+### 20. Validar antes de aplicar
 
 ```bash
 sudo kea-dhcp4 -t /etc/kea/kea-dhcp4.conf
 ```
-
-Este comando comprueba la configuración y muestra el primer error que encuentre.
-
-> **Importante:** `-t` es una comprobación previa. No demuestra que la interfaz exista, que el socket pueda abrirse ni que un cliente vaya a conseguir una concesión.
 
 Después:
 
@@ -851,48 +744,28 @@ sudo systemctl restart kea-dhcp4-server
 systemctl status kea-dhcp4-server --no-pager
 ```
 
-Comprobación adicional del socket UDP:
-
-```bash
-sudo ss -lunp | grep ':67'
-```
-
-> **Importante:** esta comprobación es auxiliar. Kea puede utilizar *raw sockets* en sistemas compatibles, por lo que la ausencia de una línea UDP 67 en `ss` **no demuestra por sí sola** que DHCP esté fallando. Para verificar el servicio combina estado, logs, tráfico DHCP y una concesión real desde cliente.
-
-Ver registros:
+Logs:
 
 ```bash
 sudo journalctl -u kea-dhcp4-server -b -n 50 --no-pager
 ```
 
-#### Ejercicio resuelto 8
-
-`kea-dhcp4 -t` termina correctamente, pero el servicio no arranca.
-
-¿Es una contradicción?
-
-No.
-
-La validación de configuración no comprueba todo el entorno de ejecución.
-
-Siguiente evidencia:
+Comprobación auxiliar:
 
 ```bash
-systemctl status kea-dhcp4-server
-journalctl -u kea-dhcp4-server -b -n 50 --no-pager
-ip -br link
+sudo ss -lunp | grep ':67'
 ```
+
+> La ausencia de una línea UDP 67 en `ss` no demuestra por sí sola un fallo de DHCP. Kea puede utilizar raw sockets. La prueba completa combina configuración, servicio, logs, tráfico DHCP y concesión real.
 
 ---
 
-### 22. Orden de trabajo recomendado
-
-Cada cambio importante seguirá esta secuencia:
+### 21. Orden de trabajo recomendado
 
 ```text
 1. copia / plan de vuelta atrás
 2. editar una sola cosa
-3. kea-dhcp4 -t
+3. validar
 4. restart
 5. status
 6. logs
@@ -902,23 +775,19 @@ Cada cambio importante seguirá esta secuencia:
 10. comprobar que no rompimos otra cosa
 ```
 
-No reinicies diez veces esperando un resultado distinto.
-
 ---
 
 ## PARTE V · CLIENTES Y CONCESIONES {#clientes}
 
-### 23. Cliente Windows 11
+### 22. Cliente Windows
 
-Configura la interfaz de `SER-LAB` para obtener IPv4 automáticamente.
-
-Después:
+Configura la NIC de `SER-LAB` para obtener IPv4 automáticamente.
 
 ```bat
 ipconfig /all
 ```
 
-Para forzar una nueva negociación:
+Forzar negociación:
 
 ```bat
 ipconfig /release
@@ -931,61 +800,45 @@ Comprueba:
 - dirección dentro del pool;
 - máscara;
 - servidor DHCP;
-- duración de la concesión;
-- sufijo/dominio cuando proceda.
+- duración de concesión.
 
-#### Qué no debes esperar en la ruta base
-
-Como `SER-LAB` está aislada:
-
-- no esperamos gateway si no existe `ser-gw01`;
-- no esperamos navegar por Internet a través de esa NIC;
-- no confundimos «DHCP funciona» con «todo Internet funciona».
+No esperes gateway en la LAN base si no existe uno.
 
 ---
 
-### 24. Cliente Debian 13
+### 23. Cliente Debian
 
-Primero identifica el gestor de red:
+Primero identifica el gestor:
 
 ```bash
 systemctl is-active NetworkManager systemd-networkd networking
 ```
 
-No es necesario que los tres estén activos.
-
-#### Si el cliente utiliza NetworkManager
+#### NetworkManager
 
 ```bash
 nmcli device status
 nmcli connection show
-```
-
-Después de activar el perfil DHCP:
-
-```bash
 nmcli -f GENERAL,IP4,DHCP4 device show INTERFAZ
-ip -br address
-ip route
 ```
 
-Para renovar de forma sencilla en el laboratorio:
+Para renovar:
 
 ```bash
 sudo nmcli connection down "NOMBRE_CONEXION"
 sudo nmcli connection up "NOMBRE_CONEXION"
 ```
 
-#### Si el cliente utiliza ifupdown
+#### ifupdown
 
-El perfil de esa NIC debe utilizar DHCP:
+Perfil:
 
 ```text
 auto enp0s8
 iface enp0s8 inet dhcp
 ```
 
-Después, desde la consola local:
+Aplicar desde consola local:
 
 ```bash
 sudo ifdown enp0s8
@@ -994,20 +847,13 @@ ip -br address
 ip route
 ```
 
-> **No copies `enp0s8` sin comprobar el nombre real de la interfaz.**
+No copies `enp0s8` sin comprobar el nombre real.
 
 ---
 
-### 25. Primera concesión
+### 24. Primera concesión
 
-Con Kea arrancado y el cliente en automático:
-
-1. inicia una renovación;
-2. observa el cliente;
-3. observa el registro de Kea;
-4. comprueba el archivo de leases.
-
-En el servidor:
+Servidor:
 
 ```bash
 sudo journalctl -u kea-dhcp4-server -f
@@ -1019,19 +865,21 @@ En otra terminal:
 sudo head -n 5 /var/lib/kea/kea-leases4.csv
 ```
 
-Tras obtener una concesión, el fichero de leases debe contener información relacionada con la dirección asignada.
+La IP del cliente y la registrada por Kea deben ser coherentes.
 
 ---
 
-### 26. Capturar DHCP con `tcpdump`
-
-En el servidor:
+### 25. Capturar DHCP con tcpdump
 
 ```bash
-sudo tcpdump -ni enp0s8 -vv 'udp port 67 or udp port 68'
+sudo tcpdump -ni INTERFAZ -vv 'udp port 67 or udp port 68'
 ```
 
-Después fuerza una negociación desde el cliente.
+Guardar PCAP:
+
+```bash
+sudo tcpdump -ni INTERFAZ -w ut01-dhcp.pcap 'udp port 67 or udp port 68'
+```
 
 Busca:
 
@@ -1042,23 +890,11 @@ Request
 ACK
 ```
 
-Detén la captura con `Ctrl+C`.
-
-#### Guardar PCAP
-
-```bash
-sudo tcpdump -ni enp0s8 -w ut01-dhcp.pcap 'udp port 67 or udp port 68'
-```
-
-El archivo puede abrirse posteriormente con Wireshark.
-
-> Sustituye `enp0s8` por la NIC real de `SER-LAB`.
-
 ---
 
-### 27. Wireshark: no entregues solo una captura
+### 26. Wireshark
 
-Filtro de visualización:
+Filtro:
 
 ```text
 dhcp
@@ -1076,26 +912,6 @@ Identifica al menos:
 | Option 58/59 | T1/T2 |
 | Option 15 | dominio si se envía |
 
-#### Ejercicio resuelto 9
-
-El ACK contiene:
-
-```text
-yiaddr = 192.168.50.104
-Server Identifier = 192.168.50.10
-Lease Time = 3600
-```
-
-El cliente muestra:
-
-```text
-192.168.50.104/24
-```
-
-y el CSV de Kea contiene esa IP.
-
-Las tres fuentes son coherentes.
-
 ![Triángulo de evidencias]({{ '/assets/docencia/ser/ut01/06_triangulo_evidencias.svg' | relative_url }})
 
 *Figura 6. Captura, lease y estado del cliente deben contar la misma historia.*
@@ -1104,9 +920,9 @@ Las tres fuentes son coherentes.
 
 ## PARTE VI · RESERVAS Y OPCIONES {#reservas}
 
-### 28. Crear una reserva
+### 27. Crear una reserva
 
-Obtén primero la MAC real del cliente.
+Obtén la MAC real.
 
 Linux:
 
@@ -1120,7 +936,7 @@ Windows:
 ipconfig /all
 ```
 
-Dentro de la entrada de `subnet4`, añade:
+Dentro de `subnet4`:
 
 ```json
 "reservations": [
@@ -1141,54 +957,31 @@ sudo systemctl restart kea-dhcp4-server
 
 Renueva el cliente.
 
-Si la identidad coincide, deberá recibir:
-
-```text
-192.168.50.80
-```
-
 ---
 
-### 29. Reserva DHCP no es IP manual
+### 28. Reserva DHCP no es IP manual
 
 Con reserva:
 
 ```text
-cliente sigue usando DHCP
-        ↓
+cliente usa DHCP
+      ↓
 servidor reconoce identidad
-        ↓
+      ↓
 entrega dirección estable
-        ↓
-puede entregar también opciones
-        ↓
-queda registro de la concesión
+      ↓
+puede entregar opciones
+      ↓
+queda registrada la concesión
 ```
 
-Con IP manual:
-
-```text
-la dirección se configura directamente en el cliente
-```
-
-#### Ejercicio resuelto 10
-
-El cliente recibe `.112` en vez de la reserva `.80`.
-
-Antes de cambiar nada, compara:
-
-- MAC real;
-- `chaddr` / client-id de la captura;
-- reserva de Kea;
-- concesión anterior.
-
-Hay que comprobar primero **qué identidad presenta realmente el cliente**.
+Con IP manual, la dirección se configura directamente en el cliente.
 
 ---
 
-### 30. Añadir gateway solo si existe
+### 29. Añadir gateway solo si existe
 
-Si posteriormente incorporamos una pasarela real:
+Si incorporamos una pasarela real:
 
 ```text
 ser-gw01 → 192.168.50.1
@@ -1203,13 +996,13 @@ podremos añadir:
 }
 ```
 
-Si no existe una pasarela, **no anunciamos una**.
+Si no existe pasarela, no la anunciamos.
 
 ---
 
-### 31. Añadir DNS cuando exista
+### 30. Añadir DNS cuando exista
 
-Cuando UT02 implante un DNS real, podremos añadir una opción como:
+Cuando implantemos un DNS real:
 
 ```json
 {
@@ -1220,13 +1013,13 @@ Cuando UT02 implante un DNS real, podremos añadir una opción como:
 
 DHCP puede entregar la dirección del DNS.
 
-Eso no demuestra que DNS resuelva correctamente.
+Eso no demuestra que DNS funcione correctamente.
 
 ---
 
 ## PARTE VII · DIAGNÓSTICO {#diagnostico}
 
-### 32. Escalera DHCP
+### 31. Escalera DHCP
 
 ![Escalera de diagnóstico DHCP]({{ '/assets/docencia/ser/ut01/07_diagnostico_dhcp.svg' | relative_url }})
 
@@ -1249,25 +1042,23 @@ Orden recomendado:
 
 ---
 
-### 33. Cliente Windows obtiene `169.254.x.x`
+### 32. Cliente Windows obtiene 169.254.x.x
 
-Una dirección APIPA suele indicar que Windows no ha obtenido una concesión DHCP útil.
+Una dirección APIPA suele indicar que Windows no ha conseguido una concesión útil.
 
-No empieces por DNS.
-
-Pregunta primero:
+Primera pregunta:
 
 ```text
 ¿llega un Discover al servidor?
 ```
 
-Servidor:
+Captura:
 
 ```bash
-sudo tcpdump -ni enp0s8 'udp port 67 or udp port 68'
+sudo tcpdump -ni INTERFAZ 'udp port 67 or udp port 68'
 ```
 
-Si no llega:
+Si no llega Discover:
 
 - red virtual;
 - NIC;
@@ -1277,16 +1068,14 @@ Si no llega:
 Si llega Discover pero no Offer:
 
 - Kea;
-- interfaz de escucha;
+- interfaz;
 - subred;
 - pool;
 - logs.
 
 ---
 
-### 34. Kea valida pero no arranca
-
-Pruebas:
+### 33. Kea valida pero no arranca
 
 ```bash
 sudo kea-dhcp4 -t /etc/kea/kea-dhcp4.conf
@@ -1299,31 +1088,14 @@ Hipótesis:
 
 - interfaz inexistente;
 - dirección/subred incoherente;
-- conflicto de socket;
-- problema de runtime.
+- conflicto;
+- problema de ejecución.
 
-#### Ejercicio resuelto 11
-
-Configuración:
-
-```json
-"interfaces": [ "enp0s9" ]
-```
-
-La VM solo tiene:
-
-```text
-enp0s3
-enp0s8
-```
-
-El test de configuración no sustituye las pruebas de ejecución.
-
-El log y `ip -br link` permiten localizar la discrepancia.
+La configuración puede ser sintácticamente válida y fallar al aplicarse al sistema real.
 
 ---
 
-### 35. Dos ofertas
+### 34. Dos ofertas
 
 Síntoma:
 
@@ -1337,26 +1109,17 @@ Busca:
 - MAC origen;
 - dos `DHCPOFFER`.
 
-Causas habituales en laboratorio:
+Posibles causas:
 
 - segundo Kea;
-- DHCP integrado en una Red NAT;
-- DHCP de una red Solo-anfitrión;
-- VM conectada al segmento equivocado.
-
-Contención:
-
-```text
-aislar
-identificar
-apagar el DHCP no autorizado
-renovar
-volver a capturar
-```
+- DHCP integrado de VirtualBox;
+- Red NAT;
+- Solo-anfitrión;
+- VM en segmento incorrecto.
 
 ---
 
-### 36. IP correcta pero no navega
+### 35. IP correcta pero no navega
 
 No concluyas:
 
@@ -1370,41 +1133,25 @@ Primero demostramos:
 cliente ↔ servidor dentro de la LAN
 ```
 
-Internet a través de una pasarela requiere que dicha pasarela exista y enrute.
-
 ---
 
-### 37. Reserva ignorada
+### 36. Reserva ignorada
 
-Comprueba:
+Compara:
 
-```bash
-ip link
-```
+- MAC real;
+- `chaddr`;
+- `client-id`;
+- reserva de Kea;
+- concesión anterior.
 
-o en Windows:
-
-```bat
-ipconfig /all
-```
-
-y compara con la reserva.
-
-Revisa también la captura:
-
-```text
-chaddr
-client-id
-requested IP
-```
-
-No cambies la reserva hasta saber qué identidad presenta el cliente.
+No cambies cosas al azar hasta saber qué identidad presenta el cliente.
 
 ---
 
 ## PARTE VIII · INDIVIDUALIZACIÓN {#individualizacion}
 
-### 38. Regla por puesto
+### 37. Regla por puesto
 
 Para dificultar la copia sin cambiar la dificultad, cada alumno utilizará su número de puesto `P`.
 
@@ -1430,7 +1177,7 @@ Dominio            pPP.ser.test
 Red VirtualBox     SER-DHCP-PXX
 ```
 
-#### Ejemplo ficticio: puesto 7
+### Ejemplo ficticio: puesto 7
 
 ```text
 P = 7
@@ -1446,77 +1193,303 @@ Red interna        SER-DHCP-P07
 
 ---
 
-## PARTE IX · CASOS RESUELTOS {#casos}
+## PARTE IX · VARIAS REDES SIN RELAY {#multired}
 
-### 39. Caso A · `169.254.x.x`
+### 38. De una red a dos redes directamente conectadas
 
-#### Síntoma
+Hasta ahora Kea ha trabajado con una única LAN.
 
-Windows muestra:
-
-```text
-Autoconfiguration IPv4 Address: 169.254.x.x
-```
-
-#### Hipótesis iniciales
+Ahora ampliaremos el laboratorio para entender que **un servidor DHCP puede atender varias subredes cuando está conectado directamente a todas ellas**.
 
 ```text
-cliente en red virtual incorrecta
-NIC desconectada
-Kea detenido
-Kea escucha en otra interfaz
-Discover bloqueado
+CLIENTE A ── RED A ── NIC A [ SERVIDOR KEA ] NIC B ── RED B ── CLIENTE B
 ```
 
-#### Primera prueba
+En este escenario:
 
-En servidor:
+- Red A y Red B son dominios de difusión distintos;
+- Kea tiene una interfaz dentro de cada red;
+- cada interfaz del servidor tiene IP fija;
+- cada red necesita su propia entrada `subnet4`;
+- **no necesitamos relay**, porque el broadcast de cada cliente llega directamente a una NIC del servidor.
+
+---
+
+### 39. Preparar una segunda NIC
+
+Con la VM apagada, añade una nueva tarjeta en VirtualBox:
+
+```text
+Adaptador 3
+Conectado a: Red interna
+Nombre: SER-DHCP2-PXX
+Cable conectado: sí
+```
+
+Al arrancar Debian:
 
 ```bash
-sudo tcpdump -ni enp0s8 'udp port 67 or udp port 68'
+ip -br link
+ip -br address
 ```
 
-#### Interpretación
+Identifica la nueva interfaz.
+
+No supongas que se llama `enp0s9`.
+
+---
+
+### 40. La segunda NIC necesita IP persistente
+
+Ejemplo para P07:
+
+```text
+Red A   192.168.57.0/24
+Kea A   192.168.57.10
+
+Red B   192.168.67.0/24
+Kea B   192.168.67.10
+```
+
+Para obtener Red B de forma determinista podemos utilizar:
+
+```text
+M = 60 + P
+Red B = 192.168.M.0/24
+```
+
+Para P07:
+
+```text
+M = 67
+Red B = 192.168.67.0/24
+```
+
+Configura la nueva NIC usando **el mismo gestor de red que ya utiliza tu Debian**.
+
+No añadas una segunda puerta de enlace predeterminada.
+
+Comprueba:
+
+```bash
+ip -br address
+ip route
+```
+
+Debes ver rutas conectadas a las dos LAN.
+
+---
+
+### 41. Kea escucha en varias interfaces
+
+`interfaces-config` acepta una lista.
+
+Ejemplo:
+
+```json
+"interfaces-config": {
+  "interfaces": [ "enp0s8", "enp0s9" ]
+}
+```
+
+Los nombres son ejemplos.
+
+Usa los de tu máquina.
+
+---
+
+### 42. Declarar dos subredes
+
+Ejemplo P07:
+
+```json
+"subnet4": [
+  {
+    "id": 1,
+    "subnet": "192.168.57.0/24",
+    "pools": [
+      {
+        "pool": "192.168.57.100 - 192.168.57.149"
+      }
+    ],
+    "option-data": [
+      {
+        "name": "domain-name",
+        "data": "p07-a.ser.test"
+      }
+    ]
+  },
+  {
+    "id": 2,
+    "subnet": "192.168.67.0/24",
+    "pools": [
+      {
+        "pool": "192.168.67.100 - 192.168.67.149"
+      }
+    ],
+    "option-data": [
+      {
+        "name": "domain-name",
+        "data": "p07-b.ser.test"
+      }
+    ]
+  }
+]
+```
+
+Cada subred tiene:
+
+- `id` distinto;
+- red distinta;
+- pool distinto.
+
+---
+
+### 43. ¿Por qué aquí no hace falta DHCP Relay?
+
+Porque el servidor **está directamente conectado a las dos redes**.
+
+```text
+Red A                         Red B
+cliente A ─ broadcast ─> NIC A   NIC B <─ broadcast ─ cliente B
+                            [ KEA ]
+```
+
+El relay aparece cuando el servidor está en otra red:
+
+```text
+CLIENTE B ── RED B ── ROUTER/RELAY ── RED A ── SERVIDOR KEA
+```
+
+| Situación | ¿Relay? |
+|---|---|
+| Kea tiene una NIC en la red del cliente | No |
+| Kea está en otra red separada por router | Sí, si queremos usar ese servidor |
+
+---
+
+### 44. Prueba de regresión
+
+Antes de ampliar:
+
+```text
+Red A funciona
+```
+
+Después de ampliar:
+
+```text
+Red A debe seguir funcionando
+Red B debe funcionar
+```
+
+Comprueba:
+
+```bash
+ip -br address
+ip route
+sudo kea-dhcp4 -t /etc/kea/kea-dhcp4.conf
+systemctl status kea-dhcp4-server --no-pager
+sudo journalctl -u kea-dhcp4-server -b -n 50 --no-pager
+```
+
+Cliente A:
+
+```text
+IP del pool A
+```
+
+Cliente B:
+
+```text
+IP del pool B
+```
+
+Leases:
+
+```bash
+sudo tail -n 20 /var/lib/kea/kea-leases4.csv
+```
+
+Deben aparecer concesiones coherentes con ambas redes.
+
+---
+
+## PARTE X · PRÁCTICAS GUIADAS {#practicas}
+
+Las siguientes prácticas son de entrenamiento. Las consignas evaluables, evidencias concretas y entregas se publican en Moodle.
+
+| Práctica | Qué vas a hacer | Tiempo orientativo |
+|---|---|---:|
+| **P01 · Mi primer Kea** | instalar, crear pool y obtener una concesión | 3 h |
+| **P02 · Reserva** | reservar una IP por MAC | 2 h |
+| **P03 · Dos clientes** | dinámica + reserva y consulta de leases | 2 h |
+| **P04 · DORA** | capturar Discover, Offer, Request y ACK | 2 h |
+| **P05 · Dos redes** | un Kea con dos NIC y dos `subnet4`, sin relay | 3 h |
+
+### Qué debe demostrar P05
+
+- servidor con una IP fija en cada LAN;
+- dos redes internas distintas;
+- dos interfaces Kea;
+- dos `subnet4`;
+- cliente A recibe del pool A;
+- cliente B recibe del pool B;
+- las leases reflejan ambas redes;
+- Red A sigue funcionando después de ampliar.
+
+---
+
+## PARTE XI · CASOS RESUELTOS {#casos}
+
+### 45. Caso A · Windows muestra 169.254.x.x
+
+Primera prueba:
+
+```bash
+sudo tcpdump -ni INTERFAZ 'udp port 67 or udp port 68'
+```
 
 **No aparece Discover**
 
-Prioridad:
+Revisar:
 
 ```text
-VirtualBox / NIC / red interna / cliente
+VirtualBox
+NIC
+red interna
+cliente
 ```
 
 **Aparece Discover pero no Offer**
 
-Prioridad:
+Revisar:
 
 ```text
-Kea / interfaz / subred / pool / logs
+Kea
+interfaz
+subnet4
+pool
+logs
 ```
 
 ---
 
-### 40. Caso B · configuración válida, servicio `failed`
+### 46. Caso B · configuración válida, servicio failed
 
 ```bash
 sudo kea-dhcp4 -t /etc/kea/kea-dhcp4.conf
 ```
 
-no muestra errores.
-
-Sin embargo:
+no muestra errores, pero:
 
 ```bash
 systemctl status kea-dhcp4-server
 ```
 
-muestra:
+muestra `failed`.
 
-```text
-failed
-```
-
-#### Diagnóstico
+Comprueba:
 
 ```bash
 sudo journalctl -u kea-dhcp4-server -b -n 50 --no-pager
@@ -1524,25 +1497,11 @@ ip -br link
 ip -br address
 ```
 
-Descubrimos que Kea está configurado para:
-
-```text
-enp0s9
-```
-
-pero la NIC de servicio es:
-
-```text
-enp0s8
-```
-
-#### Conclusión
-
-La configuración puede ser sintácticamente válida y aun así fallar al aplicarse en el entorno real.
+Si Kea escucha en una interfaz inexistente, el JSON puede ser válido y el servicio fallar.
 
 ---
 
-### 41. Caso C · dos `DHCPOFFER`
+### 47. Caso C · dos DHCPOFFER
 
 Captura:
 
@@ -1551,23 +1510,15 @@ Offer 1 → Server Identifier 192.168.50.10
 Offer 2 → Server Identifier 10.0.2.2
 ```
 
-En una práctica aislada esto sugiere otro servidor DHCP.
+Hay dos autoridades DHCP en el mismo segmento.
 
-Revisamos:
+No lo arregles cambiando el pool.
 
-```text
-modo de red
-DHCP integrado de VirtualBox
-otras VM
-```
-
-No arreglamos el problema cambiando el pool de Kea.
-
-El problema es que existen **dos autoridades DHCP en el mismo segmento**.
+Aísla y localiza el segundo servidor.
 
 ---
 
-### 42. Caso D · reserva incorrecta
+### 48. Caso D · reserva incorrecta
 
 Reserva:
 
@@ -1581,17 +1532,7 @@ Cliente:
 08:00:27:aa:bb:c7
 ```
 
-El cliente recibe `.112`.
-
-#### Solución
-
-No vaciamos todas las leases ni reiniciamos todo.
-
-Primero corregimos la identidad:
-
-```json
-"hw-address": "08:00:27:aa:bb:c7"
-```
+Primero corrige la identidad.
 
 Después:
 
@@ -1600,19 +1541,38 @@ sudo kea-dhcp4 -t /etc/kea/kea-dhcp4.conf
 sudo systemctl restart kea-dhcp4-server
 ```
 
-y renovamos el cliente.
+y renueva.
 
 ---
 
-## PARTE X · CHULETA OPERATIVA {#chuleta}
+### 49. Caso E · Red A funciona y Red B no
 
-### 43. Servidor
+Comprueba en orden:
+
+```text
+1. ¿NIC B está conectada?
+2. ¿NIC B tiene IP fija?
+3. ¿la ruta conectada a Red B existe?
+4. ¿Kea escucha en NIC B?
+5. ¿existe subnet4 de Red B?
+6. ¿el pool pertenece a Red B?
+7. ¿el cliente B está realmente en la misma red interna?
+8. ¿llega Discover por NIC B?
+```
+
+No modifiques Red A si Red A sigue funcionando.
+
+---
+
+## PARTE XII · CHULETA OPERATIVA {#chuleta}
+
+### Servidor
 
 ```bash
 ip -br link
 ip -br address
 ip route
-ip route get 192.168.50.20
+ip route get DIRECCION
 
 sudo apt update
 sudo apt install -y kea-dhcp4-server tcpdump nano
@@ -1629,12 +1589,10 @@ sudo systemctl restart kea-dhcp4-server
 systemctl status kea-dhcp4-server --no-pager
 sudo journalctl -u kea-dhcp4-server -b -n 50 --no-pager
 
-# Comprobación auxiliar: no es concluyente si Kea usa raw sockets
-sudo ss -lunp | grep ':67'
-sudo head -n 5 /var/lib/kea/kea-leases4.csv
+sudo tail -n 20 /var/lib/kea/kea-leases4.csv
 ```
 
-### 44. Captura
+### Captura
 
 ```bash
 sudo tcpdump -ni INTERFAZ -vv 'udp port 67 or udp port 68'
@@ -1652,7 +1610,7 @@ Wireshark:
 dhcp
 ```
 
-### 45. Windows
+### Windows
 
 ```bat
 ipconfig /all
@@ -1661,7 +1619,7 @@ ipconfig /renew
 ipconfig /all
 ```
 
-### 46. Debian con NetworkManager
+### Debian con NetworkManager
 
 ```bash
 nmcli device status
@@ -1673,13 +1631,13 @@ ip route
 
 ---
 
-## PARTE XI · AMPLIACIÓN {#ampliacion}
+## PARTE XIII · AMPLIACIÓN {#ampliacion}
 
-### 47. Relay DHCP
+### 50. DHCP Relay
 
 DHCP inicial utiliza broadcast y un router no reenvía ese broadcast de forma ordinaria.
 
-En redes con varias subredes se utiliza un **DHCP relay**.
+En redes donde el servidor **no está directamente conectado** a la LAN del cliente se utiliza un relay.
 
 ```text
 CLIENTE LAN B
@@ -1689,15 +1647,13 @@ RELAY
 KEA central
 ```
 
-El relay permite al servidor conocer la subred de origen y seleccionar la política correspondiente.
+El relay permite que una infraestructura DHCP centralizada atienda otras subredes.
 
-Este concepto se introduce en UT01, pero una topología de relay completa se considera ampliación para SMR.
+En SMR lo introducimos conceptualmente. La implantación completa pertenece a una ampliación.
 
 ---
 
-### 48. DHCP y DNS
-
-En UT02 aparecerá una relación muy importante:
+### 51. DHCP y DNS
 
 ```text
 DHCP
@@ -1721,14 +1677,32 @@ Cada servicio debe comprobarse por separado.
 
 ---
 
-## PARTE XII · REFERENCIAS OFICIALES {#referencias}
+### 52. Windows Server
 
-### 49. Currículo
+El protocolo no cambia aunque cambie la plataforma.
+
+En una implementación equivalente con Windows Server encontraremos:
+
+```text
+ámbitos
+exclusiones
+reservas
+concesiones
+opciones
+```
+
+El objetivo será reconocer los mismos conceptos, no repetirlos mecánicamente.
+
+---
+
+## PARTE XIV · REFERENCIAS OFICIALES {#referencias}
+
+### Currículo
 
 - [Decreto 272/2009, de 28 de diciembre · currículo de SMR en Extremadura](https://doe.juntaex.es/eli/es-ex/d/2009/12/28/272/dof/spa/pdf)
 - [Real Decreto 1691/2007 · título de Técnico en Sistemas Microinformáticos y Redes](https://www.boe.es/buscar/doc.php?id=BOE-A-2008-819)
 
-### 50. DHCP y Kea
+### DHCP y Kea
 
 - [ISC Kea · DHCPv4 Server](https://kea.readthedocs.io/en/latest/arm/dhcp4-srv.html)
 - [ISC Kea · Configuration Examples](https://kea.readthedocs.io/en/latest/config-examples.html)
@@ -1736,15 +1710,14 @@ Cada servicio debe comprobarse por separado.
 - [RFC 2131 · Dynamic Host Configuration Protocol](https://www.rfc-editor.org/rfc/rfc2131.html)
 - [RFC 2132 · DHCP Options](https://www.rfc-editor.org/rfc/rfc2132.html)
 
-### 51. Herramientas y clientes
+### Herramientas
 
 - [Wireshark User's Guide](https://www.wireshark.org/docs/wsug_html_chunked/)
 - [Microsoft · `ipconfig`](https://learn.microsoft.com/en-us/windows-server/administration/windows-commands/ipconfig)
 - [Oracle VirtualBox · Networking](https://docs.oracle.com/en/virtualization/virtualbox/7.2/user/networkingdetails.html)
 
 ---
-
-### 52. Puente hacia UT02
+## 53. Puente hacia UT02
 
 Al terminar UT01 deberías poder responder:
 
@@ -1755,6 +1728,7 @@ Al terminar UT01 deberías poder responder:
 ¿qué servidor respondió?
 ¿dónde está registrada la concesión?
 ¿qué ocurre si el cliente no recibe respuesta?
+¿cómo atiende Kea dos redes directamente conectadas?
 ```
 
 La siguiente pregunta será:
