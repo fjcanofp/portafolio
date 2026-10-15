@@ -12,7 +12,7 @@ description: "Fco. Javier Cano Granado: docente de FP, ingeniero informático, d
     <div class="about-v2-hero terminal-card">
       <div class="about-v2-photo-wrap">
         <img class="about-v2-photo"
-             src="{{ '/assets/img/profile/fjcano-profesional.jpg' | relative_url }}"
+             src="{{ '/assets/img/profile/fjcano-profesional.png' | relative_url }}"
              alt="Retrato profesional de Fco. Javier Cano Granado"
              width="800" height="1000" fetchpriority="high">
         <span class="about-v2-photo-tag">fjcanogra.es · 2026</span>
@@ -84,7 +84,7 @@ description: "Fco. Javier Cano Granado: docente de FP, ingeniero informático, d
       <header class="about-v2-section-head"><span>03 / FORMACIÓN E IDIOMAS</span><h2>Aprender para enseñar mejor</h2></header>
       <div class="about-v2-info-grid">
         <article class="about-v2-info terminal-card"><h3>Formación y actividad</h3><p><strong>Ingeniería Informática</strong> · Universidad de Extremadura (UEX).</p><p><strong>Funcionario de carrera</strong> · Profesor de Enseñanza Secundaria, especialidad Informática.</p><p><strong>FEVAL</strong> · Formación tecnológica en Python, análisis de datos y otras materias informáticas.</p><p><strong>Python aplicado a áreas técnicas</strong> · especialización y formación continua; interés por IA y Deep Learning.</p></article>
-        <article class="about-v2-info terminal-card"><h3>Idiomas</h3><ul class="about-v2-languages"><li><span>Español</span><strong>Nativo</strong></li><li><span>Inglés</span><strong>C1 · EOI</strong></li><li><span>Francés</span><strong>B1</strong></li><li><span>Alemán</span><strong>A2</strong></li><li><span>Portugués</span><strong>Básico</strong></li></ul></article>
+        <article class="about-v2-info terminal-card"><h3>Idiomas</h3><ul class="about-v2-languages"><li><span>Español</span><strong>Nativo</strong></li><li><span>Inglés</span><strong>C1 · EOI</strong></li><li><span>Francés</span><strong>B1</strong></li><li><span>Portugués</span><strong>Básico</strong></li></ul></article>
       </div>
 
       <header class="about-v2-section-head"><span>04 / CÓMO TRABAJO</span><h2>Comprender, construir y comprobar</h2></header>
