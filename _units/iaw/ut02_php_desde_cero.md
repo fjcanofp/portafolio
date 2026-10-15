@@ -2255,4 +2255,4 @@ Los nombres de servicio y las rutas de registros pueden variar según la instala
 - [VS Code Remote - SSH](https://code.visualstudio.com/docs/remote/ssh).
 - [OWASP: prevención de XSS](https://cheatsheetseries.owasp.org/cheatsheets/Cross_Site_Scripting_Prevention_Cheat_Sheet.html).
 
-**Continuación:** [UT03 · PHP y bases de datos]({{ '/docencia/asir/iaw/ut03/' | relative_url }}). Después de comprender variables, control de flujo, funciones, formularios y estado, incorporaremos PDO y MariaDB para conservar datos de manera estructurada y duradera.
+**Continuación:** UT03 · PHP y bases de datos. Tras dominar variables, control de flujo, funciones, formularios y estado, incorporaremos PDO y MariaDB para conservar datos de manera estructurada y duradera.
