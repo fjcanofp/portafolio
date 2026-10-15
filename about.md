@@ -12,7 +12,7 @@ description: "Fco. Javier Cano Granado: docente de FP, ingeniero informático, d
     <div class="about-v2-hero terminal-card">
       <div class="about-v2-photo-wrap">
         <img class="about-v2-photo"
-             src="{{ '/assets/img/profile/fjcano-profesional.png' | relative_url }}"
+             src="{{ '/assets/img/profile/fjcano-profesional.jpg' | relative_url }}"
              alt="Retrato profesional de Fco. Javier Cano Granado"
              width="800" height="1000" fetchpriority="high">
         <span class="about-v2-photo-tag">fjcanogra.es · 2026</span>
