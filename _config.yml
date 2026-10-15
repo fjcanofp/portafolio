@@ -46,31 +46,36 @@ defaults:
       path: ""
     values:
       layout: page
+
   - scope:
       path: ""
       type: posts
     values:
       layout: post
-  - scope:
-      path: ""
-      type: modules
-    values:
-      layout: module
-  - scope:
-      path: ""
-      type: workshops
-    values:
-      layout: workshop
+
   - scope:
       path: ""
       type: cycles
     values:
       layout: cycle
+
+  - scope:
+      path: ""
+      type: modules
+    values:
+      layout: module
+
   - scope:
       path: ""
       type: units
     values:
       layout: unit
+
+  - scope:
+      path: ""
+      type: workshops
+    values:
+      layout: workshop
 
 plugins:
   - jekyll-feed
