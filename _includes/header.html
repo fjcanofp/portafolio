@@ -1,12 +1,24 @@
 <header class="site-header">
   <div class="container topbar">
+
     <a class="brand" href="{{ '/' | relative_url }}">
       <span class="brand-prefix">&gt;</span>
-      <span class="brand-typewrite" id="brand-typewrite" data-text="{{ site.title }}">fjcanogra</span>
+      <span
+        class="brand-typewrite"
+        id="brand-typewrite"
+        data-text="{{ site.title }}"
+      >
+        fjcanogra
+      </span>
     </a>
 
     <div class="header-right">
-      <nav class="site-nav" aria-label="Navegación principal">
+
+      <nav
+        class="site-nav"
+        aria-label="Navegación principal"
+      >
+
         <a
           href="{{ '/docencia/' | relative_url }}"
           class="{% if page.url contains '/docencia/' %}is-active{% endif %}"
@@ -34,26 +46,24 @@
       </nav>
 
       <div class="header-tools">
-        <button id="theme-toggle" class="theme-toggle" type="button" aria-label="Cambiar tema" title="Cambiar tema">
+
+        <button
+          id="theme-toggle"
+          class="theme-toggle"
+          type="button"
+          aria-label="Cambiar tema"
+          title="Cambiar tema"
+        >
           <svg viewBox="0 0 24 24" aria-hidden="true">
-            <path d="M9 21h6v-1H9v1Zm3-19a5 5 0 0 0-3.2 8.85c.79.66 1.2 1.37 1.2 2.15V14h4v-1c0-.78.41-1.49 1.2-2.15A5 5 0 0 0 12 2Zm0 2a3 3 0 0 1 1.92 5.31A4.73 4.73 0 0 0 12.2 12h-.4a4.73 4.73 0 0 0-1.72-2.69A3 3 0 0 1 12 4Zm-1 13h2v1h-2v-1Z" fill="currentColor"/>
+            <path
+              d="M9 21h6v-1H9v1Zm3-19a5 5 0 0 0-3.2 8.85c.79.66 1.2 1.37 1.2 2.15V14h4v-1c0-.78.41-1.49 1.2-2.15A5 5 0 0 0 12 2Zm0 2a3 3 0 0 1 1.92 5.31A4.73 4.73 0 0 0 12.2 12h-.4a4.73 4.73 0 0 0-1.72-2.69A3 3 0 0 1 12 4Zm-1 13h2v1h-2v-1Z"
+              fill="currentColor"
+            />
           </svg>
         </button>
 
-
-
-          <div class="lang-menu">
-            <button type="button" class="lang-option is-active" data-lang="es">
-              <span class="flag">🇪🇸</span>
-              <span>Español</span>
-            </button>
-            <button type="button" class="lang-option" data-lang="en">
-              <span class="flag">🇬🇧</span>
-              <span>English</span>
-            </button>
-          </div>
-        </div>
       </div>
+
     </div>
   </div>
 </header>
