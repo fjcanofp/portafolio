@@ -1415,30 +1415,6 @@ Deben aparecer concesiones coherentes con ambas redes.
 
 ---
 
-## PARTE X · PRÁCTICAS GUIADAS {#practicas}
-
-Las siguientes prácticas son de entrenamiento. Las consignas evaluables, evidencias concretas y entregas se publican en Moodle.
-
-| Práctica | Qué vas a hacer | Tiempo orientativo |
-|---|---|---:|
-| **P01 · Mi primer Kea** | instalar, crear pool y obtener una concesión | 3 h |
-| **P02 · Reserva** | reservar una IP por MAC | 2 h |
-| **P03 · Dos clientes** | dinámica + reserva y consulta de leases | 2 h |
-| **P04 · DORA** | capturar Discover, Offer, Request y ACK | 2 h |
-| **P05 · Dos redes** | un Kea con dos NIC y dos `subnet4`, sin relay | 3 h |
-
-### Qué debe demostrar P05
-
-- servidor con una IP fija en cada LAN;
-- dos redes internas distintas;
-- dos interfaces Kea;
-- dos `subnet4`;
-- cliente A recibe del pool A;
-- cliente B recibe del pool B;
-- las leases reflejan ambas redes;
-- Red A sigue funcionando después de ampliar.
-
----
 
 ## PARTE XI · CASOS RESUELTOS {#casos}
 
