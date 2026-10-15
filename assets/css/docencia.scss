@@ -760,3 +760,18 @@
   }
 
 }
+
+/* =========================================
+   DOCENCIA · ESCRITORIOS GRANDES
+========================================= */
+
+@media (min-width: 1600px) {
+
+  .doc-layout {
+    grid-template-columns:
+      300px minmax(0, 1fr);
+
+    gap: 2.5rem;
+  }
+
+}

@@ -11,8 +11,10 @@
   --muted: #94a3b8;
   --accent: #0df246;
   --accent-2: #58a6ff;
-  --max: 1120px;
-  --narrow: 760px;
+
+  --max: 1240px;
+  --narrow: 820px;
+
   --radius: 16px;
   --shadow: 0 20px 45px rgba(0, 0, 0, 0.28);
 }
@@ -1651,3 +1653,14 @@ html:not([lang]) .lang-block.lang-en {
   .about-v2-action:hover { transform: none; }
 }
 
+/* =========================================
+   ESCRITORIOS GRANDES
+========================================= */
+
+@media (min-width: 1600px) {
+
+  :root {
+    --max: 1360px;
+  }
+
+}

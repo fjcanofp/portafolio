@@ -419,7 +419,7 @@ document
 
   const root = document.documentElement;
   const themeToggle = document.getElementById("theme-toggle");
-
+/*
   const translations = {
     es: {
       nav_teaching: "Docencia",
@@ -445,7 +445,7 @@ document
       footer_license_prefix: "Site contents:",
       footer_license_suffix: "unless expressly stated otherwise."
     }
-  };
+  };*/
 
   function applyTheme(theme) {
     root.setAttribute("data-theme", theme);
@@ -460,7 +460,7 @@ document
     }
   }
 
-  function applyLanguage(lang) {
+  /*function applyLanguage(lang) {
     if (!translations[lang]) return;
 
     root.lang = lang;
@@ -479,7 +479,7 @@ document
     document.querySelectorAll(".lang-option").forEach((btn) => {
       btn.classList.toggle("is-active", btn.dataset.lang === lang);
     });
-  }
+  }*/
 
   const savedTheme = localStorage.getItem("theme") || "dark";
   applyTheme(savedTheme);
@@ -491,14 +491,14 @@ document
     });
   }
 
-  const savedLang = localStorage.getItem("site-lang") || "es";
+  /*const savedLang = localStorage.getItem("site-lang") || "es";
   applyLanguage(savedLang);
 
   document.querySelectorAll(".lang-option").forEach((btn) => {
     btn.addEventListener("click", () => {
       applyLanguage(btn.dataset.lang);
     });
-  });
+  });*/
 });
 
 // Efecto de escritura de la marca.
