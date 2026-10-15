@@ -80,8 +80,6 @@ toc:
     id: individualizacion
   - title: Varias redes sin relay
     id: multired
-  - title: Prácticas guiadas
-    id: practicas
   - title: Casos resueltos
     id: casos
   - title: Chuleta
@@ -1416,7 +1414,7 @@ Deben aparecer concesiones coherentes con ambas redes.
 ---
 
 
-## PARTE XI · CASOS RESUELTOS {#casos}
+## PARTE X · CASOS RESUELTOS {#casos}
 
 ### 45. Caso A · Windows muestra 169.254.x.x
 
@@ -1540,7 +1538,7 @@ No modifiques Red A si Red A sigue funcionando.
 
 ---
 
-## PARTE XII · CHULETA OPERATIVA {#chuleta}
+## PARTE XI · CHULETA OPERATIVA {#chuleta}
 
 ### Servidor
 
@@ -1607,7 +1605,7 @@ ip route
 
 ---
 
-## PARTE XIII · AMPLIACIÓN {#ampliacion}
+## PARTE XII · AMPLIACIÓN {#ampliacion}
 
 ### 50. DHCP Relay
 
@@ -1671,7 +1669,7 @@ El objetivo será reconocer los mismos conceptos, no repetirlos mecánicamente.
 
 ---
 
-## PARTE XIV · REFERENCIAS OFICIALES {#referencias}
+## PARTE XIII · REFERENCIAS OFICIALES {#referencias}
 
 ### Currículo
 
