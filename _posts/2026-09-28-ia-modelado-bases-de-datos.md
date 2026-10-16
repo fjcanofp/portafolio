@@ -29,7 +29,7 @@ y empezamos a preguntar:
 
 Ese paso es el que separa, muchas veces, una estructura que simplemente almacena información de un modelo de datos que puede mantenerse, crecer y seguir siendo comprensible con el tiempo.
 
-![Del diseño desordenado a un modelo coherente](.assets/img/blog/modelado-bbdd/01-antes-despues.png)
+![Del diseño desordenado a un modelo coherente](/assets/img/blog/modelado-bbdd/01-antes-despues.png)
 
 *La diferencia no está solo en tener más o menos tablas: está en que cada entidad, relación y atributo tenga un significado claro.*
 
@@ -80,7 +80,7 @@ No estamos discutiendo nombres de columnas. Estamos intentando descubrir **qué 
 
 La siguiente imagen resume uno de los cambios fundamentales.
 
-![Comparación entre el modelo inicial y el modelo revisado](.assets/img/blog/modelado-bbdd/02-modelo-antes-despues.svg)
+![Comparación entre el modelo inicial y el modelo revisado](/assets/img/blog/modelado-bbdd/02-modelo-antes-despues.svg)
 
 En el modelo inicial podían aparecer datos repetidos en varias tablas porque parecían útiles o cómodos.
 
@@ -210,7 +210,7 @@ Una ejecución expresa:
 
 Son dos cosas diferentes.
 
-![Obligación frente a ejecución](.assets/img/blog/modelado-bbdd/04-obligacion-ejecucion.svg)
+![Obligación frente a ejecución](/assets/img/blog/modelado-bbdd/04-obligacion-ejecucion.svg)
 
 Si cada vez que algo se realiza simplemente sobrescribimos la próxima fecha, el sistema puede seguir funcionando.
 
@@ -323,7 +323,7 @@ Pero primero deberíamos preguntar:
 
 El ejemplo clásico es la **edad**.
 
-![La edad como dato derivado](.assets/img/blog/modelado-bbdd/03-dato-derivado-edad.svg)
+![La edad como dato derivado](/assets/img/blog/modelado-bbdd/03-dato-derivado-edad.svg)
 
 Podríamos guardar:
 
