@@ -1,0 +1,41 @@
+name: Audit site
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+
+      - name: Build Jekyll site
+        uses: actions/jekyll-build-pages@v1
+        with:
+          source: ./
+          destination: ./_site
+
+      - name: Check internal links and assets
+        uses: lycheeverse/lychee-action@v2
+        with:
+          workingDirectory: ./_site
+          args: >-
+            --root-dir "$(pwd)"
+            --offline
+            --verbose
+            --no-progress
+            './**/*.html'
+          fail: false
