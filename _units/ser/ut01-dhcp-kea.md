@@ -2099,24 +2099,36 @@ Cada servicio debe comprobarse por separado.
 
 ---
 
-## 54. Windows Server
+## 54. Segunda implementación: Windows Server 2025
 
-El protocolo no cambia aunque cambie la plataforma.
+El protocolo DHCP no cambia porque cambie la plataforma.
 
-En una implementación equivalente con Windows Server encontraremos:
+Después de implantar y diagnosticar DHCP con Kea repetiremos los **mismos conceptos del RA1** en Windows Server 2025:
 
-```text
-ámbitos
-exclusiones
-reservas
-concesiones
-opciones
-relay
-```
+| Kea | Windows Server 2025 |
+|---|---|
+| `subnet4` | ámbito |
+| `pools` | grupo de direcciones |
+| `reservations` | reservas |
+| `option-data` | opciones de ámbito |
+| `kea-leases4.csv` | concesiones de direcciones |
+| JSON / CLI | consola DHCP / PowerShell |
 
-El objetivo será reconocer los mismos conceptos, no repetirlos mecánicamente.
+No volvemos a aprender DORA desde cero. Cambia principalmente la herramienta de administración.
 
+Trabajaremos:
 
+- instalación del rol DHCP;
+- ámbito IPv4;
+- exclusiones;
+- reservas por MAC;
+- concesiones;
+- opciones;
+- PowerShell;
+- diagnóstico;
+- comparación Kea ↔ Windows Server.
+
+➡️ **[Continuar: DHCP en Windows Server 2025]({{ '/docencia/smr/ser/ut01-windows/' | relative_url }})**
 ---
 
 # PARTE XIII · REFERENCIAS OFICIALES {#referencias}
