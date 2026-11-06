@@ -1,29 +1,33 @@
 ---
 title: "UT02 · Introducción a PHP: de los primeros programas a una aplicación web"
-description: "PHP desde cero: ejecución en servidor, variables, tipos, operadores, condiciones, bucles, arrays, funciones, modularidad, persistencia ligera con ficheros, POO, formularios, cookies y sesiones."
-summary: "Aprender a razonar, escribir, ejecutar y comprobar pequeños programas PHP, conservar datos sencillos en ficheros y construir después una aplicación web con estado."
+description: "PHP desde cero en IAW: formularios y validación, funciones incorporadas y propias, modularidad, POO, ficheros y subidas seguras, cookies, sesiones, autenticación y correo con PHPMailer."
+summary: "Del primer script a una aplicación web con estado: entrada HTTP, built-ins, funciones propias, objetos, persistencia ligera, autenticación, ficheros seguros y notificaciones por correo."
 
 module_key: iaw
 cycle_key: asir
 order: 2
+
 module_title: "Implantación de Aplicaciones Web"
 module_code: "0376"
 cycle_title: "Administración de Sistemas Informáticos en Red"
 course: "2.º ASIR"
 unit: "UT02"
-level: "iniciacion"
+level: "iniciacion-intermedio"
 
 authors:
   - fjcano
+
 reviewers:
   - fjcano
+
 rights: all-rights-reserved
-version: "3.1"
-last_reviewed: 2026-09-29
+version: "4.3"
+last_reviewed: 2026-11-04
 visibility: public
 
 ra:
   - "RA5"
+
 ce:
   - "RA5.a"
   - "RA5.b"
@@ -34,17 +38,35 @@ ce:
   - "RA5.g"
   - "RA5.h"
   - "RA5.i"
+
 tags:
   - php
   - servidor
   - programacion-estructurada
+  - arrays
+  - formularios
+  - http
+  - validacion
+  - funciones-incorporadas
   - funciones
+  - callbacks
+  - modularidad
   - poo
   - ficheros
+  - subidas
   - persistencia
-  - formularios
+  - json
+  - cookies
   - sesiones
+  - autenticacion
+  - autorizacion
+  - csrf
+  - seguridad
+  - composer
+  - phpmailer
+  - email
   - asir
+
 permalink: /docencia/asir/iaw/ut02/
 published: true
 
@@ -65,18 +87,22 @@ toc:
     id: bucles
   - title: Arrays y foreach
     id: arrays
-  - title: Funciones
+  - title: Entrada de datos y formularios
+    id: formularios
+  - title: Funciones incorporadas
+    id: builtins
+  - title: Funciones propias y procedimientos
     id: funciones
   - title: Organizar varios archivos
     id: modularidad
-  - title: Persistencia con ficheros y logs
-    id: ficheros
-  - title: Primeros objetos
+  - title: Métodos y POO
     id: poo
-  - title: Formularios y PHP
-    id: formularios
-  - title: Cookies y sesiones
+  - title: Persistencia, logs y ficheros seguros
+    id: ficheros
+  - title: Cookies, sesiones y autenticación
     id: estado
+  - title: Correo electrónico con PHPMailer
+    id: email
   - title: Ejercicios progresivos
     id: ejercicios
   - title: Diagnóstico y buenas prácticas
@@ -89,7 +115,7 @@ toc:
 
 Una página HTML es un documento que el navegador interpreta y muestra. Una aplicación web puede necesitar **calcular un precio, escoger qué contenido mostrar, procesar los datos de un formulario o recordar qué usuario ha iniciado sesión**. PHP permite desarrollar esa lógica en el servidor.
 
-En esta unidad aprenderemos PHP desde sus elementos más sencillos. No es necesario haber programado antes en PHP; sí conviene recordar la estructura básica de HTML y los atributos `name`, `action` y `method` de los formularios. Comenzaremos con valores escritos directamente en el código. Cuando esos valores ya no presenten dificultades, aprenderemos a recibirlos del navegador.
+En esta unidad aprenderemos PHP desde sus elementos más sencillos. No es necesario haber programado antes en PHP; sí conviene recordar la estructura básica de HTML y los atributos `name`, `action` y `method` de los formularios. Comenzaremos con valores escritos directamente en el código; después aprenderemos a recibir información, primero desde la terminal como contraste y, sobre todo, mediante formularios HTTP. A continuación reutilizaremos esa lógica mediante funciones y, más adelante, mediante métodos de objetos sencillos.
 
 **Resultado de aprendizaje relacionado: RA5 — Genera documentos web utilizando lenguajes de guiones de servidor.** Los criterios de evaluación vinculados a la unidad se identifican en el frontmatter. La programación orientada a objetos se introduce aquí como una herramienta para comprender bibliotecas y aplicaciones PHP; no supone un resultado de aprendizaje adicional.
 
@@ -99,6 +125,23 @@ En esta unidad aprenderemos PHP desde sus elementos más sencillos. No es necesa
 
 > **Distingue dos cosas:** aprender la sintaxis de PHP y aprender a implantar una aplicación PHP. En IAW necesitamos ambas, pero avanzaremos de la primera a la segunda de manera gradual.
 {: .notice--info}
+
+### Puente hacia el Proyecto 1
+
+Esta UT prepara varias piezas que después serán obligatorias en el proyecto PHP:
+
+| Necesidad del proyecto | Dónde se prepara |
+|---|---|
+| Recibir, normalizar y validar datos | formularios y funciones incorporadas |
+| Organizar lógica reutilizable | funciones propias y modularidad |
+| Autenticación, roles y estado | cookies, sesiones y autorización |
+| Protección CSRF | sesión + token + `hash_equals()` |
+| Subida segura de ficheros | `$_FILES`, MIME real, tamaño y renombrado |
+| Logs y diagnóstico | ficheros, `error_log()` y separación usuario/técnico |
+| Correo electrónico | PHPMailer como integración complementaria |
+
+> **Todavía no implementamos aquí todo el Proyecto 1.** PDO, CRUD persistente, búsqueda/paginación real, transacciones y auditoría vinculada a la base de datos se consolidarán en la UT03 con MariaDB. Esta separación evita mezclar demasiadas capas antes de dominar cada una.
+{: .notice--warning}
 
 ---
 
@@ -1206,227 +1249,1321 @@ El operador `??` devuelve el valor de la izquierda si existe y no es `null`; en 
 
 ---
 
-## 8. Funciones: reutilizar lo que ya sabemos programar {#funciones}
 
-Hemos escrito cálculos que pueden necesitarse en varios lugares. Si copiamos el mismo bloque una y otra vez, cualquier corrección tendrá que repetirse. Una **función** da nombre a una operación y permite utilizarla con distintos datos.
+## 8. Entrada de datos en PHP: terminal, formularios y peticiones HTTP {#formularios}
 
-### 8.1. Primero, una función sin parámetros
+![Del campo name en HTML a la clave recibida por PHP]({{ '/assets/docencia/iaw/ut02/10_formularios.png' | relative_url }})
+
+Hasta ahora muchos valores estaban escritos en el propio código. Una aplicación real necesita **recibir datos desde fuera**. En PHP pueden llegar por terminal, URL, formulario, fichero subido, cookie, sesión o cuerpo JSON. La secuencia de trabajo será siempre explícita:
+
+```text
+RECIBIR → COMPROBAR TIPO → NORMALIZAR → VALIDAR → USAR → ESCAPAR AL MOSTRAR
+```
+
+### 8.1. Entrada por terminal: `readline()`, `STDIN` y `$argv`
+
+En CLI PHP sí puede esperar a que escribamos:
+
+```php
+<?php
+$nombre = readline('Escribe tu nombre: ');
+$nombre = trim($nombre);
+echo 'Hola, ' . $nombre . PHP_EOL;
+```
+
+También:
+
+```php
+$linea = fgets(STDIN);
+```
+
+o argumentos de arranque:
+
+```bash
+php script.php Ana 7
+```
+
+```php
+$nombre = $argv[1] ?? 'Sin nombre';
+$puesto = $argv[2] ?? 'NN';
+```
+
+Esto sirve para scripts y automatización. **No es la forma habitual de recoger el teclado de un usuario web.**
+
+### 8.2. En una aplicación web PHP no se queda esperando al usuario
+
+```text
+GET /contacto.php
+      ↓
+PHP genera HTML y termina
+      ↓
+usuario escribe en el navegador
+      ↓
+POST /contacto.php
+      ↓
+PHP vuelve a ejecutarse
+      ↓
+$_POST
+```
+
+Aunque utilicemos el **mismo fichero PHP**, son peticiones y ejecuciones diferentes.
+
+### 8.3. Formulario y procesamiento en archivos distintos
+
+`formulario.php`:
+
+```html
+<form action="procesar.php" method="post">
+    <label for="nombre">Nombre</label>
+    <input id="nombre" name="nombre">
+    <button>Enviar</button>
+</form>
+```
+
+`procesar.php`:
 
 ```php
 <?php
 
-function mostrarSaludo(): void {
+$valor = $_POST['nombre'] ?? '';
+
+if (!is_string($valor)) {
+    http_response_code(422);
+    exit('Formato incorrecto');
+}
+
+$nombre = trim($valor);
+
+echo htmlspecialchars(
+    $nombre,
+    ENT_QUOTES | ENT_SUBSTITUTE,
+    'UTF-8'
+);
+```
+
+Es la opción más clara para comprender el recorrido inicial.
+
+### 8.4. Formulario y procesamiento en el mismo fichero
+
+También podemos utilizar una sola URL:
+
+```php
+<?php
+
+$nombre = '';
+$mensaje = '';
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $valor = $_POST['nombre'] ?? '';
+
+    if (is_string($valor)) {
+        $nombre = trim($valor);
+
+        if ($nombre !== '') {
+            $mensaje = 'Hola, ' . $nombre;
+        }
+    }
+}
+
+function e(string $texto): string
+{
+    return htmlspecialchars(
+        $texto,
+        ENT_QUOTES | ENT_SUBSTITUTE,
+        'UTF-8'
+    );
+}
+?>
+<!doctype html>
+<html lang="es">
+<body>
+
+<?php if ($mensaje !== ''): ?>
+    <p><?= e($mensaje) ?></p>
+<?php endif; ?>
+
+<form method="post">
+    <input name="nombre" value="<?= e($nombre) ?>">
+    <button>Enviar</button>
+</form>
+
+</body>
+</html>
+```
+
+Al omitir `action`, el formulario se envía a la URL actual.
+
+| Diseño | Ventaja |
+|---|---|
+| Formulario + procesador separados | Flujo muy visible |
+| Mismo fichero | Adecuado para formularios pequeños |
+| Handler/controlador separado | Mejor separación en aplicaciones mayores |
+| POST → 303 → GET | Evita reenvíos al recargar |
+
+### 8.5. `id`, `name`, `action` y `method`
+
+- `id`: identifica el control en HTML y lo relaciona con `label`.
+- `name`: define la clave enviada a PHP.
+- `action`: indica qué recurso recibirá el formulario.
+- `method`: indica GET o POST.
+
+```html
+<input id="asunto" name="asunto">
+```
+
+se recupera como:
+
+```php
+$_POST['asunto']
+```
+
+si el formulario usa POST.
+
+### 8.6. GET y POST
+
+Con GET:
+
+```text
+/buscar.php?q=apache
+```
+
+```php
+$q = $_GET['q'] ?? '';
+```
+
+Con POST:
+
+```php
+$asunto = $_POST['asunto'] ?? '';
+```
+
+| GET | POST |
+|---|---|
+| Parámetros en URL | Datos normalmente en el cuerpo |
+| Búsquedas, filtros, navegación | Altas, ediciones, acciones |
+| URL compartible | El cuerpo no forma parte de la URL visible |
+| `$_GET` | `$_POST` |
+
+**POST no cifra los datos. HTTPS protege el transporte.**
+
+### 8.7. Superglobales que debes reconocer
+
+| Superglobal | Contenido |
+|---|---|
+| `$_GET` | Parámetros de URL |
+| `$_POST` | Campos POST compatibles |
+| `$_FILES` | Ficheros subidos |
+| `$_COOKIE` | Cookies |
+| `$_SERVER` | Información de petición/servidor |
+| `$_SESSION` | Estado de sesión tras `session_start()` |
+| `$_ENV` | Variables de entorno disponibles |
+
+Evitaremos `$_REQUEST` como atajo porque oculta de qué fuente procede un dato.
+
+### 8.8. El navegador no convierte una entrada externa en dato fiable
+
+```html
+<input type="number" name="edad">
+```
+
+no evita que llegue una petición manipulada. En servidor:
+
+```php
+$raw = $_POST['edad'] ?? '';
+
+if (!is_string($raw)) {
+    exit('Formato incorrecto');
+}
+
+$edad = filter_var(
+    trim($raw),
+    FILTER_VALIDATE_INT
+);
+
+if ($edad === false || $edad < 0 || $edad > 130) {
+    exit('Edad no válida');
+}
+```
+
+La validación HTML mejora la experiencia, pero **no sustituye la validación PHP**.
+
+### 8.9. El dato puede llegar con una forma distinta de la esperada
+
+Esperamos:
+
+```text
+?nombre=Ana
+```
+
+pero pueden enviar:
+
+```text
+?nombre[]=Ana
+```
+
+Por eso:
+
+```php
+$raw = $_GET['nombre'] ?? '';
+
+if (!is_string($raw)) {
+    http_response_code(422);
+    exit('Se esperaba texto');
+}
+```
+
+es más robusto que llamar directamente `trim($_GET['nombre'])`.
+
+### 8.10. Checkbox, radio, `select` y datos múltiples
+
+Un checkbox no marcado normalmente no envía su clave:
+
+```php
+$acepta = ($_POST['acepta'] ?? '') === 'si';
+```
+
+Un valor seleccionado debe validarse:
+
+```php
+$prioridad = $_POST['prioridad'] ?? '';
+
+if (
+    !is_string($prioridad)
+    || !in_array($prioridad, ['baja', 'media', 'alta'], true)
+) {
+    exit('Prioridad no válida');
+}
+```
+
+Para varios valores:
+
+```html
+<input type="checkbox" name="etiquetas[]" value="apache">
+<input type="checkbox" name="etiquetas[]" value="php">
+```
+
+esperamos:
+
+```php
+$etiquetas = $_POST['etiquetas'] ?? [];
+
+if (!is_array($etiquetas)) {
+    $etiquetas = [];
+}
+```
+
+### 8.11. Normalizar, validar, escapar y almacenar
+
+Son responsabilidades diferentes:
+
+```text
+NORMALIZAR  → trim(), formato coherente
+VALIDAR     → aceptar/rechazar
+ESCAPAR     → preparar para HTML u otro contexto
+ALMACENAR   → fichero, sesión, MariaDB...
+```
+
+Ejemplo de salida HTML:
+
+```php
+echo htmlspecialchars(
+    $asunto,
+    ENT_QUOTES | ENT_SUBSTITUTE,
+    'UTF-8'
+);
+```
+
+`htmlspecialchars()` no valida un email ni una prioridad.
+
+### 8.12. Método HTTP y códigos de respuesta
+
+```php
+if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+    http_response_code(405);
+    exit('Este recurso espera POST');
+}
+```
+
+Códigos que iremos utilizando:
+
+- `200`: correcto.
+- `303`: redirección después de POST.
+- `400`: petición mal formada.
+- `401`: falta autenticación.
+- `403`: sin autorización.
+- `404`: recurso no encontrado.
+- `405`: método no permitido.
+- `422`: datos no aceptables.
+- `500`: error interno.
+
+### 8.13. POST/Redirect/GET
+
+Después de una operación correcta:
+
+```php
+header('Location: confirmacion.php', true, 303);
+exit;
+```
+
+```text
+POST → procesar → 303 → GET → página final
+```
+
+Evita que `F5` repita accidentalmente el POST.
+
+### 8.14. Ficheros subidos: `$_FILES`
+
+Con:
+
+```html
+<form method="post" enctype="multipart/form-data">
+    <input type="file" name="adjunto">
+</form>
+```
+
+PHP recibe metadatos en:
+
+```php
+$_FILES['adjunto']
+```
+
+En el proyecto comprobaremos error de subida, tamaño, MIME real con `finfo`, nombre generado por la aplicación, `move_uploaded_file()` y almacenamiento fuera de `public/`.
+
+### 8.15. JSON en el cuerpo de una petición
+
+Un cliente puede enviar:
+
+```http
+Content-Type: application/json
+```
+
+Ese contenido no aparece automáticamente en `$_POST`.
+
+```php
+$cuerpo = file_get_contents('php://input');
+
+$datos = json_decode(
+    $cuerpo,
+    true,
+    512,
+    JSON_THROW_ON_ERROR
+);
+```
+
+Es una ampliación profesional; primero dominaremos formularios.
+
+### 8.16. Comprobación de aprendizaje
+
+Debes poder explicar:
+
+1. Por qué `readline()` y un formulario web son escenarios distintos.
+2. Relación entre `name="asunto"` y `$_POST['asunto']`.
+3. Diferencia GET/POST.
+4. Por qué mismo fichero no significa misma ejecución.
+5. Por qué se comprueba el tipo antes de `trim()`.
+6. Qué ocurre con un checkbox no marcado.
+7. Cuándo esperamos un array.
+8. Diferencia entre validar y escapar.
+9. Por qué `type="number"` no basta.
+10. Para qué sirve PRG.
+
+---
+
+## 9. Funciones incorporadas (*built-in functions*) {#builtins}
+
+PHP proporciona miles de funciones. No hay que memorizarlas todas: hay que aprender a **buscar, leer parámetros, interpretar el retorno y comprobar casos límite**.
+
+### 9.1. Función, construcción del lenguaje y método
+
+```php
+trim($texto);          // función incorporada
+normalizar($texto);    // función propia
+$ticket->cerrar();     // método de instancia
+Ticket::crear();       // método estático
+```
+
+Mientras que:
+
+```text
+echo, include, require, isset, empty, exit
+```
+
+son construcciones del lenguaje.
+
+### 9.2. Anatomía de una llamada
+
+```php
+$longitud = strlen($texto);
+```
+
+- `strlen`: nombre.
+- `$texto`: argumento.
+- `$longitud`: recibe el retorno.
+
+Siempre preguntaremos: **qué recibe, qué devuelve, cómo indica fallo y si modifica algo**.
+
+### 9.3. Cadenas
+
+```text
+trim()
+strlen()
+mb_strlen()
+strtolower() / strtoupper()
+mb_strtolower() / mb_strtoupper()
+str_contains()
+str_starts_with()
+str_ends_with()
+substr()
+str_replace()
+explode()
+implode()
+```
+
+Ejemplo:
+
+```php
+$entrada = '  PHP,Apache,MariaDB  ';
+$partes = explode(',', trim($entrada));
+echo implode(' | ', $partes);
+```
+
+`strlen()` cuenta bytes. Para texto UTF-8 humano, `mb_strlen()` suele expresar mejor el número de caracteres esperado.
+
+### 9.4. Arrays
+
+```text
+count()
+in_array()
+array_key_exists()
+array_keys()
+array_values()
+array_merge()
+array_map()
+array_filter()
+array_sum()
+sort() / rsort()
+usort()
+```
+
+Cuando proceda:
+
+```php
+in_array($prioridad, $permitidas, true);
+```
+
+utiliza comparación estricta.
+
+### 9.5. Tipos y validación
+
+```text
+is_string()
+is_int()
+is_float()
+is_bool()
+is_array()
+is_object()
+is_null()
+is_numeric()
+filter_var()
+```
+
+`isset()` es una construcción del lenguaje. `array_key_exists()` comprueba una clave incluso cuando su valor es `null`.
+
+### 9.6. Números, fechas y formato
+
+```text
+round()
+min()
+max()
+abs()
+pow()
+sqrt()
+number_format()
+time()
+date()
+```
+
+También veremos objetos:
+
+```php
+$fecha = new DateTimeImmutable(
+    'now',
+    new DateTimeZone('Europe/Madrid')
+);
+
+echo $fecha->format(DateTimeInterface::ATOM);
+```
+
+Aquí `format()` es un **método**.
+
+### 9.7. Web, seguridad, JSON y ficheros
+
+Funciones especialmente relevantes:
+
+```text
+htmlspecialchars()
+header()
+http_response_code()
+setcookie()
+session_start()
+session_regenerate_id()
+password_hash()
+password_verify()
+random_bytes()
+
+json_encode()
+json_decode()
+
+file_get_contents()
+file_put_contents()
+fopen()
+fwrite()
+fclose()
+```
+
+### 9.8. Depuración
+
+```php
+var_dump($dato);
+print_r($array);
+```
+
+Son útiles en desarrollo. No debemos publicar volcados con secretos o datos sensibles.
+
+### 9.9. Cómo estudiar una built-in
+
+Ejemplo:
+
+```text
+NOMBRE: trim
+RECIBE: string
+DEVUELVE: string
+MODIFICA ORIGINAL: no
+FALLO: no aplicable en uso normal
+CASO LÍMITE: cadena vacía
+```
+
+Ese método de análisis es más importante que memorizar listas.
+
+### 9.10. Built-ins que reutilizaremos en el Proyecto 1
+
+A partir de ahora no estudiaremos las funciones incorporadas como un catálogo. Las reutilizaremos cuando aparezca una necesidad concreta del proyecto.
+
+| Necesidad | Funciones / recursos que aparecerán |
+|---|---|
+| Normalizar y comprobar texto | `trim()`, `mb_strlen()`, `str_contains()` |
+| Comprobar valores admitidos | `in_array(..., true)`, `array_key_exists()` |
+| Validar email o entero | `filter_var()` |
+| Escapar salida HTML | `htmlspecialchars()` |
+| Depurar durante desarrollo | `var_dump()`, `print_r()`, `get_debug_type()` |
+| Calcular páginas | `ceil()`, `max()`, `min()` |
+| Contraseñas | `password_hash()`, `password_verify()` |
+| Tokens aleatorios | `random_bytes()`, `bin2hex()` |
+| Comparar tokens CSRF | `hash_equals()` |
+| Sesiones | `session_start()`, `session_regenerate_id()` |
+| Redirección PRG | `header()` |
+| Tipo real de un fichero | `finfo` / `finfo_file()` |
+| Subida HTTP | `move_uploaded_file()` |
+| Comprobar almacenamiento | `file_exists()`, `is_file()`, `is_readable()` |
+| JSON | `json_encode()`, `json_decode()` |
+| Registro técnico | `error_log()` |
+
+#### Ejemplo 1 · Validar una prioridad
+
+```php
+$permitidas = ['baja', 'media', 'alta'];
+
+if (!in_array($prioridad, $permitidas, true)) {
+    exit('Prioridad no permitida');
+}
+```
+
+El tercer argumento `true` exige comparación estricta. En validaciones no queremos que una conversión automática de tipos haga coincidir valores inesperados.
+
+#### Ejemplo 2 · Validar un email
+
+```php
+$email = trim($email);
+
+if (filter_var($email, FILTER_VALIDATE_EMAIL) === false) {
+    $errores[] = 'Email no válido';
+}
+```
+
+Validar y escapar siguen siendo operaciones distintas. `filter_var()` decide si el dato cumple una regla; `htmlspecialchars()` se utiliza al incluir texto en HTML.
+
+#### Ejemplo 3 · Número total de páginas
+
+```php
+$totalRegistros = 73;
+$porPagina = 10;
+
+$totalPaginas = (int) ceil(
+    $totalRegistros / $porPagina
+);
+```
+
+En UT03, `$totalRegistros` procederá de una consulta `COUNT(*)` y cada página se obtendrá con `LIMIT` y `OFFSET`. No cargaremos todos los registros para ocultarlos después con JavaScript.
+
+#### Ejemplo 4 · Contraseñas
+
+```php
+$hash = password_hash(
+    $password,
+    PASSWORD_DEFAULT
+);
+
+if (password_verify($passwordRecibida, $hash)) {
+    // Credencial correcta.
+}
+```
+
+La aplicación almacena el **hash**, no la contraseña original. El Proyecto 1 utilizará esta pareja de funciones durante el registro/creación de usuarios y el login.
+
+#### Ejemplo 5 · Token aleatorio y comparación segura
+
+```php
+$token = bin2hex(
+    random_bytes(32)
+);
+
+if (!hash_equals($tokenGuardado, $tokenRecibido)) {
+    http_response_code(403);
+    exit('Token incorrecto');
+}
+```
+
+Este patrón aparecerá de nuevo cuando implementemos protección CSRF con un token asociado a la sesión.
+
+#### Ejemplo 6 · Nombre de fichero generado por la aplicación
+
+```php
+$nombreSeguro = bin2hex(
+    random_bytes(16)
+) . '.pdf';
+```
+
+El nombre original proporcionado por el navegador no debe utilizarse como nombre final del fichero almacenado. Antes habrá que validar tamaño y **MIME real**.
+
+#### Ejemplo 7 · Comprobar el MIME real de una subida
+
+```php
+$finfo = new finfo(FILEINFO_MIME_TYPE);
+$mime = $finfo->file($rutaTemporal);
+
+$permitidos = [
+    'image/jpeg',
+    'image/png',
+    'application/pdf',
+];
+
+if (!is_string($mime)
+    || !in_array($mime, $permitidos, true)) {
+    exit('Tipo de fichero no permitido');
+}
+```
+
+La extensión `.jpg` escrita en el nombre no demuestra que el contenido sea realmente una imagen JPEG.
+
+#### Ejemplo 8 · Registrar un fallo sin mostrarlo al usuario
+
+```php
+error_log(
+    'IAW Desk: error al guardar un ticket'
+);
+```
+
+El mensaje que ve el usuario y el detalle técnico de diagnóstico no tienen por qué ser el mismo. Nunca escribiremos contraseñas, tokens de sesión ni credenciales SQL en un log.
+
+> **Regla de estudio:** no memorices veinte firmas. Localiza la necesidad, busca la función adecuada en el manual, revisa sus parámetros y su valor de retorno, prueba un caso normal y uno límite y después intégrala en tu código.
+{: .notice--info}
+
+**Ejercicios 9.1–9.10.** Limpia y mide una cadena; divide una lista separada por comas y vuelve a unirla; diferencia `isset()` de `array_key_exists()` cuando el valor es `null`; valida un email; calcula las páginas necesarias para 73 registros a 10 por página; genera y verifica un hash de contraseña; genera un token aleatorio hexadecimal; compara dos tokens con `hash_equals()`; identifica el MIME real de un fichero de prueba; registra mediante `error_log()` una incidencia que no contenga información sensible.
+
+---
+
+## 10. Funciones propias y procedimientos {#funciones}
+
+![Función con parámetros y valor devuelto]({{ '/assets/docencia/iaw/ut02/07_funciones.png' | relative_url }})
+
+Una función da nombre a una operación reutilizable.
+
+### 10.1. Definir y llamar
+
+```php
+function mostrarSaludo(): void
+{
     echo 'Bienvenido a IAW';
 }
 
 mostrarSaludo();
 ```
 
-**Partes de la función:**
+Definir no es ejecutar.
 
-| Fragmento | Función |
-|---|---|
-| `function` | Indica que estamos definiendo una función. |
-| `mostrarSaludo` | Es su nombre. |
-| `()` | Zona reservada a parámetros; por ahora no recibe ninguno. |
-| `: void` | Indica que no devuelve un valor mediante `return`. |
-| `{ ... }` | Contiene las instrucciones que ejecutará al llamarla. |
-| `mostrarSaludo();` | Invoca la función. |
-
-**Definir no es ejecutar:** si escribimos la definición pero nunca llamamos a `mostrarSaludo()`, el mensaje no aparecerá.
-
-### 8.2. Una función con parámetros
-
-Ahora queremos saludar a distintas personas. En vez de definir varias funciones, recibimos el nombre como **parámetro**:
+### 10.2. Parámetro y argumento
 
 ```php
-<?php
-
-function saludar(string $nombre): void {
-    echo 'Hola, ' . $nombre . '<br>';
+function saludar(string $nombre): string
+{
+    return 'Hola, ' . $nombre;
 }
 
 saludar('Ana');
-saludar('Luis');
 ```
 
-Al llamar `saludar('Ana')`, el valor `'Ana'` se entrega al parámetro `$nombre`. En la segunda llamada se entrega `'Luis'`. El **parámetro** es la variable declarada en la función; el **argumento** es el dato con el que la llamamos.
+`$nombre` es parámetro; `'Ana'` es argumento.
 
-### 8.3. La diferencia entre `echo` y `return`
-
-Una función puede **mostrar** un resultado o **devolverlo** para que otras partes del programa lo utilicen. No es lo mismo:
+### 10.3. `return`, `echo` y «procedimiento»
 
 ```php
-<?php
-
-function sumar(int $a, int $b): int {
+function sumar(int $a, int $b): int
+{
     return $a + $b;
 }
-
-$resultado = sumar(4, 5);
-echo $resultado; // 9
 ```
 
-Aquí sucede lo siguiente:
-
-1. `sumar(4, 5)` ejecuta la función con `$a = 4` y `$b = 5`.
-2. `return $a + $b;` devuelve `9` al lugar de la llamada.
-3. `$resultado` recibe ese `9`.
-4. `echo $resultado;` lo muestra.
-
-![Función con parámetros y valor devuelto]({{ '/assets/docencia/iaw/ut02/07_funciones.png' | relative_url }})
-
-Esta separación será útil cuando una aplicación necesite mostrar una cantidad en pantalla, guardarla en un archivo o enviarla a otro sistema: **el cálculo no tiene por qué decidir cómo se presenta**.
-
-### 8.4. Tipos de los parámetros y valor devuelto
+`return` entrega el resultado al llamador.
 
 ```php
-<?php
+function mostrarMensaje(string $texto): void
+{
+    echo $texto;
+}
+```
 
+En terminología didáctica tradicional podemos llamar **procedimiento** a una función orientada a realizar una acción y sin valor de retorno útil. PHP no tiene una palabra `procedure`: sigue siendo una función, normalmente con retorno `void`.
+
+### 10.4. Responsabilidad única
+
+Preferimos:
+
+```text
+normalizarTexto()
+validarTicket()
+prioridadValida()
+calcularImporte()
+```
+
+a una función `procesarTodo()` que lea POST, valide, consulte BBDD, genere HTML y escriba logs al mismo tiempo.
+
+### 10.5. Tipos y `strict_types`
+
+```php
 declare(strict_types=1);
 
-function calcularCoste(float $horas, float $tarifa): float {
+function calcularCoste(
+    float $horas,
+    float $tarifa
+): float {
     return $horas * $tarifa;
 }
-
-$total = calcularCoste(2.5, 18.0);
-echo $total; // 45
 ```
 
-`float` indica que esperamos números con parte decimal (también se aceptan enteros en los contextos compatibles de PHP). `: float` indica qué tipo devolverá la función. `declare(strict_types=1);` permite utilizar un modo más estricto para ciertas conversiones automáticas de tipos en las llamadas realizadas desde ese archivo; **no sustituye la validación de formularios**.
+El tipado ayuda a expresar contratos. **No sustituye la validación de la entrada HTTP.**
 
-### 8.5. Parámetros opcionales
+### 10.6. Parámetros opcionales
 
 ```php
-<?php
-
-function saludar(string $nombre, string $prefijo = 'Hola'): string {
+function saludar(
+    string $nombre,
+    string $prefijo = 'Hola'
+): string {
     return $prefijo . ', ' . $nombre;
 }
-
-echo saludar('Ana');             // Hola, Ana
-echo saludar('Ana', 'Buenos días'); // Buenos días, Ana
 ```
 
-Cuando falta el segundo argumento, la función utiliza el valor predeterminado `'Hola'`.
-
-### 8.6. Ámbito local: una variable dentro y otra fuera
+### 10.7. Argumentos con nombre
 
 ```php
-<?php
-
-$tarifa = 20;
-
-function calcularDoble(int $numero): int {
-    $resultado = $numero * 2;
-    return $resultado;
-}
-
-echo calcularDoble(3); // 6
-// $resultado pertenece a la función; no se utiliza aquí fuera.
+crearCodigo(
+    modulo: 'IAW',
+    puesto: 7,
+    prefijo: 'TICKET'
+);
 ```
 
-Las variables definidas dentro de una función tienen normalmente **ámbito local**. Para comunicar un resultado al resto del programa utilizaremos `return` en lugar de depender de variables globales.
+Mejoran legibilidad en ciertos casos, aunque convierten los nombres de parámetros en parte práctica de la API.
 
-### 8.7. Caso resuelto: de un bloque repetido a una función
-
-**Situación.** Debemos calcular el importe de una intervención para distintas parejas de horas y tarifas. Sin funciones podríamos copiar varias veces `$horas * $tarifa`. Con una función centralizamos la operación:
+### 10.8. Variádicos y desempaquetado
 
 ```php
-<?php
-
-declare(strict_types=1);
-
-function calcularImporte(float $horas, float $tarifa): float {
-    return $horas * $tarifa;
+function sumarTodo(int ...$numeros): int
+{
+    return array_sum($numeros);
 }
 
-$importeAna = calcularImporte(2.0, 20.0);
-$importeLuis = calcularImporte(3.5, 25.0);
-
-echo 'Ana: ' . $importeAna . ' €<br>';
-echo 'Luis: ' . $importeLuis . ' €';
+echo sumarTodo(1, 2, 3);
 ```
 
-**Prueba de escritorio:** indica el valor de ambos importes, modifica solo la segunda tarifa y comprueba qué salida cambia.
+Y:
 
-**Ejercicios 8.1–8.12.** Escribe `saludar`; convierte una cantidad de minutos a segundos; crea `esPar(int): bool`; crea `areaRectangulo`; crea `calcularIVA`; crea `mayorDeDos`; crea `factorial` con `for`; crea `esPrimo`; crea `contarAbiertos(array): int`; modifica una función para recibir un parámetro opcional; separa una función de cálculo de su `echo`; prueba cada función con un valor típico y uno límite. **No necesitas POO para realizar estos ejercicios.**
+```php
+$valores = [4, 5, 6];
+echo sumarTodo(...$valores);
+```
+
+### 10.9. Paso por valor
+
+```php
+function duplicar(int $numero): int
+{
+    return $numero * 2;
+}
+
+$original = 5;
+$doble = duplicar($original);
+```
+
+`$original` sigue valiendo `5`.
+
+### 10.10. Paso por referencia
+
+```php
+function incrementar(int &$numero): void
+{
+    $numero++;
+}
+```
+
+El `&` permite modificar deliberadamente la variable del llamador. Para cálculos suele ser más claro `return`.
+
+### 10.11. Arrays de entrada y salida
+
+```php
+function validarTicket(
+    string $asunto,
+    string $prioridad
+): array {
+    $errores = [];
+
+    if (trim($asunto) === '') {
+        $errores['asunto'] = 'Obligatorio';
+    }
+
+    if (
+        !in_array(
+            $prioridad,
+            ['baja', 'media', 'alta'],
+            true
+        )
+    ) {
+        $errores['prioridad'] = 'No válida';
+    }
+
+    return $errores;
+}
+```
+
+Las funciones booleanas son especialmente expresivas:
+
+```php
+function prioridadValida(string $prioridad): bool
+{
+    return in_array(
+        $prioridad,
+        ['baja', 'media', 'alta'],
+        true
+    );
+}
+```
+
+### 10.12. Ámbito
+
+Las variables declaradas dentro de una función tienen ámbito local.
+
+Evitaremos `global` como mecanismo habitual; preferiremos parámetros y retornos.
+
+### 10.13. Callbacks y `callable`
+
+```php
+function transformar(
+    array $valores,
+    callable $operacion
+): array {
+    return array_map($operacion, $valores);
+}
+```
+
+Una función entregada a otra para que la ejecute es un **callback**.
+
+Aparece en:
+
+```text
+array_map()
+array_filter()
+usort()
+```
+
+### 10.14. Funciones anónimas y closures
+
+```php
+$doble = function (int $n): int {
+    return $n * 2;
+};
+```
+
+Captura de variables externas:
+
+```php
+$iva = 0.21;
+
+$calcular = function (float $base) use ($iva): float {
+    return $base * (1 + $iva);
+};
+```
+
+### 10.15. Arrow functions
+
+```php
+$doble = fn(int $n): int => $n * 2;
+```
+
+Son adecuadas para expresiones breves:
+
+```php
+$dobles = array_map(
+    fn(int $n): int => $n * 2,
+    [1, 2, 3]
+);
+```
+
+### 10.16. Recursividad
+
+```php
+function factorial(int $n): int
+{
+    if ($n <= 1) {
+        return 1;
+    }
+
+    return $n * factorial($n - 1);
+}
+```
+
+Debe existir un caso base. La mayoría del proyecto no necesitará recursividad, pero conviene reconocerla.
+
+### 10.17. Efectos secundarios y diseño
+
+Una función puede modificar sesión, fichero, BBDD o argumentos por referencia. Cuando sea razonable preferiremos operaciones predecibles que reciban datos y devuelvan resultados.
+
+Una buena función intenta tener:
+
+```text
+nombre claro
+una responsabilidad
+parámetros comprensibles
+retorno conocido
+pocos efectos secundarios
+casos límite comprobables
+```
+
+### 10.18. Funciones que aparecerán en el proyecto
+
+```text
+normalizarTexto()
+validarTicket()
+prioridadValida()
+puedeEditar()
+generarNombreSeguro()
+obtenerConexion()
+buscarTickets()
+crearTicket()
+registrarAuditoria()
+generarCsrfToken()
+validarCsrf()
+```
+
+No las implementaremos todas ahora, pero debemos entender el patrón.
 
 ---
 
-## 9. Organizar una aplicación con varios archivos {#modularidad}
+## 11. Modularidad: repartir responsabilidades {#modularidad}
 
-Una página pequeña puede escribirse en un único `.php`. Cuando crece, resulta conveniente separar **el archivo al que entra la petición, las funciones reutilizables y el HTML de presentación**.
+![Tres archivos y sus responsabilidades: entrada, lógica y presentación]({{ '/assets/docencia/iaw/ut02/08_modulos.png' | relative_url }})
 
-### 9.1. Nuestro primer proyecto modular
+Una aplicación no debe crecer dentro de un único `index.php`.
 
 ```text
 /srv/iaw/php/
 ├── public/
-│   └── index.php
+│   ├── index.php
+│   └── procesar.php
 ├── src/
-│   └── calculos.php
-└── templates/
-    └── resultado.php
+│   └── funciones.php
+├── templates/
+│   └── resultado.php
+└── var/
+    ├── data/
+    ├── logs/
+    └── uploads/
 ```
 
-En `src/calculos.php`:
+### 11.1. `include`, `require` y variantes `_once`
 
-```php
-<?php
-
-declare(strict_types=1);
-
-function calcularImporte(float $horas, float $tarifa): float {
-    return $horas * $tarifa;
-}
-```
-
-En `public/index.php`:
-
-```php
-<?php
-
-require_once __DIR__ . '/../src/calculos.php';
-
-$importe = calcularImporte(3.0, 22.5);
-
-require __DIR__ . '/../templates/resultado.php';
-```
-
-En `templates/resultado.php`:
-
-```php
-<!doctype html>
-<html lang="es">
-<head><meta charset="UTF-8"><title>Resultado</title></head>
-<body>
-    <h1>Importe del servicio</h1>
-    <p><?= number_format($importe, 2, ',', '.') ?> €</p>
-</body>
-</html>
-```
-
-![Tres archivos y sus responsabilidades: entrada, lógica y presentación]({{ '/assets/docencia/iaw/ut02/08_modulos.png' | relative_url }})
-
-**¿Qué ocurre en orden?** Apache solicita `public/index.php`; el PHP de entrada carga `src/calculos.php`; ejecuta `calcularImporte`; guarda el importe; y carga la plantilla que generará el HTML.
-
-### 9.2. `include`, `require`, `_once` y `__DIR__`
-
-| Recurso | Para qué sirve |
+| Recurso | Idea |
 |---|---|
-| `include 'archivo.php';` | Carga otro archivo; si falla, emite una advertencia y el programa puede continuar. |
-| `require 'archivo.php';` | Carga un archivo necesario; si falla, se detiene la ejecución. |
-| `require_once 'archivo.php';` | Evita cargarlo más de una vez en la misma petición. |
-| `__DIR__` | Carpeta en la que se encuentra el archivo actual; ayuda a construir rutas fiables. |
+| `include` | Incluye; el programa puede continuar tras ciertos fallos |
+| `require` | El archivo es imprescindible |
+| `include_once` | Incluye una vez |
+| `require_once` | Requiere una vez |
 
-Para las funciones indispensables del proyecto usaremos normalmente `require_once`. La estructura modular **no exige crear decenas de archivos sin razón**; exige que sea fácil localizar una responsabilidad.
+```php
+require_once
+    __DIR__
+    . '/../src/funciones.php';
+```
 
-**Ejercicios 9.1–9.5.** Divide una calculadora en `index.php` y `src/calculos.php`; añade una plantilla HTML; mueve el CSS a `public/css/`; comprueba con el navegador que `src/` no está publicado directamente; cambia una tarifa y señala qué archivo debe modificarse y cuáles deben permanecer iguales.
+### 11.2. `__DIR__`
+
+Contiene el directorio del archivo actual y ayuda a construir rutas fiables.
+
+### 11.3. Entrada, lógica y presentación
+
+```text
+public/procesar.php   → recibe HTTP
+src/funciones.php     → lógica reutilizable
+templates/*.php       → HTML
+```
+
+No buscamos muchos archivos: buscamos responsabilidades localizables.
 
 ---
 
-## 10. Persistencia ligera con ficheros y logs {#ficheros}
+## 12. Métodos y programación orientada a objetos {#poo}
+
+Una **función** puede existir de forma independiente. Un **método** se declara dentro de una clase.
+
+```php
+trim($texto);          // función incorporada
+normalizar($texto);    // función propia
+$ticket->cerrar();     // método de instancia
+Validador::email();    // método estático
+```
+
+![Distinción entre clase Ticket y dos objetos con estados independientes]({{ '/assets/docencia/iaw/ut02/09_objetos.png' | relative_url }})
+
+### 12.1. Clase, objeto, propiedad y método
+
+```php
+class Ticket
+{
+    public string $asunto = '';
+
+    public function resumen(): string
+    {
+        return 'Ticket: ' . $this->asunto;
+    }
+}
+```
+
+```php
+$ticket = new Ticket();
+$ticket->asunto = 'Apache no responde';
+
+echo $ticket->resumen();
+```
+
+### 12.2. `$this`
+
+Dentro de un método de instancia, `$this` representa el objeto concreto que ejecuta el método.
+
+### 12.3. Constructor
+
+```php
+class Ticket
+{
+    public function __construct(
+        public string $asunto,
+        public string $estado = 'abierto'
+    ) {
+    }
+}
+```
+
+La promoción de propiedades anterior es compacta; antes conviene comprender la versión explícita:
+
+```php
+public string $asunto;
+
+public function __construct(string $asunto)
+{
+    $this->asunto = $asunto;
+}
+```
+
+### 12.4. Visibilidad y encapsulación
+
+```text
+public     → accesible desde fuera
+private    → solo desde la clase
+protected  → clase y descendientes
+```
+
+```php
+private string $estado = 'abierto';
+
+public function cerrar(): void
+{
+    $this->estado = 'cerrado';
+}
+```
+
+La encapsulación protege reglas del objeto.
+
+### 12.5. Métodos que devuelven y métodos `void`
+
+```php
+public function resumen(): string
+{
+    return $this->asunto;
+}
+```
+
+frente a:
+
+```php
+public function cerrar(): void
+{
+    $this->estado = 'cerrado';
+}
+```
+
+### 12.6. Métodos estáticos y `::`
+
+```php
+class Validador
+{
+    public static function emailValido(string $email): bool
+    {
+        return filter_var(
+            $email,
+            FILTER_VALIDATE_EMAIL
+        ) !== false;
+    }
+}
+```
+
+```php
+Validador::emailValido('ana@example.com');
+```
+
+Un método `static` no dispone de `$this`.
+
+### 12.7. `self::`, `parent::`, herencia y sobrescritura
+
+```php
+class Ticket
+{
+    public function etiqueta(): string
+    {
+        return 'Ticket';
+    }
+}
+
+class IncidenciaCritica extends Ticket
+{
+    public function etiqueta(): string
+    {
+        return parent::etiqueta() . ' CRÍTICO';
+    }
+}
+```
+
+La clase hija sobrescribe el método. No construiremos jerarquías profundas sin necesidad.
+
+### 12.8. Interfaces
+
+```php
+interface Exportable
+{
+    public function exportar(): string;
+}
+```
+
+Una interfaz expresa un contrato que una clase puede implementar.
+
+### 12.9. Traits
+
+```php
+trait MarcaTemporal
+{
+    public function ahoraIso(): string
+    {
+        return date(DATE_ATOM);
+    }
+}
+```
+
+Un trait permite reutilizar miembros entre clases sin crear una relación de herencia.
+
+### 12.10. Métodos mágicos
+
+Conviene reconocer:
+
+```text
+__construct()
+__destruct()
+__toString()
+__get()
+__set()
+__call()
+```
+
+Dominaremos `__construct()`. El resto se estudiará cuando exista una necesidad real.
+
+### 12.11. PHP no sobrecarga métodos por firma como Java
+
+No declararemos dos métodos con el mismo nombre diferenciados únicamente por sus parámetros. PHP resuelve necesidades similares con parámetros opcionales, variádicos u otros mecanismos.
+
+### 12.12. ¿Función o método?
+
+Función:
+
+```text
+recibe datos → calcula/valida → devuelve
+```
+
+Método:
+
+```text
+la operación pertenece a un objeto concreto
+```
+
+Ejemplos:
+
+```text
+prioridadValida()      → función
+normalizarTexto()      → función
+$ticket->cerrar()      → método
+$usuario->cambiarClave() → método
+```
+
+No todo necesita una clase.
+
+### 12.13. Comprobación de aprendizaje
+
+Debes poder explicar:
+
+1. Función incorporada vs propia.
+2. Procedimiento como función `void`.
+3. Parámetro vs argumento.
+4. `echo` vs `return`.
+5. Paso por valor vs referencia.
+6. Parámetro opcional, variádico y argumento con nombre.
+7. Callback, función anónima y arrow function.
+8. Función vs método.
+9. `$this`.
+10. Constructor y visibilidad.
+11. Método de instancia vs estático.
+12. Herencia, interfaz y trait a nivel de reconocimiento.
+13. Por qué no todo debe convertirse en una clase.
+
+**Ejercicios integradores.** Convierte validaciones repetidas en funciones; crea funciones que reciban y devuelvan arrays; prueba valor/referencia; utiliza `array_filter()` con callback; reescribe un callback simple mediante `fn`; separa validadores en `src/funciones.php`; crea una clase `Ticket` con constructor, `cerrar()` y `estaCerrado()`; compara `prioridadValida()` con `$ticket->cerrar()` y justifica su ubicación.
+
+---
+
+## 13. Persistencia ligera, logs y ficheros seguros {#ficheros}
 
 Hasta ahora, las variables existen mientras se ejecuta una petición. Cuando termina el script, una variable normal desaparece. Antes de introducir MariaDB conviene conocer una forma de **persistencia sencilla**: guardar datos en el sistema de ficheros del servidor.
 
@@ -1439,7 +2576,7 @@ Un fichero puede ser útil para un registro de actividad, una configuración sen
 | Sesión | Sí, entre peticiones de una sesión | Servidor + identificador en cliente | Estado de navegación e identidad |
 | Base de datos | Sí | SGBD | Datos estructurados y concurrentes |
 
-### 10.1. Dónde guardar datos que no deben ser públicos
+### 13.1. Dónde guardar datos que no deben ser públicos
 
 No escribiremos logs ni datos internos dentro del `DocumentRoot`. Amplía la estructura del proyecto:
 
@@ -1451,7 +2588,8 @@ No escribiremos logs ni datos internos dentro del `DocumentRoot`. Amplía la est
 ├── templates/
 └── var/                 ← NO accesible directamente por HTTP
     ├── data/
-    └── logs/
+    ├── logs/
+    └── uploads/
 ```
 
 En el laboratorio, el administrador puede preparar las carpetas con permisos de escritura para el usuario de desarrollo y para el grupo utilizado por el servicio web, sin recurrir a `chmod 777`:
@@ -1460,11 +2598,12 @@ En el laboratorio, el administrador puede preparar las carpetas con permisos de 
 sudo install -d -m 2770 -o "$USER" -g www-data /srv/iaw/php/var
 sudo install -d -m 2770 -o "$USER" -g www-data /srv/iaw/php/var/data
 sudo install -d -m 2770 -o "$USER" -g www-data /srv/iaw/php/var/logs
+sudo install -d -m 2770 -o "$USER" -g www-data /srv/iaw/php/var/uploads
 ```
 
 Después comprueba las rutas y permisos con `namei -l` y `ls -ld`. Si PHP-FPM no puede escribir, no abras los permisos a todo el sistema: identifica qué usuario/grupo ejecuta el proceso y corrige la propiedad o los permisos necesarios.
 
-### 10.2. Primer fichero: escribir una línea
+### 13.2. Primer fichero: escribir una línea
 
 `file_put_contents()` permite escribir una cadena completa en un fichero. Empezaremos con un registro muy pequeño:
 
@@ -1485,7 +2624,7 @@ if ($resultado === false) {
 
 **Atención:** sin opciones adicionales, `file_put_contents()` reemplaza el contenido anterior del fichero. Para un log normalmente queremos **añadir**, no borrar.
 
-### 10.3. Añadir al final: un log acumulativo
+### 13.3. Añadir al final: un log acumulativo
 
 ```php
 <?php
@@ -1512,7 +2651,7 @@ if ($resultado === false) {
 
 Un bloqueo de fichero **no convierte un archivo de texto en una base de datos transaccional**. Sirve para un caso pequeño y controlado; después compararemos sus límites con MariaDB.
 
-### 10.4. Leer un fichero de texto
+### 13.4. Leer un fichero de texto
 
 `file_get_contents()` devuelve el contenido completo como cadena o `false` si no puede leerlo:
 
@@ -1536,7 +2675,7 @@ echo '<pre>' . htmlspecialchars(
 
 Escapamos el texto antes de mostrarlo en HTML. Un log puede contener caracteres enviados por usuarios o por otros sistemas; no debemos convertir accidentalmente esas cadenas en marcado ejecutable.
 
-### 10.5. Datos estructurados sencillos con JSON
+### 13.5. Datos estructurados sencillos con JSON
 
 Un log es una sucesión de líneas. Para conservar una pequeña estructura de datos podemos serializar un array como JSON. Supongamos que todavía no existe MariaDB y queremos guardar dos tickets de prueba:
 
@@ -1601,7 +2740,7 @@ foreach ($tickets as $ticket) {
 
 El segundo argumento `true` de `json_decode()` pide arrays asociativos. Aquí reutilizamos arrays y `foreach`: la persistencia no introduce otra forma de programar, sino otra **fuente y destino de los datos**.
 
-### 10.6. `fopen`, modos de apertura y escritura por flujo
+### 13.6. `fopen`, modos de apertura y escritura por flujo
 
 Las funciones anteriores resuelven muchos casos sencillos. Cuando necesitamos más control podemos abrir explícitamente un recurso con `fopen()`. Los modos básicos que conviene reconocer son:
 
@@ -1629,7 +2768,7 @@ fclose($recurso);
 
 Abrir, utilizar y cerrar explícitamente ayuda a comprender el ciclo de trabajo con un fichero. Para operaciones pequeñas preferiremos la solución más simple que permita controlar correctamente los errores.
 
-### 10.7. Log de aplicación y log de errores no son lo mismo
+### 13.7. Log de aplicación y log de errores no son lo mismo
 
 Un **log de aplicación** puede registrar hechos previstos: creación de un ticket, cambio de estado o una importación. Un **log de errores** registra problemas técnicos que interesa diagnosticar. PHP ofrece `error_log()` para enviar un mensaje al mecanismo de registro configurado por el entorno:
 
@@ -1647,7 +2786,7 @@ En nuestro laboratorio, según la configuración de Apache y PHP-FPM, esos mensa
 
 **Nunca registres contraseñas, cookies de sesión, claves API ni secretos de base de datos.** Un log también es un dato que debe protegerse, limitarse y rotarse cuando crece.
 
-### 10.8. ¿Cuándo deja de ser buena idea un fichero?
+### 13.8. ¿Cuándo deja de ser buena idea un fichero?
 
 Los ficheros son apropiados para aprender persistencia ligera y para algunos usos reales, especialmente logs, exportaciones y configuraciones. Empiezan a resultar incómodos cuando necesitamos:
 
@@ -1660,345 +2799,201 @@ Los ficheros son apropiados para aprender persistencia ligera y para algunos uso
 
 Ese problema prepara la siguiente unidad: **UT03 introduce PDO y MariaDB**. No sustituimos un fichero porque sea «malo»; elegimos otro mecanismo porque cambian los requisitos.
 
-**Ejercicios 10.1–10.8.** Escribe una línea con fecha en `app.log`; añade cinco operaciones sin borrar las anteriores; muestra el log escapado en una página; crea un contador persistente en un fichero; guarda un array de tickets en JSON; léelo y genera una lista HTML; provoca un JSON incorrecto y controla el fallo; explica qué datos guardarías en variable, fichero, sesión o base de datos y justifica cada decisión.
+**Ejercicios 13.1–13.8.** Escribe una línea con fecha en `app.log`; añade cinco operaciones sin borrar las anteriores; muestra el log escapado en una página; crea un contador persistente en un fichero; guarda un array de tickets en JSON; léelo y genera una lista HTML; provoca un JSON incorrecto y controla el fallo; explica qué datos guardarías en variable, fichero, sesión o base de datos y justifica cada decisión.
 
 ---
 
-## 11. Primeros pasos en programación orientada a objetos {#poo}
 
-Hasta ahora hemos agrupado instrucciones en funciones. En aplicaciones mayores también puede ser útil reunir **datos y operaciones relacionadas** en un mismo tipo de objeto. Lo estudiaremos con un ejemplo pequeño, sin comenzar directamente por herencia o interfaces.
+### 13.9. Subida de ficheros: `$_FILES` no basta por sí solo
 
-### 11.1. De un ticket descrito con variables a una clase
-
-Un ticket puede tener datos como `asunto` y `estado`, y comportamientos como `cerrar()`. La **clase** define el modelo; el **objeto** es una instancia concreta creada a partir de ese modelo.
-
-![Distinción entre clase Ticket y dos objetos con estados independientes]({{ '/assets/docencia/iaw/ut02/09_objetos.png' | relative_url }})
-
-Primero vamos a escribir una clase muy sencilla:
-
-```php
-<?php
-
-class Ticket {
-    public string $asunto = '';
-}
-
-$ticket1 = new Ticket();
-$ticket1->asunto = 'No carga Apache';
-
-$ticket2 = new Ticket();
-$ticket2->asunto = 'Error de contraseña';
-
-echo $ticket1->asunto; // No carga Apache
-```
-
-**Lectura:**
-
-- `class Ticket` define el tipo de objetos que podemos crear.
-- `public string $asunto` define una propiedad donde cada objeto podrá guardar texto.
-- `new Ticket()` crea un objeto distinto cada vez.
-- `->` permite acceder a una propiedad o llamar a un método de ese objeto.
-
-Aunque ambos objetos pertenecen a la clase `Ticket`, **cada uno tiene su propio asunto**.
-
-### 11.2. Métodos: una acción que puede realizar el objeto
-
-```php
-<?php
-
-class Ticket {
-    public string $asunto = '';
-
-    public function mostrarResumen(): string {
-        return 'Ticket: ' . $this->asunto;
-    }
-}
-
-$ticket = new Ticket();
-$ticket->asunto = 'No carga Apache';
-
-echo $ticket->mostrarResumen();
-```
-
-`$this` representa **el objeto concreto cuyo método se está ejecutando**. Si existen dos objetos, `$this->asunto` puede contener un valor distinto en cada uno.
-
-### 11.3. Constructor: datos al crear el objeto
-
-No queremos crear primero un ticket vacío y después recordar que hay que asignarle siempre su asunto. Un **constructor** permite establecer sus valores iniciales:
-
-```php
-<?php
-
-class Ticket {
-    public string $asunto;
-    public string $estado;
-
-    public function __construct(string $asunto, string $estado = 'abierto') {
-        $this->asunto = $asunto;
-        $this->estado = $estado;
-    }
-
-    public function resumen(): string {
-        return $this->asunto . ' (' . $this->estado . ')';
-    }
-}
-
-$ticket = new Ticket('Apache no responde');
-echo $ticket->resumen(); // Apache no responde (abierto)
-```
-
-El constructor recibe el argumento `$asunto` y **lo guarda en la propiedad del mismo nombre de este objeto** mediante `$this->asunto = $asunto;`. Observa que **el parámetro `$asunto` y la propiedad `$this->asunto` no son lo mismo**: la variable del parámetro existe durante la llamada, mientras la propiedad pertenece al objeto. El segundo argumento es opcional porque tiene un valor por defecto. PHP también ofrece una sintaxis más corta llamada *promoción de propiedades*; conviene conocer primero esta versión explícita.
-
-### 11.4. Encapsulación: no permitir cualquier cambio
-
-Si un programa puede cambiar libremente `$estado` a `'volando'`, el objeto representará una situación sin sentido. Podemos ocultar la propiedad y ofrecer métodos controlados:
-
-```php
-<?php
-
-class Ticket {
-    private string $asunto;
-    private string $estado = 'abierto';
-
-    public function __construct(string $asunto) {
-        $this->asunto = $asunto;
-    }
-
-    public function cerrar(): void {
-        $this->estado = 'cerrado';
-    }
-
-    public function resumen(): string {
-        return $this->asunto . ' (' . $this->estado . ')';
-    }
-}
-
-$ticket = new Ticket('Error de acceso');
-$ticket->cerrar();
-echo $ticket->resumen(); // Error de acceso (cerrado)
-```
-
-La propiedad `private` solo puede modificarse directamente desde la clase. El método público `cerrar()` expresa una acción reconocible. **Encapsular** no significa esconder todo sin criterio: significa exponer operaciones que conserven las reglas del objeto.
-
-### 11.5. Antes de añadir más POO, comprueba estos conceptos
-
-| Concepto | Pregunta que debes poder responder |
-|---|---|
-| Clase | ¿Qué modelo representa `Ticket`? |
-| Objeto | ¿Qué crea `new Ticket()`? |
-| Propiedad | ¿Dónde guarda un ticket su asunto? |
-| Método | ¿Qué hace `cerrar()`? |
-| Constructor | ¿Cómo llegan los valores iniciales? |
-| `$this` | ¿A qué objeto se refiere? |
-| `public` / `private` | ¿Quién puede acceder al miembro? |
-
-**Ampliación de lectura.** La herencia con `extends` permite especializar una clase; una interfaz con `implements` define operaciones que distintas clases deben proporcionar. Las veremos cuando tengamos una necesidad concreta, no antes de comprender la clase anterior. Composer y los frameworks aparecerán después: son herramientas para organizar aplicaciones, no sustitutos de la comprensión del lenguaje.
-
-**Ejercicios 11.1–11.8.** Crea dos objetos `Modulo`; añade una propiedad y un método; crea un `Ticket` con asunto obligatorio; implementa `cerrar()` y `reabrir()`; prueba dos objetos que cambian independientemente; sustituye una propiedad pública por una privada; crea un método de resumen sin HTML; explica por qué una clase `Ticket` no debería encargarse también de configurar Apache.
-
----
-## 12. Recuperamos el formulario HTML: PHP recibe datos {#formularios}
-
-Ahora sí es el momento de utilizar el formulario creado en el repaso de HTML. Ya conocemos variables, arrays asociativos, condiciones, bucles, funciones y organización por archivos. Así podremos comprender **qué datos llegan, cómo comprobarlos y qué respuesta generar**.
-
-![Del campo name en HTML a la clave del array POST en PHP]({{ '/assets/docencia/iaw/ut02/10_formularios.png' | relative_url }})
-
-### 12.1. Un formulario muy pequeño
-
-Crea `public/formulario.html`:
+Un formulario de subida necesita `enctype="multipart/form-data"`:
 
 ```html
-<!doctype html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <title>Formulario de prueba</title>
-</head>
-<body>
-    <form action="procesar.php" method="post">
-        <label for="nombre">Nombre</label>
-        <input type="text" id="nombre" name="nombre" required>
-        <button type="submit">Enviar</button>
-    </form>
-</body>
-</html>
+<form method="post" enctype="multipart/form-data">
+  <input type="file" name="adjunto">
+  <button>Subir</button>
+</form>
 ```
 
-Distingue tres atributos:
+PHP expone la información recibida en `$_FILES`. Para un campo llamado `adjunto` aparecen datos como `name`, `tmp_name`, `error` y `size`. El nombre que envía el navegador es **un dato aportado por el cliente**, no un nombre de almacenamiento fiable.
 
-| Atributo | Función |
-|---|---|
-| `id="nombre"` | Identifica ese control dentro del HTML y lo asocia al `label`. |
-| `name="nombre"` | Define la **clave** con la que se enviará su valor. |
-| `action="procesar.php"` | Señala el recurso al que el navegador enviará el formulario. |
-
-`method="post"` indica el método HTTP utilizado para enviar los datos. **No cifra por sí mismo el contenido**: para proteger el transporte de información sensible se utiliza HTTPS.
-
-### 12.2. PHP recibe el valor mediante `$_POST`
-
-Crea `public/procesar.php`:
-
-```php
-<?php
-
-$nombre = $_POST['nombre'] ?? '';
-
-echo 'Hola, ' . htmlspecialchars(
-    $nombre,
-    ENT_QUOTES | ENT_SUBSTITUTE,
-    'UTF-8'
-);
-```
-
-`$_POST` es un **array superglobal** que contiene valores recibidos normalmente en el cuerpo de una petición de formulario POST. **No es una función ni un objeto**, y sus claves dependen de los nombres `name` que se hayan enviado.
-
-| En HTML | En PHP |
-|---|---|
-| `name="nombre"` | `$_POST['nombre']` |
-| `name="email"` | `$_POST['email']` |
-| `name="prioridad"` | `$_POST['prioridad']` |
-
-El operador `?? ''` evita asumir que la clave existe: utiliza una cadena vacía si falta o es nula. Una entrada HTTP no debe considerarse automáticamente correcta o segura.
-
-### 12.3. GET y POST: dos formas de enviar valores
-
-Cambia **temporalmente** el método del formulario a `get`, envía `Ana` y observa la URL:
+La secuencia segura que utilizaremos en el Proyecto 1 será:
 
 ```text
-http://php07.iaw.test/procesar.php?nombre=Ana
+$_FILES
+   ↓
+comprobar error
+   ↓
+comprobar tamaño
+   ↓
+detectar MIME real
+   ↓
+comprobar tipo permitido
+   ↓
+generar nombre interno
+   ↓
+move_uploaded_file()
+   ↓
+guardar metadatos
 ```
 
-Con `method="get"`, el programa consultaría `$_GET['nombre']`. Con `method="post"`, los datos se envían normalmente en el cuerpo de la petición y se consultan mediante `$_POST['nombre']`.
-
-| Aspecto | GET | POST |
-|---|---|---|
-| Uso frecuente | Consulta, búsqueda, filtros y navegación. | Envío de formularios que producen cambios. |
-| Dónde viajan valores de formulario típicos | En la cadena de consulta de la URL. | En el cuerpo de la petición. |
-| ¿Aparecen en la barra de direcciones? | Normalmente, sí. | Normalmente, no. |
-| ¿Cifra el contenido? | No. HTTPS protege el transporte en ambos casos. |
-
-**Experimento:** utiliza las herramientas del navegador → *Network* → selecciona la petición y compara `Request Method`, URL y los datos enviados. Vuelve después a POST y adapta `procesar.php` a `$_POST`.
-
-### 12.4. Validación paso a paso
-
-En el formulario podemos escribir `required`, pero el navegador no es una frontera de confianza. Un usuario puede modificar HTML, desactivar validaciones o enviar peticiones construidas por otros medios.
-
-Primero validaremos **un solo campo**. Además de comprobar su contenido, comprobaremos que recibimos el tipo esperado:
+Ejemplo reducido:
 
 ```php
 <?php
 
-if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-    http_response_code(405);
-    exit('Este recurso espera un formulario POST');
+$fichero = $_FILES['adjunto'] ?? null;
+
+if (!is_array($fichero)) {
+    exit('No llegó el fichero');
 }
 
-$valor = $_POST['nombre'] ?? '';
-
-if (!is_string($valor)) {
-    http_response_code(422);
-    exit('Nombre no válido');
+if (($fichero['error'] ?? UPLOAD_ERR_NO_FILE) !== UPLOAD_ERR_OK) {
+    exit('Error durante la subida');
 }
 
-$nombre = trim($valor);
-
-if ($nombre === '') {
-    http_response_code(422);
-    exit('Debes escribir tu nombre');
+if ((int) $fichero['size'] > 2 * 1024 * 1024) {
+    exit('Fichero demasiado grande');
 }
 
-echo 'Hola, ' . htmlspecialchars(
-    $nombre,
-    ENT_QUOTES | ENT_SUBSTITUTE,
-    'UTF-8'
-);
-```
+$tmp = $fichero['tmp_name'] ?? '';
 
-**Recorrido:** (1) comprobar el método; (2) leer la clave; (3) comprobar el tipo; (4) eliminar espacios iniciales y finales; (5) rechazar contenido vacío; (6) mostrar el texto como HTML seguro. Con `name="nombre[]"` podría llegar un array en lugar de una cadena, por lo que no conviene llamar a `trim()` sin comprobar el tipo de un valor externo.
+if (!is_string($tmp) || !is_uploaded_file($tmp)) {
+    exit('La subida temporal no es válida');
+}
 
-### 12.5. Un formulario de tickets con varios campos
+$finfo = new finfo(FILEINFO_MIME_TYPE);
+$mime = $finfo->file($tmp);
 
-Cuando el primer formulario funcione, añade `asunto`, `prioridad` y `descripcion`. La prioridad debe seleccionarse entre las opciones admitidas:
+$permitidos = [
+    'application/pdf' => 'pdf',
+    'image/jpeg' => 'jpg',
+    'image/png' => 'png',
+];
 
-```php
-<?php
+if (!is_string($mime) || !isset($permitidos[$mime])) {
+    exit('Tipo no permitido');
+}
 
-$prioridad = $_POST['prioridad'] ?? '';
-$permitidas = ['baja', 'media', 'alta'];
+$nombreInterno =
+    bin2hex(random_bytes(16))
+    . '.'
+    . $permitidos[$mime];
 
-if (!is_string($prioridad) || !in_array($prioridad, $permitidas, true)) {
-    http_response_code(422);
-    exit('Prioridad no permitida');
+$directorio =
+    __DIR__
+    . '/../var/uploads';
+
+if (!is_dir($directorio) || !is_writable($directorio)) {
+    error_log('IAW Desk: directorio de subidas no disponible');
+    exit('No se puede almacenar el fichero');
+}
+
+$destino =
+    $directorio
+    . '/'
+    . $nombreInterno;
+
+if (!move_uploaded_file($tmp, $destino)) {
+    error_log('IAW Desk: move_uploaded_file() ha fallado');
+    exit('No se pudo almacenar el fichero');
 }
 ```
 
-`in_array(..., true)` utiliza comparación estricta. **No basta con que un `select` HTML presente solo tres opciones**: el servidor tiene que controlar los valores realmente recibidos.
+**No confundas tres nombres:** el nombre original puede conservarse como metadato para mostrarlo al usuario; el fichero temporal lo crea PHP durante la subida; el nombre físico definitivo debe decidirlo la aplicación.
 
-Los checkbox no marcados normalmente **no envían su clave**. Por eso, para una casilla de confirmación:
+### 13.10. Descarga controlada: el cliente no debe escoger una ruta del servidor
 
-```php
-<?php
+No construiremos una descarga aceptando directamente:
 
-$acepta = ($_POST['acepta'] ?? '') === 'si';
+```text
+download.php?file=../../algo
 ```
 
-En HTML es conveniente declarar expresamente `value="si"` para que el valor esperado sea conocido.
+La aplicación recibirá un **identificador lógico** y decidirá qué fichero corresponde a él después de comprobar identidad y permisos.
 
-### 12.6. Validar, escapar y almacenar son tres responsabilidades distintas
-
-- **Validar:** ¿el asunto no está vacío?, ¿la prioridad pertenece a las opciones?, ¿el email tiene el formato requerido?
-- **Escapar al mostrar HTML:** ¿el asunto enviado se representará como texto aunque contenga etiquetas?
-- **Almacenar:** ¿dónde permanecerá el ticket cuando otra petición lo necesite? Para datos sencillos ya hemos practicado ficheros y JSON; cuando necesitemos relaciones, consultas y concurrencia utilizaremos PDO y MariaDB en la UT03.
-
-Ejemplo de salida HTML segura:
-
-```php
-<?php
-
-$asunto = '<b>Problema de acceso</b>';
-
-echo htmlspecialchars(
-    $asunto,
-    ENT_QUOTES | ENT_SUBSTITUTE,
-    'UTF-8'
-);
+```text
+GET /download.php?id=17
+          ↓
+validar id
+          ↓
+buscar metadatos
+          ↓
+comprobar autorización
+          ↓
+resolver ruta controlada
+          ↓
+enviar fichero
 ```
 
-El navegador mostrará literalmente `<b>Problema de acceso</b>` como texto, en lugar de interpretarlo como una etiqueta del usuario. `htmlspecialchars` sirve para **escapar en un contexto HTML apropiado**; no valida una dirección de correo ni sustituye las consultas preparadas SQL.
+Cuando incorporemos MariaDB, los metadatos del adjunto —registro al que pertenece, nombre interno, nombre original, MIME, tamaño y propietario— podrán persistirse en la base de datos mientras los bytes permanecen en un almacenamiento controlado.
 
-### 12.7. Qué hacer después de un POST correcto
+### 13.11. Qué papel tendrán los ficheros en el Proyecto 1
 
-Una aplicación que recibe un formulario puede redirigir al navegador a una página de confirmación para evitar que actualizar la página reenvíe accidentalmente el mismo POST. El patrón se conoce como **POST/Redirect/GET (PRG)**.
+El requisito del proyecto no consiste únicamente en «subir un archivo». El alumno deberá poder explicar y demostrar:
 
-```php
-<?php
-
-// Fragmento que se ejecuta únicamente tras validar y procesar el POST.
-header('Location: confirmado.php', true, 303);
-exit;
-```
-
-`header()` debe ejecutarse **antes de enviar contenido** que comprometa las cabeceras HTTP; después de enviar la redirección, `exit` impide continuar la ejecución. No pondremos este fragmento en el primer formulario hasta entender sus pasos previos.
-
-**Ejercicios 12.1–12.10.** Procesa un nombre; explica `id` frente a `name`; compara GET y POST; procesa un número entero válido; calcula un área a partir de formulario; valida la nota 0…10; comprueba casilla marcada/desmarcada; rechaza una prioridad inventada; recupera los valores de un formulario tras un error; procesa un ticket con nombre, asunto y prioridad mostrando los datos escapados. **No utilizaremos aún una base de datos.**
+- que existe un tamaño máximo;
+- que se comprueba el MIME real;
+- que el nombre físico no es el proporcionado por el navegador;
+- que el fichero queda vinculado a un registro;
+- que una descarga privada comprueba autorización;
+- que los errores no exponen rutas internas innecesarias.
 
 ---
 
-## 13. Estado entre peticiones: cookies y sesiones {#estado}
+## 14. Estado entre peticiones: cookies, sesiones y autenticación {#estado}
 
-### 13.1. ¿Qué ocurre cuando visitamos otra página?
+![Relación entre peticiones HTTP, cookie de sesión y estado conservado en el servidor]({{ '/assets/docencia/iaw/ut02/11_estado_http.png' | relative_url }})
 
-Una petición web no conserva automáticamente las variables PHP de una petición anterior. Por ejemplo, si un script ejecuta `$visitas = 1;` en cada petición, el valor vuelve a empezar cuando se solicita otra vez la página.
+### 14.1. El problema: una petición PHP termina
 
-Este comportamiento plantea preguntas reales: ¿cómo recordar la preferencia de idioma?, ¿cómo reconocer que dos peticiones pertenecen al mismo navegador?, ¿cómo mantener una identidad autenticada?
+Una variable PHP ordinaria vive durante una ejecución. Si cada petición ejecuta:
 
-![Tres peticiones HTTP y relación entre cookie de sesión y datos en servidor]({{ '/assets/docencia/iaw/ut02/11_estado_http.png' | relative_url }})
+```php
+<?php
 
-### 13.2. Primera pieza: una cookie de preferencia
+$contador = 0;
+$contador++;
 
-Una cookie es un pequeño dato que el servidor solicita guardar al navegador y que este puede devolver en peticiones posteriores, de acuerdo con sus políticas y configuración.
+echo $contador;
+```
 
-Ejemplo simplificado de una preferencia **no sensible**:
+veremos `1` en cada recarga. La nueva petición vuelve a empezar desde el principio.
+
+```text
+PETICIÓN 1                    PETICIÓN 2
+GET /pagina.php               GET /pagina.php
+      ↓                             ↓
+PHP comienza                  PHP comienza de nuevo
+      ↓                             ↓
+$contador = 0                 $contador = 0
+      ↓                             ↓
+respuesta                     respuesta
+      ↓                             ↓
+FIN                           FIN
+```
+
+Para recordar información entre peticiones necesitamos mecanismos específicos.
+
+### 14.2. Primero: cookies
+
+Una **cookie** es un pequeño dato que el navegador conserva y puede enviar en peticiones posteriores.
+
+```text
+RESPUESTA
+Set-Cookie: tema=oscuro
+        ↓
+NAVEGADOR
+guarda tema=oscuro
+        ↓
+PETICIÓN POSTERIOR
+Cookie: tema=oscuro
+        ↓
+PHP
+$_COOKIE['tema']
+```
+
+Crear una cookie:
 
 ```php
 <?php
@@ -2009,51 +3004,129 @@ setcookie('tema', 'oscuro', [
     'httponly' => true,
     'samesite' => 'Lax',
 ]);
-
-echo 'Preferencia enviada al navegador';
 ```
 
-**Lectura de las opciones:** `expires` indica una fecha de caducidad expresada como marca temporal; `time() + 3600` representa aproximadamente una hora desde ahora. `path` indica las rutas del sitio a las que se enviará; `httponly` impide que JavaScript del navegador acceda a la cookie mediante las API habituales; `samesite` limita determinados envíos entre sitios. Una cookie de preferencia no debe utilizarse como mecanismo de autenticación.
+`setcookie()` prepara una **cabecera HTTP de respuesta**. Por eso no debemos pensar que la nueva cookie aparecerá inmediatamente en `$_COOKIE` durante la misma ejecución: normalmente PHP la verá cuando el navegador la devuelva en una petición posterior.
 
-`setcookie()` prepara una cabecera HTTP. La cookie no tiene por qué aparecer inmediatamente en `$_COOKIE` durante esa misma petición; normalmente se leerá cuando el navegador la envíe en una petición posterior:
+> **Orden importante:** `setcookie()`, `header()` y el inicio de una sesión que necesite enviar su cookie deben ejecutarse antes de haber enviado contenido al navegador. Si aparece `headers already sent`, busca primero HTML, `echo`, espacios o saltos de línea enviados demasiado pronto.
+{: .notice--warning}
+
+### 14.3. Opciones importantes de una cookie
+
+| Opción | Idea |
+|---|---|
+| `expires` | momento de caducidad |
+| `path` | rutas en las que se enviará |
+| `domain` | dominio al que pertenece |
+| `secure` | solo se envía mediante HTTPS |
+| `httponly` | JavaScript no puede leerla mediante las API habituales |
+| `samesite` | limita determinados envíos entre sitios |
+
+En un laboratorio HTTP local no podemos exigir siempre `secure=true`; en una web pública bajo HTTPS sí debe valorarse.
+
+### 14.4. Una cookie procede del cliente: validar antes de utilizar
+
+El usuario puede inspeccionar o modificar sus cookies. Por ello una preferencia debe validarse igual que otros datos externos:
 
 ```php
 <?php
 
+$permitidos = ['claro', 'oscuro'];
+
 $tema = $_COOKIE['tema'] ?? 'claro';
 
-echo 'Tema: ' . htmlspecialchars(
-    is_string($tema) ? $tema : 'claro',
-    ENT_QUOTES | ENT_SUBSTITUTE,
-    'UTF-8'
-);
+if (
+    !is_string($tema)
+    ||
+    !in_array($tema, $permitidos, true)
+) {
+    $tema = 'claro';
+}
 ```
 
-En una web pública con HTTPS, deberá valorarse además la opción `'secure' => true` para cookies que solo deban viajar por conexiones cifradas. Los navegadores pueden eliminar cookies antes de su caducidad prevista. **Nunca guardes contraseñas ni hashes de contraseña en cookies de preferencias.**
+Una cookie puede ser útil para preferencias no sensibles. **No guardaremos contraseñas ni `password_hash` en cookies.**
 
-### 13.3. Segunda pieza: una sesión en el servidor
+### 14.5. Eliminar una cookie
 
-PHP proporciona `$_SESSION`, un array donde podemos conservar datos entre peticiones pertenecientes a la misma sesión.
+Pedimos al navegador que reemplace la cookie por otra equivalente con caducidad pasada:
 
-Crea `public/contador.php`:
+```php
+<?php
+
+setcookie('tema', '', [
+    'expires' => time() - 3600,
+    'path' => '/',
+    'httponly' => true,
+    'samesite' => 'Lax',
+]);
+```
+
+El `path` y los atributos de alcance deben ser coherentes con los utilizados al crearla.
+
+### 14.6. De la cookie a la sesión
+
+Una sesión PHP utiliza normalmente una cookie para transportar un **identificador**, mientras los datos de `$_SESSION` se mantienen del lado servidor según el almacenamiento configurado.
+
+```text
+NAVEGADOR
+PHPSESSID=abc123
+        │
+        ▼
+SERVIDOR
+sesión abc123
+visitas = 4
+user_id = 7
+role = usuario
+```
+
+Cookie y sesión no son sinónimos:
+
+| Aspecto | Cookie | Sesión |
+|---|---|---|
+| Dato principal | navegador | servidor |
+| El cliente puede modificarlo directamente | sí | no directamente |
+| Uso típico | preferencias / identificadores | estado de aplicación |
+| Contraseña | no | tampoco |
+
+### 14.7. `session_start()` y `$_SESSION`
+
+Antes de iniciar una sesión debemos conocer también la política de su cookie. En un sitio servido exclusivamente mediante HTTPS podríamos preparar:
+
+```php
+<?php
+
+ini_set('session.use_strict_mode', '1');
+
+session_set_cookie_params([
+    'path' => '/',
+    'secure' => true,
+    'httponly' => true,
+    'samesite' => 'Lax',
+]);
+
+session_start();
+```
+
+En un laboratorio que todavía utilice HTTP, `secure => true` impediría que el navegador devolviera esa cookie por HTTP. **No desactives seguridad por costumbre:** adapta este atributo al entorno y exige HTTPS cuando la aplicación pase a un escenario público.
+
+Para crear o recuperar una sesión:
 
 ```php
 <?php
 
 session_start();
 
-$_SESSION['visitas'] = ($_SESSION['visitas'] ?? 0) + 1;
+$_SESSION['visitas']
+    = ($_SESSION['visitas'] ?? 0) + 1;
 
-echo 'Número de visitas de esta sesión: ' . $_SESSION['visitas'];
+echo $_SESSION['visitas'];
 ```
 
-**Primera visita:** si no existe `visitas`, `?? 0` toma cero y se suma una unidad. **Segunda visita con la misma sesión:** se recupera el valor anterior y vuelve a incrementarse.
+Cada script que necesite los datos de esa sesión debe iniciarla antes de utilizarlos.
 
-El identificador de sesión viaja normalmente en una cookie, mientras que los datos de `$_SESSION` se conservan del lado servidor según el almacenamiento configurado. **Una sesión no es una base de datos duradera ni equivale por sí sola a una cuenta autenticada.**
+### 14.8. Compartir datos entre páginas
 
-### 13.4. Dos páginas que comparten una sesión
-
-Archivo `public/guardar.php`:
+`guardar.php`:
 
 ```php
 <?php
@@ -2062,10 +3135,10 @@ session_start();
 
 $_SESSION['modulo'] = 'IAW';
 
-echo '<a href="consultar.php">Consultar otra página</a>';
+echo '<a href="consultar.php">Consultar</a>';
 ```
 
-Archivo `public/consultar.php`:
+`consultar.php`:
 
 ```php
 <?php
@@ -2075,44 +3148,482 @@ session_start();
 $modulo = $_SESSION['modulo'] ?? 'Sin módulo';
 
 echo htmlspecialchars(
-    is_string($modulo) ? $modulo : 'Sin módulo',
-    ENT_QUOTES | ENT_SUBSTITUTE,
-    'UTF-8'
+    is_string($modulo)
+        ? $modulo
+        : 'Sin módulo'
 );
 ```
 
-Observa que ambos archivos llaman a `session_start()` porque cada petición necesita abrir o recuperar la sesión. Pruébalo también en una ventana privada: normalmente utilizará cookies separadas.
+Prueba la misma secuencia en una ventana privada: normalmente utilizará un contexto de cookies diferente.
 
-### 13.5. Inicio de sesión, autorización y cierre
+### 14.9. Diagnosticar una sesión
 
-Una aplicación puede utilizar una sesión para recordar la identidad **después de comprobar las credenciales**. Debemos diferenciar:
-
-| Concepto | Pregunta |
-|---|---|
-| Autenticación | ¿Quién eres y cómo se ha comprobado? |
-| Autorización | ¿Puedes realizar esta operación sobre este recurso? |
-| Sesión | ¿Cómo se conserva el estado entre peticiones relacionadas? |
-
-Después de un login correctamente verificado se debe regenerar el identificador de sesión para dificultar ataques de fijación:
+Podemos observar:
 
 ```php
 <?php
 
-// Fragmento: solo después de verificar las credenciales.
 session_start();
-session_regenerate_id(true);
-$_SESSION['usuario_id'] = 7;
+
+var_dump([
+    'name' => session_name(),
+    'id' => session_id(),
+    'status' => session_status(),
+    'cookie' => session_get_cookie_params(),
+]);
 ```
 
-Para almacenar y verificar contraseñas cuando llegue el bloque de persistencia utilizaremos `password_hash()` y `password_verify()`, **no contraseñas en texto claro**. En un sistema real la autorización debe comprobarse en cada operación; ocultar un botón no impide acceder directamente a una URL.
+El objetivo es comprender el mecanismo, no manipular manualmente IDs.
 
-Para cerrar la sesión de forma completa habrá que eliminar sus datos, invalidarla y tratar adecuadamente su cookie de identificación. `session_destroy()` elimina los datos de sesión del almacenamiento, pero no borra automáticamente todas las variables ya presentes en memoria ni la cookie del navegador. El cierre completo se practicará como una operación diferenciada.
+### 14.10. Duración: cookie, datos de sesión y caché son conceptos distintos
 
-**Ejercicios 13.1–13.7.** Crea un contador; compara la primera y segunda visita; abre otra ventana privada; guarda el nombre de un módulo y recupéralo en otra página; implementa una preferencia visual sin guardar datos sensibles; explica qué ocurre cuando no llega la cookie; distingue autenticación de autorización en un supuesto de tickets de dos usuarios.
+No debemos mezclar:
+
+| Concepto | Qué controla |
+|---|---|
+| cookie de sesión | cuánto conserva el navegador el identificador |
+| datos de sesión del servidor | ciclo de vida según almacenamiento/configuración |
+| caché HTTP | cuánto puede almacenarse una respuesta en caché |
+| timeout de la aplicación | regla creada por nuestro código |
+
+Por ejemplo, una política explícita de inactividad:
+
+```php
+<?php
+
+const MAX_INACTIVIDAD = 900;
+
+$ahora = time();
+
+if (
+    isset($_SESSION['ultima_actividad'])
+    &&
+    $ahora - (int) $_SESSION['ultima_actividad']
+        > MAX_INACTIVIDAD
+) {
+    $_SESSION = [];
+    session_destroy();
+
+    exit('Sesión cerrada por inactividad');
+}
+
+$_SESSION['ultima_actividad'] = $ahora;
+```
+
+### 14.11. Sesión, autenticación y autorización no son lo mismo
+
+![Relación entre sesión, autenticación y autorización]({{ '/assets/docencia/iaw/ut02/03_sesion_autorizacion.svg' | relative_url }})
+
+| Concepto | Pregunta |
+|---|---|
+| Sesión | ¿cómo conservamos estado? |
+| Autenticación | ¿quién eres? |
+| Autorización | ¿puedes ejecutar esta acción? |
+
+Una sesión puede existir sin que nadie haya iniciado sesión.
+
+Después de verificar unas credenciales:
+
+```php
+<?php
+
+session_start();
+
+session_regenerate_id();
+
+$_SESSION['user'] = [
+    'id' => 7,
+    'username' => 'ana',
+    'role' => 'usuario',
+];
+```
+
+No necesitamos guardar contraseña ni hash en `$_SESSION`.
+
+La regeneración se realiza **después de verificar las credenciales y antes de guardar el estado autenticado**. En este ejemplo no utilizamos `session_regenerate_id(true)`: borrar inmediatamente los datos asociados al identificador anterior puede provocar problemas en peticiones concurrentes o conexiones inestables. La política completa de caducidad se controla con timestamps y configuración de sesión, no únicamente destruyendo IDs.
+
+### 14.12. Modularizar autenticación
+
+En lugar de repetir la misma comprobación en cada página podemos crear `src/auth.php`:
+
+```php
+<?php
+
+function currentUser(): ?array
+{
+    $user = $_SESSION['user'] ?? null;
+
+    return is_array($user)
+        ? $user
+        : null;
+}
+
+function requireLogin(): void
+{
+    if (currentUser() === null) {
+        header('Location: /login.php', true, 303);
+        exit;
+    }
+}
+
+function requireRole(string $role): void
+{
+    requireLogin();
+
+    if ((currentUser()['role'] ?? null) !== $role) {
+        http_response_code(403);
+        exit('Acceso denegado');
+    }
+}
+```
+
+Una página privada podrá limitarse a:
+
+```php
+session_start();
+
+require_once __DIR__ . '/../src/auth.php';
+
+requireLogin();
+```
+
+y una página administrativa:
+
+```php
+requireRole('admin');
+```
+
+Esto conecta directamente con la programación modular estudiada anteriormente.
+
+### 14.13. Ocultar un botón no es autorización
+
+Podemos ocultar el enlace de administración a un usuario normal, pero alguien puede escribir la URL manualmente. La comprobación de permisos debe ejecutarse **en el servidor**.
+
+Más adelante también comprobaremos la propiedad del recurso:
+
+```text
+usuario autenticado
+      ↓
+rol
+      ↓
+owner_id del registro
+      ↓
+¿puede modificar ESTE recurso?
+```
+
+### 14.14. Logout completo
+
+Un cierre de sesión debe distinguir datos, cookie identificadora y almacenamiento de sesión:
+
+```php
+<?php
+
+session_start();
+
+$_SESSION = [];
+
+if (ini_get('session.use_cookies')) {
+    $params = session_get_cookie_params();
+
+    setcookie(session_name(), '', [
+        'expires' => time() - 42000,
+        'path' => $params['path'],
+        'domain' => $params['domain'],
+        'secure' => $params['secure'],
+        'httponly' => $params['httponly'],
+        'samesite' => $params['samesite'] ?? 'Lax',
+    ]);
+}
+
+session_destroy();
+
+header('Location: /login.php', true, 303);
+exit;
+```
+
+### 14.15. Seguridad básica de la cookie de sesión
+
+Debemos reconocer conceptos como:
+
+- `HttpOnly`;
+- `Secure` bajo HTTPS;
+- `SameSite`;
+- `session.use_only_cookies`;
+- `session.use_strict_mode`.
+
+No se trata de memorizar directivas; hay que comprender qué riesgo pretende reducir cada una.
+
+### 14.16. Primer contacto con CSRF
+
+Las sesiones también nos permiten guardar un token que viaje oculto en formularios de modificación:
+
+```php
+<?php
+
+session_start();
+
+if (!isset($_SESSION['csrf'])) {
+    $_SESSION['csrf']
+        = bin2hex(random_bytes(32));
+}
+```
+
+Formulario:
+
+```html
+<input
+  type="hidden"
+  name="csrf"
+  value="<?= htmlspecialchars($_SESSION['csrf']) ?>"
+>
+```
+
+Al recibir POST:
+
+```php
+$tokenSesion = $_SESSION['csrf'] ?? null;
+$tokenRecibido = $_POST['csrf'] ?? null;
+
+if (
+    !is_string($tokenSesion)
+    || !is_string($tokenRecibido)
+    || !hash_equals($tokenSesion, $tokenRecibido)
+) {
+    http_response_code(403);
+    exit('Token CSRF incorrecto');
+}
+```
+
+Lo desarrollaremos de nuevo cuando las operaciones CRUD modifiquen datos persistentes.
+
+### 14.17. Puente hacia PDO y MariaDB
+
+Ahora los usuarios de demostración pueden estar definidos temporalmente en PHP. Con PDO cambia la **fuente de los datos**, no el concepto:
+
+```text
+POST login
+   ↓
+SELECT usuario con PDO
+   ↓
+password_verify()
+   ↓
+session_regenerate_id()
+   ↓
+$_SESSION['user']
+   ↓
+autorización
+```
 
 ---
 
-## 14. Banco de ejercicios progresivos {#ejercicios}
+## 15. Correo electrónico desde PHP con PHPMailer {#email}
+
+El correo electrónico es una funcionalidad complementaria. No sustituye a la persistencia ni debe bloquear el aprendizaje del Proyecto 1. Lo utilizaremos para comprender cómo una aplicación PHP se integra con otro servicio.
+
+### 15.1. Primero: separar preparación de mensaje y transporte
+
+Antes de hablar de SMTP debemos poder:
+
+1. recibir un formulario;
+2. validar nombre, dirección, asunto y mensaje;
+3. construir el contenido;
+4. registrar errores;
+5. solo entonces intentar el envío.
+
+Durante la explicación podemos simular el envío escribiendo un log:
+
+```php
+<?php
+
+$linea =
+    date('c')
+    . ' | correo preparado'
+    . ' | '
+    . $email
+    . PHP_EOL;
+
+file_put_contents(
+    __DIR__ . '/../var/logs/mail.log',
+    $linea,
+    FILE_APPEND | LOCK_EX
+);
+```
+
+Así distinguimos la lógica de nuestra aplicación de los problemas de red, DNS, TLS, autenticación SMTP o disponibilidad del proveedor.
+
+### 15.2. PHPMailer como biblioteca
+
+Para trabajar con una biblioteca mantenida utilizaremos Composer. Primero comprueba que el comando existe:
+
+```bash
+composer --version
+```
+
+Desde la raíz del proyecto:
+
+```bash
+composer require phpmailer/phpmailer
+composer show phpmailer/phpmailer
+```
+
+Composer crea o actualiza `composer.json`, `composer.lock` y el directorio `vendor/`. En una aplicación conviene conservar `composer.json` y `composer.lock` en el repositorio y regenerar dependencias mediante `composer install`; `vendor/` es código generado por Composer y normalmente no es necesario versionarlo.
+
+Cargaremos las clases mediante el autoloader:
+
+```php
+<?php
+
+use PHPMailer\PHPMailer\Exception;
+use PHPMailer\PHPMailer\PHPMailer;
+
+require __DIR__ . '/../vendor/autoload.php';
+
+$mail = new PHPMailer(true);
+```
+
+Aquí reaparecen conceptos de POO: `PHPMailer` es una clase, `$mail` es un objeto y `isSMTP()`, `addAddress()` o `send()` son métodos. El argumento `true` hace que PHPMailer pueda lanzar excepciones que después controlaremos.
+
+> Si Composer todavía no está preparado en el laboratorio, el envío real queda como ampliación. No descargues copias aleatorias de la biblioteca ni incrustes clases manualmente sin comprender su procedencia.
+{: .notice--info}
+
+### 15.3. Las credenciales no pertenecen al código
+
+No escribiremos en el repositorio:
+
+```php
+$mail->Password = 'mi-clave-real';
+```
+
+La aplicación leerá configuración externa:
+
+```php
+$host = getenv('SMTP_HOST');
+$user = getenv('SMTP_USER');
+$pass = getenv('SMTP_PASS');
+```
+
+El mismo principio se reutilizará para credenciales de MariaDB.
+
+### 15.4. Ejemplo de transporte SMTP
+
+Antes de crear el objeto, comprobamos que la configuración mínima existe. No queremos descubrir un `false` de `getenv()` varias líneas después:
+
+```php
+<?php
+
+use PHPMailer\PHPMailer\Exception;
+use PHPMailer\PHPMailer\PHPMailer;
+
+require __DIR__ . '/../vendor/autoload.php';
+
+$host = getenv('SMTP_HOST');
+$user = getenv('SMTP_USER');
+$pass = getenv('SMTP_PASS');
+$from = getenv('SMTP_FROM');
+$to = getenv('SMTP_TO');
+
+if (
+    !is_string($host) || $host === ''
+    || !is_string($user) || $user === ''
+    || !is_string($pass) || $pass === ''
+    || !is_string($from) || $from === ''
+    || !is_string($to) || $to === ''
+) {
+    throw new RuntimeException(
+        'Falta configuración SMTP'
+    );
+}
+
+$mail = new PHPMailer(true);
+
+try {
+    $mail->CharSet = 'UTF-8';
+
+    $mail->isSMTP();
+    $mail->Host = $host;
+    $mail->SMTPAuth = true;
+    $mail->Username = $user;
+    $mail->Password = $pass;
+
+    $mail->SMTPSecure =
+        PHPMailer::ENCRYPTION_STARTTLS;
+
+    $mail->Port =
+        (int) (getenv('SMTP_PORT') ?: 587);
+
+    $mail->setFrom(
+        $from,
+        'IAW · Aplicación'
+    );
+
+    $mail->addAddress($to);
+
+    $mail->isHTML(true);
+    $mail->Subject = 'Prueba IAW';
+    $mail->Body = '<p>Mensaje HTML</p>';
+    $mail->AltBody = 'Mensaje en texto plano';
+
+    $mail->send();
+
+    echo 'Correo enviado';
+} catch (Exception $e) {
+    error_log(
+        'IAW Desk: fallo durante el envío SMTP'
+    );
+
+    http_response_code(502);
+    echo 'No se pudo enviar la notificación';
+}
+```
+
+El ejemplo utiliza STARTTLS y el puerto `587` porque es una configuración habitual, **no una regla universal**. Utiliza siempre los parámetros del servidor SMTP de laboratorio o del proveedor. No desactives la verificación TLS como forma de «arreglar» un error de certificados.
+
+En el laboratorio se utilizarán únicamente credenciales proporcionadas para la práctica o un servidor de pruebas. No utilizaremos contraseñas personales incrustadas en el proyecto.
+
+### 15.5. Adjuntos: validar antes de enviar
+
+Un fichero recibido no se convierte automáticamente en adjunto válido. Primero aplicaremos las mismas comprobaciones de subida segura:
+
+```text
+error
+↓
+tamaño
+↓
+MIME real
+↓
+tipo permitido
+↓
+añadir a PHPMailer
+```
+
+Una notificación por correo es una consecuencia de una operación; el dato principal seguirá persistiendo en la aplicación. En el Proyecto 1, un fallo de SMTP **no debe deshacer silenciosamente una operación de negocio que ya se confirmó en la base de datos**. La aplicación debe decidir y documentar qué ocurre si la notificación falla.
+
+### 15.6. Errores
+
+Ante un fallo de correo:
+
+```text
+usuario
+→ mensaje comprensible
+
+log
+→ detalle técnico
+```
+
+No mostraremos contraseñas, rutas sensibles ni configuración SMTP.
+
+### 15.7. Qué debes ser capaz de explicar
+
+- diferencia entre preparar un mensaje y transportarlo por SMTP;
+- por qué usamos una biblioteca;
+- relación entre PHPMailer y POO;
+- por qué las credenciales deben estar fuera del código;
+- por qué un adjunto debe validarse;
+- por qué el fallo del correo no debe corromper los datos principales de la aplicación.
+
+---
+
+## 16. Banco de ejercicios progresivos {#ejercicios}
 
 Los ejemplos resueltos de los apartados anteriores muestran **cómo razonar cada construcción**. Los ejercicios siguientes permiten practicar sin limitarse a copiar el ejemplo: primero realizan una modificación pequeña, después plantean una variación y finalmente integran varias técnicas conocidas.
 
@@ -2173,22 +3684,42 @@ Los ejemplos resueltos de los apartados anteriores muestran **cómo razonar cada
 
 ### Bloque F · Formularios y estado
 
-39. Reutiliza el formulario HTML ya construido para enviar el asunto de una incidencia.
-40. Valida en PHP que el asunto no sea una cadena vacía ni un array.
-41. Añade prioridad y comprueba que pertenezca a la lista permitida.
-42. Realiza una petición GET de búsqueda y compara sus datos con el POST de creación.
-43. Muestra un asunto que contenga `<b>` y comprueba que aparece como texto.
-44. Registra en un log una operación de formulario válida sin guardar datos sensibles.
-45. Crea un contador de sesión independiente de un contador local reiniciado en cada petición.
-46. Guarda y recupera una preferencia no sensible mediante cookie.
-47. Integra un formulario validado y una página de confirmación **sin** almacenar todavía el ticket en MariaDB.
+39. Crea `formulario.php` y `procesar.php`: el primero muestra un campo `asunto` y el segundo recibe el POST.
+40. Convierte el ejercicio anterior en un único `formulario.php` que muestre y procese los datos según `$_SERVER['REQUEST_METHOD']`.
+41. Dibuja las peticiones HTTP de ambos ejercicios y explica por qué «mismo fichero» no significa «misma petición».
+42. Conserva el valor escrito en el formulario cuando la validación detecte un error.
+43. Valida en PHP que el asunto no sea una cadena vacía ni un array.
+44. Añade prioridad y comprueba que pertenezca a la lista permitida.
+45. Realiza una petición GET de búsqueda a la misma página y compara sus datos con el POST de creación.
+46. Recibe un `input type="number"`, demuestra con `var_dump` qué llega y valida el entero en servidor.
+47. Muestra un asunto que contenga `<b>` y comprueba que aparece como texto mediante `htmlspecialchars`.
+48. Extrae la normalización y validación del asunto a funciones propias.
+49. Registra en un log una operación de formulario válida sin guardar datos sensibles.
+50. Crea un contador de sesión independiente de un contador local reiniciado en cada petición.
+51. Guarda y recupera una preferencia no sensible mediante cookie.
+52. Integra un formulario validado y una página de confirmación **sin** almacenar todavía el ticket en MariaDB.
 
 > **Antes de entregar o publicar una aplicación:** comprueba al menos el caso esperado, el caso incorrecto y un valor límite; explica qué ocurre y por qué. No es suficiente obtener una captura de pantalla de un resultado casualmente correcto.
 {: .notice--info}
 
 ---
 
-## 15. Diagnóstico y buenas prácticas {#diagnostico}
+
+### Bloque G · Seguridad, correo y ficheros seguros
+
+53. Manipula manualmente una cookie de preferencia y demuestra por qué el servidor debe validar también su contenido.
+54. Implementa un login temporal separado en `login.php`, `panel.php` y `src/auth.php`; protege una página con `requireLogin()` y otra con `requireRole('admin')`.
+55. Añade logout y un timeout de inactividad. Explica qué problema resuelve cada mecanismo.
+56. Añade un token CSRF a un formulario POST e intenta enviarlo después de modificar el token desde las herramientas del navegador.
+57. Configura las opciones de la cookie de sesión y justifica `HttpOnly`, `SameSite` y el uso de `Secure` cuando exista HTTPS.
+58. Crea un formulario de contacto que valide los datos y simule el correo mediante un log. Como ampliación, sustituye el simulador por PHPMailer y SMTP de laboratorio.
+59. Sube un PDF/JPEG/PNG validando error, tamaño y MIME real; genera un nombre interno aleatorio y almacénalo fuera de `public/`.
+60. Diseña una descarga controlada que reciba un ID lógico y nunca una ruta arbitraria proporcionada por el cliente.
+61. Explica qué información de cookies, sesiones y ficheros permanecerá cuando el proyecto migre a MariaDB y qué información pasará a la base de datos.
+
+---
+
+## 17. Diagnóstico y buenas prácticas {#diagnostico}
 
 Los errores proporcionan información sobre **qué capa** está fallando. No empieces a modificar PHP si todavía no has comprobado que la página correcta llega al servidor.
 
@@ -2204,6 +3735,10 @@ Los errores proporcionan información sobre **qué capa** está fallando. No emp
 | El resultado numérico es incorrecto | Comprueba asignaciones, precedencia y tipos con una traza. |
 | El bucle no termina | Busca la condición de salida y la variable que debería actualizarse. |
 | Los datos desaparecen en otra página | Revisa primero qué se conserva por petición y qué se ha guardado en sesión. |
+| `headers already sent` | Busca salida enviada antes de `header()`, `setcookie()` o del inicio de sesión. |
+| La sesión desaparece | Comprueba `session_start()`, cookie de sesión, `path`, `Secure`, `SameSite` y timeout. |
+| La subida falla | Revisa `$_FILES['error']`, límites PHP, tamaño, MIME, ruta y permisos de `var/uploads/`. |
+| El correo no sale | Separa primero lógica de aplicación de DNS, puerto, TLS, autenticación y disponibilidad SMTP. |
 
 Comandos básicos desde la terminal remota:
 
@@ -2222,7 +3757,7 @@ Los nombres de servicio y las rutas de registros pueden variar según la instala
 
 ---
 
-## 16. Glosario y referencias {#fuentes}
+## 18. Glosario y referencias {#fuentes}
 
 | Término | Significado breve |
 |---|---|
@@ -2243,6 +3778,14 @@ Los nombres de servicio y las rutas de registros pueden variar según la instala
 | Log | Registro cronológico de eventos o errores utilizado para operación y diagnóstico. |
 | JSON | Formato textual estructurado que puede representar arrays y objetos simples. |
 | Sesión | Estado asociado a peticiones relacionadas, administrado por el servidor. |
+| Función incorporada | Función proporcionada por PHP que reutilizamos conociendo parámetros, retorno y casos límite. |
+| Callback | Función o `callable` entregado a otra operación para que pueda ejecutarlo. |
+| Autenticación | Proceso de comprobar la identidad de un usuario. |
+| Autorización | Decisión sobre si una identidad puede realizar una acción concreta. |
+| CSRF | Ataque que intenta provocar una acción autenticada desde una petición no deseada; se mitiga, entre otras medidas, con tokens y políticas de cookie. |
+| MIME | Tipo de contenido utilizado para identificar la naturaleza de datos o ficheros; en subidas debe comprobarse del lado servidor. |
+| Composer | Gestor de dependencias utilizado para instalar y reproducir bibliotecas PHP. |
+| SMTP | Protocolo utilizado para transportar correo electrónico entre sistemas. |
 
 **Documentación para ampliar y contrastar ejemplos:**
 
@@ -2252,7 +3795,13 @@ Los nombres de servicio y las rutas de registros pueden variar según la instala
 - [Arrays](https://www.php.net/manual/es/language.types.array.php) y [`foreach`](https://www.php.net/manual/es/control-structures.foreach.php).
 - [Funciones](https://www.php.net/manual/es/language.functions.php) y [clases/objetos](https://www.php.net/manual/es/language.oop5.php).
 - [Superglobales](https://www.php.net/manual/es/language.variables.superglobals.php), [`htmlspecialchars`](https://www.php.net/manual/es/function.htmlspecialchars.php) y [sesiones](https://www.php.net/manual/es/book.session.php).
+- [PHP: seguridad de sesiones](https://www.php.net/manual/es/features.session.security.management.php), [`setcookie()`](https://www.php.net/manual/es/function.setcookie.php) y [`session_regenerate_id()`](https://www.php.net/manual/es/function.session-regenerate-id.php).
+- [PHP: subida de ficheros](https://www.php.net/manual/es/features.file-upload.php), [`move_uploaded_file()`](https://www.php.net/manual/es/function.move-uploaded-file.php) y [Fileinfo](https://www.php.net/manual/es/book.fileinfo.php).
+- [Composer: uso básico](https://getcomposer.org/doc/01-basic-usage.md).
+- [PHPMailer: repositorio y documentación oficial](https://github.com/PHPMailer/PHPMailer).
 - [VS Code Remote - SSH](https://code.visualstudio.com/docs/remote/ssh).
 - [OWASP: prevención de XSS](https://cheatsheetseries.owasp.org/cheatsheets/Cross_Site_Scripting_Prevention_Cheat_Sheet.html).
+- [OWASP: prevención de CSRF](https://cheatsheetseries.owasp.org/cheatsheets/Cross-Site_Request_Forgery_Prevention_Cheat_Sheet.html).
 
 **Continuación:** UT03 · PHP y bases de datos. Tras dominar variables, control de flujo, funciones, formularios y estado, incorporaremos PDO y MariaDB para conservar datos de manera estructurada y duradera.
+
