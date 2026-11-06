@@ -31,11 +31,10 @@ jobs:
       - name: Check internal links and assets
         uses: lycheeverse/lychee-action@v2
         with:
-          workingDirectory: ./_site
           args: >-
-            --root-dir "$(pwd)"
+            --root-dir "${{ github.workspace }}/_site"
             --offline
             --verbose
             --no-progress
-            './**/*.html'
+            './_site/**/*.html'
           fail: false
