@@ -1,7 +1,7 @@
 ---
-title: "UT01 · DHCP en Windows Server 2025"
-description: "Segunda implementación de DHCPv4 de la UT01 de SER: rol DHCP de Windows Server 2025, ámbitos, exclusiones, reservas, concesiones, opciones, PowerShell y diagnóstico."
-summary: "Los mismos conceptos DHCP del RA1 administrados en Windows Server 2025 mediante consola gráfica y PowerShell."
+title: "UT01 · DHCP en Windows Server 2022 y 2025"
+description: "DHCPv4 en Windows Server 2022/2025: dos NIC, ámbito, exclusiones, reservas, concesiones, PowerShell, RRAS/NAT, diagnóstico y comparación con Kea."
+summary: "Mismo protocolo, dos generaciones de Windows Server: DHCP, administración gráfica, PowerShell, salida a Internet mediante RRAS/NAT y comparación con Debian/Kea."
 
 module_key: ser
 cycle_key: smr
@@ -12,23 +12,20 @@ module_code: "0227"
 cycle_title: "Sistemas Microinformáticos y Redes"
 course: "2.º SMR"
 unit: "UT01"
-hours: 8
+hours: 10
 level: "base-intermedio"
 
 authors:
   - fjcano
-
 reviewers:
   - fjcano
-
 rights: all-rights-reserved
-version: "1.1"
-last_reviewed: 2026-11-06
+version: "2.0"
+last_reviewed: 2026-11-09
 visibility: public
 
 ra:
   - "RA1"
-
 ce:
   - "RA1.a"
   - "RA1.b"
@@ -41,15 +38,16 @@ ce:
 
 tags:
   - dhcp
-  - windows-server
+  - windows-server-2022
   - windows-server-2025
   - ambitos
   - exclusiones
   - reservas
   - leases
   - powershell
+  - rras
+  - nat
   - diagnostico
-  - ra1
 
 permalink: /docencia/smr/ser/ut01-windows/
 published: true
@@ -57,28 +55,26 @@ published: true
 toc:
   - title: Por qué Windows Server
     id: por-que
-  - title: Laboratorio
+  - title: 2022 vs 2025
+    id: versiones
+  - title: Laboratorio con dos NIC
     id: laboratorio
-  - title: Conceptos
+  - title: Comprobar Internet del servidor
+    id: servidor-internet
+  - title: Conceptos DHCP
     id: conceptos
-  - title: Instalación
+  - title: Instalar el rol
     id: instalacion
-  - title: Autorización
-    id: autorizacion
-  - title: Ámbito IPv4
+  - title: Ámbito, exclusiones y opciones
     id: ambito
-  - title: Exclusiones
-    id: exclusiones
-  - title: Opciones de ámbito
-    id: opciones
-  - title: Reservas
+  - title: Reservas y concesiones
     id: reservas
-  - title: Concesiones
-    id: concesiones
-  - title: Clientes Windows y Linux
+  - title: Clientes
     id: clientes
   - title: PowerShell
     id: powershell
+  - title: Dar Internet al cliente con RRAS/NAT
+    id: rras
   - title: Diagnóstico
     id: diagnostico
   - title: Kea vs Windows
@@ -91,164 +87,299 @@ toc:
     id: cierre
 ---
 
-## 1. ¿Por qué ver DHCP también en Windows Server 2025? {#por-que}
+## 1. ¿Por qué DHCP también en Windows Server? {#por-que}
 
-El protocolo **no cambia** porque cambie el sistema operativo.
-
-Esta página es la **segunda implementación de la misma UT01**. La primera se realiza con [Kea en Debian 13]({{ '/docencia/smr/ser/ut01/' | relative_url }}); aquí repetimos los conceptos esenciales con Windows Server 2025 para aprender a administrarlos desde otra plataforma.
-
-Seguimos trabajando:
+Ya conocemos DHCP con Kea en Debian 13. Ahora repetimos el **mismo servicio** en otra plataforma para comprobar qué pertenece al protocolo y qué pertenece a la herramienta de administración.
 
 ```text
-cliente
-  ↓ DHCPDISCOVER
-servidor
-  ↓ DHCPOFFER
-cliente
-  ↓ DHCPREQUEST
-servidor
-  ↓ DHCPACK
+DHCPDISCOVER → DHCPOFFER → DHCPREQUEST → DHCPACK
 ```
 
-Lo que cambia es la forma de administrar el servicio.
-
-En Debian/Kea hemos utilizado:
+Eso no cambia entre:
 
 ```text
-subnet4
-pools
-reservations
-option-data
-leases
+Debian + Kea
+Windows Server 2022
+Windows Server 2025
 ```
 
-En Windows Server encontraremos:
+Lo que sí cambia es cómo lo administramos.
+
+| Idea | Kea | Windows Server |
+|---|---|---|
+| Red administrada | `subnet4` | ámbito |
+| Direcciones dinámicas | `pools` | intervalo + exclusiones |
+| Reserva | `reservations` | reserva |
+| Opciones | `option-data` | opciones de ámbito |
+| Concesiones | `kea-leases4.csv` | concesiones de direcciones |
+| Administración | JSON + CLI | MMC + PowerShell |
+
+> **Objetivo:** ser capaz de configurar y comprobar DHCP en Windows Server sin depender de memorizar una secuencia de clics.
+
+---
+
+## 2. Windows Server 2022 frente a Windows Server 2025 {#versiones}
+
+Microsoft documenta conjuntamente el rol DHCP para **Windows Server 2022 y Windows Server 2025**. Para el nivel de esta UT, el procedimiento y los conceptos fundamentales son esencialmente los mismos:
 
 ```text
-ámbito
-grupo de direcciones
+DHCP Server
+ámbitos
 exclusiones
 reservas
-concesiones
-opciones de ámbito
+leases
+opciones
+PowerShell
+RRAS / Routing
 ```
 
-> **Objetivo de este bloque:** reconocer los mismos conceptos DHCP en una segunda plataforma y ser capaz de administrarlos tanto desde la consola gráfica como desde PowerShell.
+![Windows Server 2022 frente a 2025]({{ '/assets/docencia/ser/ut01/windows/04_ws2022_vs_2025.svg' | relative_url }})
 
-Microsoft incluye Windows Server 2025 entre las versiones a las que se aplica su guía actual de instalación y configuración del rol DHCP.
+### Lo que sí merece la pena distinguir
+
+| Aspecto | Windows Server 2022 | Windows Server 2025 |
+|---|---|---|
+| Generación | LTSC 2021 | LTSC 2024 |
+| DHCP básico | mismo modelo | mismo modelo |
+| Consola DHCP | MMC | MMC |
+| Cmdlets DHCP | mismos cmdlets principales | mismos cmdlets principales |
+| RRAS / Routing | disponible | disponible |
+| Interfaz visual | generación anterior | escritorio/instalación más reciente |
+| Soporte estándar | finalizado en octubre de 2026 | hasta noviembre de 2029 |
+| Soporte ampliado | hasta octubre de 2031 | hasta noviembre de 2034 |
+
+### Qué NO vamos a hacer
+
+No vamos a inventar diferencias en DHCP donde no las hay.
+
+La comparación útil será:
+
+```text
+¿puedo resolver el mismo problema en 2022 y 2025?
+¿cambian los conceptos?
+¿cambian los cmdlets?
+¿cambia la interfaz?
+¿qué versión tiene mayor recorrido de soporte?
+```
+
+### Ampliación profesional
+
+Microsoft documenta incluso la migración de DHCP desde versiones anteriores hacia Windows Server más reciente. Por tanto, una empresa puede mantener la misma política DHCP y migrar el servidor con cambios mínimos para los clientes.
 
 ---
 
-## 2. Laboratorio seguro {#laboratorio}
+## 3. Laboratorio: servidor con dos tarjetas {#laboratorio}
 
-### Máquina servidor
+El escenario completo será:
 
-Recomendación de aula:
-
-```text
-Windows Server 2025 Standard Evaluation
-Server with Desktop Experience
-2 vCPU
-4 GB RAM
-60 GB disco
-```
-
-La edición de evaluación oficial de Windows Server 2025 está disponible durante **180 días** en Microsoft Evaluation Center.
-
-### Red virtual
-
-Patrón recomendado:
+![Topología DHCP + RRAS/NAT]({{ '/assets/docencia/ser/ut01/windows/01_topologia_dhcp_nat.svg' | relative_url }})
 
 ```text
-NIC 1 → NAT
-NIC 2 → Red interna SER-WIN-PXX
+                    WINDOWS SERVER
+Internet ← NAT ← [ WAN-NAT | LAN-INTERNA ] ← Red interna ← Cliente
+                           │
+                           ├─ DHCP Server
+                           └─ RRAS + NAT
 ```
 
-La NIC de servicio debe tener una IPv4 **estática**.
+### NIC 1 · WAN-NAT
 
-La NIC NAT se utiliza únicamente para:
+VirtualBox:
 
 ```text
-Windows Update
-descargas
-mantenimiento
+Adaptador 1
+Conectado a: NAT
+Cable conectado: sí
 ```
 
-La NIC de servicio se utiliza para:
+Esta interfaz obtiene normalmente su configuración del NAT de VirtualBox.
+
+Su función es:
 
 ```text
-DHCP
-pruebas de clientes
-Wireshark
+actualizaciones
+navegación del servidor
+salida WAN del RRAS
 ```
 
-> **Seguridad:** no conectes un servidor DHCP de prácticas en modo Puente a la red física del centro.
+### NIC 2 · LAN-INTERNA
 
-### Clientes
-
-Puedes probar con:
+VirtualBox:
 
 ```text
-Windows 11
-Debian 13
+Adaptador 2
+Conectado a: Red interna
+Nombre: SER-WIN-LAB
+Cable conectado: sí
 ```
 
-Los dos deben estar configurados para obtener IPv4 automáticamente en la NIC del laboratorio.
+Esta interfaz será la LAN del laboratorio.
+
+Ejemplo didáctico:
+
+```text
+LAN             192.168.150.0/24
+Servidor LAN    192.168.150.1/24
+Gateway LAN     vacío en el propio servidor
+```
+
+> La NIC interna del servidor **no necesita una segunda puerta de enlace predeterminada**. La ruta por defecto pertenece a la NIC WAN/NAT.
+
+### Cliente
+
+El cliente tendrá **solo una NIC** conectada a:
+
+```text
+Red interna: SER-WIN-LAB
+```
+
+Y se configurará para obtener:
+
+```text
+IPv4 automáticamente
+DNS automáticamente
+```
 
 ---
 
-## 3. Conceptos de Windows DHCP {#conceptos}
+## 4. Preparar y comprobar las dos NIC {#servidor-internet}
+
+Antes de instalar DHCP debemos demostrar que el servidor está bien conectado.
+
+### 4.1 Renombrar adaptadores
+
+En Windows Server:
+
+```text
+Win + R
+→ ncpa.cpl
+```
+
+Renombra las tarjetas para no confundirlas:
+
+```text
+Ethernet  → WAN-NAT
+Ethernet 2 → LAN-INTERNA
+```
+
+### 4.2 Configurar la LAN con IP fija
+
+En `LAN-INTERNA`:
+
+```text
+IPv4: 192.168.150.1
+Máscara: 255.255.255.0
+Gateway: vacío
+DNS: vacío inicialmente
+```
+
+La WAN-NAT puede permanecer con configuración automática de VirtualBox.
+
+PowerShell para comprobar:
+
+```powershell
+Get-NetAdapter
+Get-NetIPConfiguration
+Get-NetRoute -DestinationPrefix "0.0.0.0/0"
+```
+
+Debe existir **una única ruta por defecto útil**, asociada a WAN-NAT.
+
+### 4.3 ¿Tiene Internet el servidor?
+
+No utilices solo `ping` como prueba.
+
+Comprueba por capas:
+
+```powershell
+Get-NetIPConfiguration
+Resolve-DnsName www.microsoft.com
+Test-NetConnection www.microsoft.com -Port 443
+```
+
+Si quieres una comprobación HTTP:
+
+```powershell
+Invoke-WebRequest https://www.microsoft.com -UseBasicParsing
+```
+
+### Interpretación
+
+```text
+servidor sin Internet
+→ todavía NO sigas con RRAS
+```
+
+Primero corrige la WAN/NAT.
+
+---
+
+## 5. DHCP no significa Internet {#conceptos}
+
+![DHCP no es Internet]({{ '/assets/docencia/ser/ut01/windows/02_dhcp_no_es_internet.svg' | relative_url }})
+
+DHCP puede entregar al cliente:
+
+```text
+IP
+máscara
+gateway
+DNS
+lease
+```
+
+Pero DHCP **no enruta paquetes**.
+
+Para que el cliente de la LAN interna pueda salir a Internet necesitamos además:
+
+```text
+Routing and Remote Access (RRAS)
++
+NAT
+```
+
+Esta separación es fundamental:
+
+```text
+DHCP → configura
+RRAS → enruta
+NAT → traduce direcciones
+DNS → resuelve nombres
+```
+
+---
+
+## 6. Conceptos propios de Windows DHCP
 
 ### Ámbito
 
 Un **ámbito** es el conjunto administrativo de direcciones que Windows DHCP gestiona para una subred.
 
-Un ámbito define, entre otras cosas:
+Define:
 
 ```text
-red
-intervalo de distribución
+intervalo
 máscara
-duración de lease
+lease
 exclusiones
-opciones
 reservas
-```
-
-### Intervalo de distribución
-
-Es el intervalo continuo que pertenece al ámbito.
-
-Ejemplo didáctico:
-
-```text
-Red       10.25.10.0/24
-Ámbito    10.25.10.20 - 10.25.10.220
+opciones
 ```
 
 ### Exclusión
 
-Una exclusión es una parte del intervalo del ámbito que **Windows no entregará dinámicamente**.
+Una exclusión pertenece al intervalo del ámbito, pero Windows no la entregará como concesión dinámica.
 
-Ejemplo:
+![Ámbito, exclusiones y reserva]({{ '/assets/docencia/ser/ut01/windows/03_ambito_exclusion_reserva.svg' | relative_url }})
 
-```text
-Ámbito      10.25.10.20 - 10.25.10.220
-Exclusión   10.25.10.20 - 10.25.10.79
-Exclusión   10.25.10.180 - 10.25.10.220
-
-Dinámicas efectivas:
-10.25.10.80 - 10.25.10.179
-```
-
-Las exclusiones son útiles para proteger direcciones destinadas a:
+Ejemplo didáctico:
 
 ```text
-servidores
-routers
-impresoras con IP manual
-infraestructura
-crecimiento
+Red              192.168.150.0/24
+Intervalo         .20 - .220
+Exclusión         .20 - .79
+Exclusión         .180 - .220
+Dinámicas         .80 - .179
 ```
 
 ### Reserva
@@ -256,107 +387,66 @@ crecimiento
 Una reserva vincula:
 
 ```text
-MAC del cliente
+MAC / Client ID
       ↓
-dirección IPv4 concreta
+IPv4 concreta
 ```
 
-El cliente continúa utilizando DHCP.
+El cliente sigue utilizando DHCP.
 
-### Diferencia importante respecto al diseño de Kea
+### Particularidad importante de Windows
 
-En Windows Server, una reserva debe encontrarse dentro del **intervalo de distribución del ámbito**.
+La IP reservada debe estar dentro del **intervalo del ámbito**.
 
-Si no quieres que esa dirección se entregue dinámicamente:
-
-```text
-amplía el intervalo del ámbito
-        +
-incluye esa dirección en una exclusión
-        +
-crea la reserva
-```
-
-Una reserva situada dentro de una exclusión **sigue funcionando**.
+Puede estar además incluida en una exclusión para impedir que se entregue dinámicamente a otro cliente.
 
 ---
 
-## 4. Instalar el rol DHCP {#instalacion}
+## 7. Instalar el rol DHCP {#instalacion}
 
-Antes de instalar el rol:
-
-```text
-1. servidor con IPv4 estática
-2. red de laboratorio comprobada
-3. cliente en el mismo segmento
-4. plan de direccionamiento preparado
-```
-
-### Ruta gráfica
-
-En Windows Server 2025:
+### GUI
 
 ```text
 Administrador del servidor
 → Administrar
 → Agregar roles y características
-→ Instalación basada en características o en roles
+→ Instalación basada en características o roles
 → Servidor local
 → Servidor DHCP
 → Agregar características
-→ Siguiente
 → Instalar
 ```
 
-La documentación oficial de Microsoft indica que la instalación del rol no requiere reinicio.
-
-### PowerShell equivalente
-
-Abre PowerShell como administrador:
+PowerShell equivalente:
 
 ```powershell
 Install-WindowsFeature DHCP -IncludeManagementTools
 ```
 
-Comprobación:
+Comprobar:
 
 ```powershell
 Get-WindowsFeature DHCP
 Get-Service DHCPServer
 ```
 
----
+Microsoft indica que la instalación del rol no requiere reinicio.
 
-## 5. ¿Hay que autorizar el servidor? Depende {#autorizacion}
+### Autorización en Active Directory
 
-### Laboratorio sin dominio
+En nuestro laboratorio inicial utilizaremos un servidor independiente.
 
-Si el servidor está en un **grupo de trabajo** y no pertenece a Active Directory:
+Si no está unido a un dominio de Active Directory:
 
 ```text
-NO hay que ejecutar Add-DhcpServerInDC
+no necesitamos autorizarlo en AD
 ```
 
-En la configuración posterior a la instalación puede omitirse la autorización de AD.
-
-### Servidor unido a dominio
-
-En un entorno de Active Directory, el servidor DHCP debe estar autorizado.
-
-PowerShell:
-
-```powershell
-Add-DhcpServerInDC -DnsName DHCP1.ejemplo.test -IPAddress 10.25.10.10
-Get-DhcpServerInDC
-```
-
-> En SER utilizaremos primero el escenario **independiente**. La autorización en AD se trata como ampliación profesional.
+En un dominio sí aparece la autorización del servidor DHCP como medida contra servidores no autorizados.
 
 ---
 
-## 6. Crear un ámbito IPv4 {#ambito}
-
-### Desde la consola DHCP
+## 8. Crear el ámbito, exclusiones y opciones {#ambito}
 
 Abre:
 
@@ -364,220 +454,97 @@ Abre:
 Administrador del servidor
 → Herramientas
 → DHCP
-```
-
-Después:
-
-```text
-Servidor
+→ servidor
 → IPv4
-→ botón derecho
-→ Nuevo ámbito...
+→ Nuevo ámbito
 ```
 
-El asistente solicita:
+### Ejemplo docente completo
 
 ```text
-nombre
-intervalo
-máscara
-exclusiones
-duración de concesión
-opciones
-activación
+Nombre        SER-WIN-DEMO
+Red           192.168.150.0/24
+Intervalo     192.168.150.20 - 192.168.150.220
+Exclusión 1   192.168.150.20 - 192.168.150.79
+Exclusión 2   192.168.150.180 - 192.168.150.220
+Dinámicas     192.168.150.80 - 192.168.150.179
+Lease         30 minutos
 ```
 
-### Ejemplo didáctico
+### Opción 003 · Router
+
+Cuando RRAS/NAT esté configurado, el gateway de los clientes será:
 
 ```text
-Nombre del ámbito     LAB-EJEMPLO
-Red                   10.25.10.0/24
-Intervalo             10.25.10.20 - 10.25.10.220
-Lease                 30 minutos
+192.168.150.1
 ```
 
-No copies estos valores para una tarea evaluable.
+porque esa es la interfaz LAN del router Windows Server.
+
+### Opción 006 · DNS
+
+Si todavía no hemos instalado DNS en nuestro servidor podemos utilizar, para este laboratorio de salida a Internet, servidores DNS públicos.
+
+Ejemplo:
+
+```text
+1.1.1.1
+8.8.8.8
+```
+
+No anuncies un DNS local que todavía no existe.
 
 ---
 
-## 7. Exclusiones {#exclusiones}
+## 9. Reservas y concesiones {#reservas}
 
-Microsoft recomienda planificar primero el intervalo del ámbito y después proteger mediante exclusiones las direcciones que no deben entregarse dinámicamente.
-
-Ejemplo didáctico:
-
-```text
-10.25.10.20 - 10.25.10.79     infraestructura / reservas
-10.25.10.180 - 10.25.10.220   crecimiento
-```
-
-En la consola:
+### Ver leases
 
 ```text
 Ámbito
-→ Grupo de direcciones
-→ botón derecho
-→ Nuevo intervalo de exclusión
+→ Concesiones de direcciones
 ```
 
 PowerShell:
 
 ```powershell
-Add-DhcpServerv4ExclusionRange `
-  -ScopeId 10.25.10.0 `
-  -StartRange 10.25.10.20 `
-  -EndRange 10.25.10.79
+Get-DhcpServerv4Lease -ScopeId 192.168.150.0
 ```
 
----
+### Crear una reserva
 
-## 8. Opciones de ámbito {#opciones}
-
-Las opciones más conocidas son:
-
-| Opción | Uso |
-|---|---|
-| 003 | Router / puerta de enlace |
-| 006 | Servidores DNS |
-| 015 | Nombre de dominio |
-| 051 | Duración de concesión |
-
-No anuncies servicios inexistentes.
-
-Si la red de laboratorio:
+Desde una concesión:
 
 ```text
-no tiene router
-no tiene DNS
-```
-
-no inventes una puerta de enlace ni un servidor DNS.
-
-### PowerShell
-
-Cuando exista una pasarela real:
-
-```powershell
-Set-DhcpServerv4OptionValue `
-  -ScopeId 10.25.10.0 `
-  -Router 10.25.10.1
-```
-
-Cuando exista DNS real:
-
-```powershell
-Set-DhcpServerv4OptionValue `
-  -ScopeId 10.25.10.0 `
-  -DnsServer 10.25.10.10 `
-  -DnsDomain "ejemplo.test"
-```
-
----
-
-## 9. Reservas por MAC {#reservas}
-
-### Desde una concesión existente
-
-Una forma cómoda:
-
-```text
-Ámbito
-→ Concesiones de direcciones
+Concesiones de direcciones
 → botón derecho sobre el cliente
 → Agregar a reserva
 ```
 
-### Crearla manualmente
+O manualmente:
 
 ```text
-Ámbito
-→ Reservas
+Reservas
 → Nueva reserva
-```
-
-Necesitas:
-
-```text
-nombre
-dirección IPv4
-MAC / Client ID
-```
-
-### PowerShell
-
-Ejemplo didáctico:
-
-```powershell
-Add-DhcpServerv4Reservation `
-  -ScopeId 10.25.10.0 `
-  -IPAddress 10.25.10.70 `
-  -ClientId "001122334455" `
-  -Description "Equipo de prueba"
-```
-
-### Regla de Windows que debes recordar
-
-La reserva debe pertenecer al intervalo del ámbito.
-
-Una dirección excluida de la asignación dinámica **puede utilizarse como reserva**.
-
----
-
-## 10. Concesiones {#concesiones}
-
-En la consola:
-
-```text
-IPv4
-→ Ámbito
-→ Concesiones de direcciones
-```
-
-Puedes comprobar:
-
-```text
-IP
-nombre
-identificador único
-fecha de expiración
-tipo
 ```
 
 PowerShell:
 
 ```powershell
-Get-DhcpServerv4Lease -ScopeId 10.25.10.0
+Add-DhcpServerv4Reservation `
+  -ScopeId 192.168.150.0 `
+  -IPAddress 192.168.150.70 `
+  -ClientId "001122334455" `
+  -Description "Cliente reservado"
 ```
 
-Reservas:
-
-```powershell
-Get-DhcpServerv4Reservation -ScopeId 10.25.10.0
-```
-
-Ámbitos:
-
-```powershell
-Get-DhcpServerv4Scope
-```
-
-Exclusiones:
-
-```powershell
-Get-DhcpServerv4ExclusionRange -ScopeId 10.25.10.0
-```
-
-Opciones:
-
-```powershell
-Get-DhcpServerv4OptionValue -ScopeId 10.25.10.0
-```
+Los valores anteriores son ejemplos de aprendizaje, no una solución evaluable.
 
 ---
 
-## 11. Probar desde Windows y Linux {#clientes}
+## 10. Cliente Windows o Linux {#clientes}
 
-### Cliente Windows
+### Windows
 
 ```bat
 ipconfig /release
@@ -591,36 +558,36 @@ Comprueba:
 IPv4
 máscara
 servidor DHCP
-lease obtenida
-lease expira
-gateway si existe
-DNS si existe
+gateway
+DNS
+fecha de obtención
+fecha de expiración
 ```
 
-### Cliente Linux
+### Linux
 
-Comprueba la interfaz y los parámetros recibidos con las herramientas trabajadas en la unidad.
+Comprueba la dirección, rutas y datos DHCP con las herramientas ya trabajadas en la unidad.
 
-Lo importante es que:
+### Antes de activar RRAS
+
+El cliente puede tener perfectamente:
 
 ```text
-cliente
-consola DHCP
-PowerShell
-captura DORA
+IP correcta
+máscara correcta
+gateway correcto
+DNS correcto
 ```
 
-cuenten la misma historia.
+pero **todavía no navegar**.
+
+¿Por qué?
+
+Porque el servidor aún no está reenviando/traduciendo tráfico entre LAN y WAN.
 
 ---
 
-## 12. PowerShell: administrar, no memorizar {#powershell}
-
-Instalar:
-
-```powershell
-Install-WindowsFeature DHCP -IncludeManagementTools
-```
+## 11. PowerShell: misma administración sin GUI {#powershell}
 
 Listar ámbitos:
 
@@ -633,85 +600,172 @@ Crear un ámbito:
 ```powershell
 Add-DhcpServerv4Scope `
   -Name "LAB-EJEMPLO" `
-  -StartRange 10.25.10.20 `
-  -EndRange 10.25.10.220 `
+  -StartRange 192.168.150.20 `
+  -EndRange 192.168.150.220 `
   -SubnetMask 255.255.255.0 `
   -LeaseDuration 00:30:00
 ```
 
-Crear exclusión:
+Exclusión:
 
 ```powershell
 Add-DhcpServerv4ExclusionRange `
-  -ScopeId 10.25.10.0 `
-  -StartRange 10.25.10.20 `
-  -EndRange 10.25.10.79
+  -ScopeId 192.168.150.0 `
+  -StartRange 192.168.150.20 `
+  -EndRange 192.168.150.79
 ```
 
-Crear reserva:
+Gateway y DNS:
 
 ```powershell
-Add-DhcpServerv4Reservation `
-  -ScopeId 10.25.10.0 `
-  -IPAddress 10.25.10.70 `
-  -ClientId "001122334455"
+Set-DhcpServerv4OptionValue `
+  -ScopeId 192.168.150.0 `
+  -Router 192.168.150.1 `
+  -DnsServer 1.1.1.1,8.8.8.8
 ```
 
-Activar/desactivar:
+Comprobaciones:
 
 ```powershell
-Set-DhcpServerv4Scope -ScopeId 10.25.10.0 -State Active
-Set-DhcpServerv4Scope -ScopeId 10.25.10.0 -State InActive
-```
-
-Comprobar binding:
-
-```powershell
+Get-DhcpServerv4Scope
+Get-DhcpServerv4ExclusionRange -ScopeId 192.168.150.0
+Get-DhcpServerv4Reservation -ScopeId 192.168.150.0
+Get-DhcpServerv4Lease -ScopeId 192.168.150.0
+Get-DhcpServerv4OptionValue -ScopeId 192.168.150.0
 Get-DhcpServerv4Binding
+Get-DhcpServerv4ScopeStatistics
 ```
 
-> El objetivo no es memorizar todos los cmdlets. Debes ser capaz de reconocer qué objeto estás administrando: rol, ámbito, exclusión, reserva, opción o concesión.
+---
+
+## 12. Dar Internet al cliente: RRAS + NAT {#rras}
+
+Este apartado ya no pertenece estrictamente a DHCP, pero completa el escenario profesional de dos tarjetas.
+
+### 12.1 Instalar el servicio de enrutamiento
+
+```text
+Administrador del servidor
+→ Administrar
+→ Agregar roles y características
+→ Acceso remoto
+→ Servicios de rol
+→ Enrutamiento
+→ Instalar
+```
+
+PowerShell:
+
+```powershell
+Install-WindowsFeature RemoteAccess -IncludeManagementTools
+Install-WindowsFeature Routing
+```
+
+### 12.2 Configurar RRAS
+
+Abre:
+
+```text
+Administrador del servidor
+→ Herramientas
+→ Enrutamiento y acceso remoto
+```
+
+Después:
+
+```text
+botón derecho sobre el servidor
+→ Configurar y habilitar Enrutamiento y acceso remoto
+→ NAT
+```
+
+Selecciona como interfaz pública:
+
+```text
+WAN-NAT
+```
+
+Y como interfaz privada:
+
+```text
+LAN-INTERNA
+```
+
+### 12.3 Qué debe ocurrir
+
+```text
+Cliente
+  ↓ gateway 192.168.150.1
+Windows Server / LAN-INTERNA
+  ↓ routing + NAT
+Windows Server / WAN-NAT
+  ↓
+VirtualBox NAT
+  ↓
+Internet
+```
+
+### 12.4 Comprobaciones
+
+Servidor:
+
+```powershell
+Get-Service RemoteAccess
+Get-NetIPConfiguration
+```
+
+Cliente:
+
+```bat
+ipconfig /all
+ping 192.168.150.1
+nslookup www.microsoft.com
+```
+
+Comprobación TCP/HTTP desde PowerShell cliente:
+
+```powershell
+Test-NetConnection www.microsoft.com -Port 443
+```
+
+### Si el cliente tiene IP pero no Internet
+
+No culpes directamente a DHCP.
+
+Comprueba:
+
+```text
+1. gateway entregado
+2. RRAS iniciado
+3. WAN correcta
+4. NAT sobre la interfaz WAN
+5. DNS entregado
+```
 
 ---
 
 ## 13. Diagnóstico {#diagnostico}
 
-### Escalera rápida
+![Escalera de diagnóstico]({{ '/assets/docencia/ser/ut01/windows/05_diagnostico.svg' | relative_url }})
 
-```text
-1. ¿cliente y servidor están en la misma Red interna?
-2. ¿servidor tiene IP fija?
-3. ¿servicio DHCP Server está iniciado?
-4. ¿ámbito está activo?
-5. ¿quedan direcciones disponibles?
-6. ¿el servidor está enlazado a la interfaz correcta?
-7. ¿la reserva coincide con la MAC real?
-8. ¿el cliente envía Discover?
-9. ¿el servidor responde Offer?
-10. ¿la concesión aparece en la consola?
-```
-
-### Servicio
+### Servidor DHCP
 
 ```powershell
 Get-Service DHCPServer
-```
-
-### Binding
-
-```powershell
+Get-DhcpServerv4Scope
 Get-DhcpServerv4Binding
-```
-
-### Estadísticas
-
-```powershell
 Get-DhcpServerv4ScopeStatistics
 ```
 
-### Eventos
+### RRAS
 
-Abre:
+```powershell
+Get-Service RemoteAccess
+Get-NetIPConfiguration
+Get-NetRoute
+```
+
+### Eventos DHCP
 
 ```text
 Visor de eventos
@@ -721,18 +775,9 @@ Visor de eventos
 → DHCP-Server
 ```
 
-Microsoft documenta canales:
+### Auditoría DHCP
 
-```text
-Operational
-Admin
-System
-Audit
-```
-
-### Logs
-
-Los registros de DHCP se encuentran de forma predeterminada en:
+Ruta habitual:
 
 ```text
 %windir%\System32\Dhcp
@@ -755,41 +800,125 @@ Request
 ACK
 ```
 
+### Cliente APIPA
+
 Si aparece:
 
 ```text
 169.254.x.x
 ```
 
-no cambies cosas al azar.
-
-Pregunta primero:
+investiga primero:
 
 ```text
-¿ha llegado un Offer útil al cliente?
+red interna
+NIC
+servicio
+ámbito
+binding
+Discover/Offer
 ```
 
 ---
 
-## 14. Kea y Windows Server: mismos conceptos, otra administración {#comparacion}
+## 14. Kea vs Windows Server 2022 vs 2025 {#comparacion}
 
-| Concepto DHCP | Debian + Kea | Windows Server 2025 |
-|---|---|---|
-| Servicio | `kea-dhcp4-server` | DHCP Server |
-| Red atendida | `subnet4` | Ámbito |
-| Direcciones dinámicas | `pools` | Grupo de direcciones |
-| No asignar dinámicamente | separar del pool | Exclusión |
-| Reserva | `reservations` | Reservas |
-| Identidad | MAC / client-id | MAC / Client ID |
-| Concesiones | `kea-leases4.csv` | Concesiones de direcciones |
-| Opciones | `option-data` | Opciones de ámbito |
-| CLI | fichero JSON / utilidades | PowerShell |
-| Validación | `kea-dhcp4 -t` | consola/cmdlets + servicio/eventos |
+| Concepto | Kea / Debian 13 | WS 2022 | WS 2025 |
+|---|---|---|---|
+| Protocolo | DHCPv4 | DHCPv4 | DHCPv4 |
+| Red | `subnet4` | ámbito | ámbito |
+| Dinámicas | `pools` | intervalo/exclusiones | intervalo/exclusiones |
+| Reserva | `reservations` | reserva | reserva |
+| Lease | CSV/BD | concesión | concesión |
+| Opciones | `option-data` | opciones | opciones |
+| GUI | no necesaria | MMC | MMC |
+| CLI | fichero/CLI | PowerShell | PowerShell |
+| Routing/NAT | servicio aparte | RRAS | RRAS |
 
-### Diferencia que debes entender
+### Qué queremos que aprendas
 
-Kea permite diseñar directamente un pool separado de una reserva.
+No memorices tres productos.
 
-Windows Server parte del **intervalo del ámbito** y utiliza **exclusiones** para retirar direcciones de la asignación dinámica.
+Aprende a traducir conceptos:
+
+```text
+problema de red
+      ↓
+concepto DHCP
+      ↓
+implementación concreta
+```
 
 ---
+
+## 15. Prácticas {#practicas}
+
+### W01 · Preparar el servidor de dos NIC
+
+Demostrar:
+
+```text
+WAN-NAT operativa
+LAN interna con IP estable
+una sola ruta por defecto
+Internet en el servidor
+```
+
+### W02 · Implantar DHCP
+
+Demostrar:
+
+```text
+ámbito diseñado
+exclusiones justificadas
+cliente con concesión
+lease visible en servidor
+```
+
+### W03 · Reserva y DORA
+
+Demostrar:
+
+```text
+MAC real
+reserva
+cliente reservado
+DORA propio
+```
+
+### W04 · Internet para el cliente mediante RRAS/NAT
+
+Demostrar:
+
+```text
+gateway entregado por DHCP
+RRAS activo
+NAT WAN
+cliente llega a Internet
+```
+
+### W05 · Windows Server 2022 vs 2025
+
+Comparar el mismo servicio en ambas versiones:
+
+```text
+instalación del rol
+ámbito
+reserva
+PowerShell
+RRAS
+resultado del cliente
+```
+
+---
+
+## 16. Recursos reales {#recursos}
+
+### Microsoft Learn
+
+- [Servidor DHCP - instalación y configuración](https://learn.microsoft.com/es-es/windows-server/networking/technologies/dhcp/quickstart-install-configure-dhcp-server)
+- [Ámbitos DHCP](https://learn.microsoft.com/windows-server/networking/technologies/dhcp/dhcp-scopes)
+- [DHCP mediante PowerShell](https://learn.microsoft.com/es-es/windows-server/networking/technologies/dhcp/dhcp-deploy-wps)
+- [Diagnóstico DHCP](https://learn.microsoft.com/es-es/troubleshoot/windows-server/networking/troubleshoot-dhcp-guidance)
+- [Acceso remoto y servicio de routing](https://learn.microsoft.com/es-es/windows-server/remote/remote-access/remote-access)
+- [Migración DHCP entre Windows Server](https://learn.microsoft.com/es-es/windows-server/networking/technologies/dhcp/migrate-dhcp-server)
