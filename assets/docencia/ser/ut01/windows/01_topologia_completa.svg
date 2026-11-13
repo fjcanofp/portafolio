@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="520" viewBox="0 0 1200 520">
+<rect width="1200" height="520" fill="white"/>
+<text x="600" y="45" text-anchor="middle" font-family="Arial" font-size="28" font-weight="700" fill="#1F6B4F">Topología final: DHCP + RRAS/NAT</text>
+<rect x="50" y="175" rx="12" width="210" height="120" fill="#EAF1FB" stroke="#2F5597" stroke-width="3"/>
+<text x="155.0" y="203" text-anchor="middle" font-family="Arial" font-size="22" font-weight="700" fill="#202020">Internet</text>
+<text x="155.0" y="230" text-anchor="middle" font-family="Arial" font-size="16" fill="#333333">salida exterior</text>
+<rect x="330" y="115" rx="12" width="410" height="240" fill="#EAF3EE" stroke="#1F6B4F" stroke-width="3"/>
+<text x="535.0" y="143" text-anchor="middle" font-family="Arial" font-size="22" font-weight="700" fill="#202020">Windows Server 2022 / 2025</text>
+<text x="535.0" y="170" text-anchor="middle" font-family="Arial" font-size="16" fill="#333333">WAN-NAT + LAN-INTERNA</text>
+<rect x="860" y="175" rx="12" width="260" height="120" fill="#F4F6F5" stroke="#666666" stroke-width="3"/>
+<text x="990.0" y="203" text-anchor="middle" font-family="Arial" font-size="22" font-weight="700" fill="#202020">Cliente</text>
+<text x="990.0" y="230" text-anchor="middle" font-family="Arial" font-size="16" fill="#333333">Windows 11 / Linux</text>
+<line x1="260" y1="235" x2="330" y2="235" stroke="#2F5597" stroke-width="5"/><polygon points="330,235 314,226 314,244" fill="#2F5597"/>
+<line x1="740" y1="235" x2="860" y2="235" stroke="#1F6B4F" stroke-width="5"/><polygon points="860,235 844,226 844,244" fill="#1F6B4F"/>
+<text x="295" y="215" text-anchor="middle" font-family="Arial" font-size="16">VirtualBox NAT</text>
+<text x="800" y="215" text-anchor="middle" font-family="Arial" font-size="16">Red interna</text>
+<text x="535" y="195" text-anchor="middle" font-family="Arial" font-size="17" font-weight="700">DHCP Server</text>
+<text x="535" y="225" text-anchor="middle" font-family="Arial" font-size="17">ámbito · exclusión · reserva</text>
+<text x="535" y="265" text-anchor="middle" font-family="Arial" font-size="17" font-weight="700">RRAS / NAT</text>
+<text x="535" y="295" text-anchor="middle" font-family="Arial" font-size="17">gateway real para la LAN</text>
+<text x="535" y="340" text-anchor="middle" font-family="Arial" font-size="15" fill="#666666">WAN-NAT: configuración automática · LAN: IPv4 estática</text>
+</svg>

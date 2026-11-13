@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="430" viewBox="0 0 1200 430">
+<rect width="1200" height="430" fill="white"/>
+<text x="600" y="45" text-anchor="middle" font-family="Arial" font-size="28" font-weight="700" fill="#1F6B4F">DHCP no es Internet</text>
+<rect x="60" y="135" rx="12" width="250" height="140" fill="#EAF3EE" stroke="#1F6B4F" stroke-width="3"/>
+<text x="185.0" y="163" text-anchor="middle" font-family="Arial" font-size="22" font-weight="700" fill="#202020">DHCP</text>
+<text x="185.0" y="190" text-anchor="middle" font-family="Arial" font-size="16" fill="#333333">IP · máscara · gateway · DNS</text>
+<rect x="475" y="135" rx="12" width="250" height="140" fill="#F4F6F5" stroke="#666666" stroke-width="3"/>
+<text x="600.0" y="163" text-anchor="middle" font-family="Arial" font-size="22" font-weight="700" fill="#202020">RRAS</text>
+<text x="600.0" y="190" text-anchor="middle" font-family="Arial" font-size="16" fill="#333333">enrutamiento entre interfaces</text>
+<rect x="890" y="135" rx="12" width="250" height="140" fill="#EAF1FB" stroke="#2F5597" stroke-width="3"/>
+<text x="1015.0" y="163" text-anchor="middle" font-family="Arial" font-size="22" font-weight="700" fill="#202020">NAT</text>
+<text x="1015.0" y="190" text-anchor="middle" font-family="Arial" font-size="16" fill="#333333">traducción hacia la WAN</text>
+<line x1="310" y1="205" x2="475" y2="205" stroke="#333" stroke-width="4"/><polygon points="475,205 460,197 460,213" fill="#333"/>
+<line x1="725" y1="205" x2="890" y2="205" stroke="#333" stroke-width="4"/><polygon points="890,205 875,197 875,213" fill="#333"/>
+<text x="600" y="350" text-anchor="middle" font-family="Arial" font-size="18" fill="#A61B1B">Un cliente puede recibir DHCP perfectamente y seguir sin Internet.</text>
+</svg>
