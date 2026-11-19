@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="450">
+<rect width="1200" height="450" fill="white"/>
+<text x="600" y="45" text-anchor="middle" font-family="Arial" font-size="28" font-weight="700" fill="#1F6B4F">Triángulo de evidencias DNS</text>
+<polygon points="600,95 245,350 955,350" fill="#F4F6F5" stroke="#1F6B4F" stroke-width="4"/>
+<text x="600" y="145" text-anchor="middle" font-family="Arial" font-size="22" font-weight="700">Cliente</text>
+<text x="315" y="332" text-anchor="middle" font-family="Arial" font-size="21" font-weight="700">Configuración / servidor</text>
+<text x="885" y="332" text-anchor="middle" font-family="Arial" font-size="21" font-weight="700">Consulta / respuesta</text>
+<text x="600" y="245" text-anchor="middle" font-family="Arial" font-size="18">nombre · IP · tipo · autoridad · serial</text>
+</svg>

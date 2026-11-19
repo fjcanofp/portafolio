@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="480">
+<rect width="1200" height="480" fill="white"/>
+<text x="600" y="45" text-anchor="middle" font-family="Arial" font-size="28" font-weight="700" fill="#1F6B4F">Zona directa y zona inversa</text>
+<rect x="90" y="145" rx="12" width="400" height="150" fill="#EAF3EE" stroke="#1F6B4F" stroke-width="3"/>
+<text x="290.0" y="175" text-anchor="middle" font-family="Arial" font-size="22" font-weight="700" fill="#202020">Zona directa</text>
+<text x="290.0" y="205" text-anchor="middle" font-family="Arial" font-size="16" fill="#333333">www.p07-l03.ser.test → 192.168.157.80</text>
+<rect x="710" y="145" rx="12" width="400" height="150" fill="#EAF1FB" stroke="#2F5597" stroke-width="3"/>
+<text x="910.0" y="175" text-anchor="middle" font-family="Arial" font-size="22" font-weight="700" fill="#202020">Zona inversa</text>
+<text x="910.0" y="205" text-anchor="middle" font-family="Arial" font-size="16" fill="#333333">192.168.157.80 → www.p07-l03.ser.test</text>
+<line x1="490" y1="220" x2="710" y2="220" stroke="#777" stroke-width="4"/>
+<text x="600" y="205" text-anchor="middle" font-family="Arial" font-size="17">no son la misma zona</text>
+<text x="600" y="385" text-anchor="middle" font-family="Arial" font-size="18" fill="#A61B1B">A no crea PTR automáticamente en BIND: hay que diseñar y mantener ambas partes.</text>
+</svg>

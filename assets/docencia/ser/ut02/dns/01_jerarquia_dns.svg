@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="680">
+<rect width="1200" height="680" fill="white"/>
+<text x="600" y="45" text-anchor="middle" font-family="Arial" font-size="28" font-weight="700" fill="#1F6B4F">DNS es jerárquico</text>
+<rect x="500" y="80" rx="12" width="200" height="80" fill="#EAF1FB" stroke="#2F5597" stroke-width="3"/>
+<text x="600.0" y="110" text-anchor="middle" font-family="Arial" font-size="22" font-weight="700" fill="#202020">.</text>
+<text x="600.0" y="140" text-anchor="middle" font-family="Arial" font-size="16" fill="#333333">raíz</text>
+<rect x="180" y="225" rx="12" width="210" height="90" fill="#F4F6F5" stroke="#666666" stroke-width="3"/>
+<text x="285.0" y="255" text-anchor="middle" font-family="Arial" font-size="22" font-weight="700" fill="#202020">com</text>
+<text x="285.0" y="285" text-anchor="middle" font-family="Arial" font-size="16" fill="#333333">TLD</text>
+<rect x="495" y="225" rx="12" width="210" height="90" fill="#EAF3EE" stroke="#1F6B4F" stroke-width="3"/>
+<text x="600.0" y="255" text-anchor="middle" font-family="Arial" font-size="22" font-weight="700" fill="#202020">test</text>
+<text x="600.0" y="285" text-anchor="middle" font-family="Arial" font-size="16" fill="#333333">TLD de pruebas</text>
+<rect x="810" y="225" rx="12" width="210" height="90" fill="#F4F6F5" stroke="#666666" stroke-width="3"/>
+<text x="915.0" y="255" text-anchor="middle" font-family="Arial" font-size="22" font-weight="700" fill="#202020">es</text>
+<text x="915.0" y="285" text-anchor="middle" font-family="Arial" font-size="16" fill="#333333">TLD</text>
+<rect x="455" y="385" rx="12" width="290" height="105" fill="#EAF3EE" stroke="#1F6B4F" stroke-width="3"/>
+<text x="600.0" y="415" text-anchor="middle" font-family="Arial" font-size="22" font-weight="700" fill="#202020">ser.test</text>
+<text x="600.0" y="445" text-anchor="middle" font-family="Arial" font-size="16" fill="#333333">espacio de laboratorio</text>
+<rect x="420" y="550" rx="12" width="360" height="85" fill="#FFF2CC" stroke="#C59A00" stroke-width="3"/>
+<text x="600.0" y="580" text-anchor="middle" font-family="Arial" font-size="22" font-weight="700" fill="#202020">p07-l03.ser.test</text>
+<text x="600.0" y="610" text-anchor="middle" font-family="Arial" font-size="16" fill="#333333">zona individual</text>
+<line x1="600" y1="160" x2="285" y2="225" stroke="#777" stroke-width="3"/>
+<line x1="600" y1="160" x2="600" y2="225" stroke="#777" stroke-width="3"/>
+<line x1="600" y1="160" x2="915" y2="225" stroke="#777" stroke-width="3"/>
+<line x1="600" y1="315" x2="600" y2="385" stroke="#777" stroke-width="3"/>
+<line x1="600" y1="490" x2="600" y2="550" stroke="#777" stroke-width="3"/>
+</svg>

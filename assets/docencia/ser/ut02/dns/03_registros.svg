@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="570">
+<rect width="1200" height="570" fill="white"/>
+<text x="600" y="45" text-anchor="middle" font-family="Arial" font-size="28" font-weight="700" fill="#1F6B4F">Registros que vamos a dominar</text>
+<rect x="70" y="115" rx="12" width="300" height="120" fill="#EAF3EE" stroke="#1F6B4F" stroke-width="3"/>
+<text x="220.0" y="145" text-anchor="middle" font-family="Arial" font-size="22" font-weight="700" fill="#202020">SOA + NS</text>
+<text x="220.0" y="175" text-anchor="middle" font-family="Arial" font-size="16" fill="#333333">autoridad de la zona</text>
+<rect x="450" y="115" rx="12" width="300" height="120" fill="#EAF1FB" stroke="#2F5597" stroke-width="3"/>
+<text x="600.0" y="145" text-anchor="middle" font-family="Arial" font-size="22" font-weight="700" fill="#202020">A / AAAA</text>
+<text x="600.0" y="175" text-anchor="middle" font-family="Arial" font-size="16" fill="#333333">nombre → dirección</text>
+<rect x="830" y="115" rx="12" width="300" height="120" fill="#F4F6F5" stroke="#666666" stroke-width="3"/>
+<text x="980.0" y="145" text-anchor="middle" font-family="Arial" font-size="22" font-weight="700" fill="#202020">PTR</text>
+<text x="980.0" y="175" text-anchor="middle" font-family="Arial" font-size="16" fill="#333333">dirección → nombre</text>
+<rect x="250" y="340" rx="12" width="300" height="120" fill="#FFF2CC" stroke="#C59A00" stroke-width="3"/>
+<text x="400.0" y="370" text-anchor="middle" font-family="Arial" font-size="22" font-weight="700" fill="#202020">CNAME</text>
+<text x="400.0" y="400" text-anchor="middle" font-family="Arial" font-size="16" fill="#333333">alias → nombre</text>
+<rect x="650" y="340" rx="12" width="300" height="120" fill="#FDE9E7" stroke="#A61B1B" stroke-width="3"/>
+<text x="800.0" y="370" text-anchor="middle" font-family="Arial" font-size="22" font-weight="700" fill="#202020">MX</text>
+<text x="800.0" y="400" text-anchor="middle" font-family="Arial" font-size="16" fill="#333333">correo → nombre servidor</text>
+<text x="600" y="525" text-anchor="middle" font-family="Arial" font-size="17" fill="#666666">DNS publica información; no demuestra que el servicio web, correo o fichero esté realmente escuchando.</text>
+</svg>

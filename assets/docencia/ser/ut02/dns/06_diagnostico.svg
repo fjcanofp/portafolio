@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="720">
+<rect width="1200" height="720" fill="white"/>
+<text x="600" y="45" text-anchor="middle" font-family="Arial" font-size="28" font-weight="700" fill="#1F6B4F">Diagnóstico DNS por capas</text><rect x="165" y="95" rx="12" width="870" height="72" fill="#F4F6F5" stroke="#1F6B4F" stroke-width="3"/>
+<text x="600.0" y="125" text-anchor="middle" font-family="Arial" font-size="22" font-weight="700" fill="#202020">1 · Red</text>
+<text x="600.0" y="155" text-anchor="middle" font-family="Arial" font-size="16" fill="#333333">¿cliente y DNS se alcanzan por IP?</text><line x1="600" y1="167" x2="600" y2="190" stroke="#777" stroke-width="3"/><rect x="165" y="190" rx="12" width="870" height="72" fill="#F4F6F5" stroke="#1F6B4F" stroke-width="3"/>
+<text x="600.0" y="220" text-anchor="middle" font-family="Arial" font-size="22" font-weight="700" fill="#202020">2 · Cliente</text>
+<text x="600.0" y="250" text-anchor="middle" font-family="Arial" font-size="16" fill="#333333">¿qué servidor DNS está usando realmente?</text><line x1="600" y1="262" x2="600" y2="285" stroke="#777" stroke-width="3"/><rect x="165" y="285" rx="12" width="870" height="72" fill="#F4F6F5" stroke="#1F6B4F" stroke-width="3"/>
+<text x="600.0" y="315" text-anchor="middle" font-family="Arial" font-size="22" font-weight="700" fill="#202020">3 · Servicio</text>
+<text x="600.0" y="345" text-anchor="middle" font-family="Arial" font-size="16" fill="#333333">¿named / DNS Server está activo y escucha en 53?</text><line x1="600" y1="357" x2="600" y2="380" stroke="#777" stroke-width="3"/><rect x="165" y="380" rx="12" width="870" height="72" fill="#F4F6F5" stroke="#1F6B4F" stroke-width="3"/>
+<text x="600.0" y="410" text-anchor="middle" font-family="Arial" font-size="22" font-weight="700" fill="#202020">4 · Configuración</text>
+<text x="600.0" y="440" text-anchor="middle" font-family="Arial" font-size="16" fill="#333333">¿la configuración y las zonas cargan sin error?</text><line x1="600" y1="452" x2="600" y2="475" stroke="#777" stroke-width="3"/><rect x="165" y="475" rx="12" width="870" height="72" fill="#F4F6F5" stroke="#1F6B4F" stroke-width="3"/>
+<text x="600.0" y="505" text-anchor="middle" font-family="Arial" font-size="22" font-weight="700" fill="#202020">5 · Datos</text>
+<text x="600.0" y="535" text-anchor="middle" font-family="Arial" font-size="16" fill="#333333">¿A / CNAME / MX / PTR responden y hay autoridad?</text><line x1="600" y1="547" x2="600" y2="570" stroke="#777" stroke-width="3"/><rect x="165" y="570" rx="12" width="870" height="72" fill="#F4F6F5" stroke="#1F6B4F" stroke-width="3"/>
+<text x="600.0" y="600" text-anchor="middle" font-family="Arial" font-size="22" font-weight="700" fill="#202020">6 · Exterior / réplica</text>
+<text x="600.0" y="630" text-anchor="middle" font-family="Arial" font-size="16" fill="#333333">¿funciona caché/reenviador y la transferencia secundaria?</text></svg>
