@@ -58,7 +58,7 @@ tags:
   - ra1
 
 permalink: /docencia/smr/ser/ut01-windows/
-published: false
+published: true
 
 toc:
   - title: Objetivo y RA1

@@ -39,7 +39,7 @@ tags:
   - relay
   - diagnostico
 permalink: /docencia/asir/sri/ut01-windows/
-published: true
+published: false
 toc:
   - title: Por qué Windows y Kea
     id: comparacion
