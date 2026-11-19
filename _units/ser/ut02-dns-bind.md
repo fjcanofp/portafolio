@@ -198,18 +198,17 @@ sin perder el control técnico.
 
 ## 3. De `/etc/hosts` a DNS {#fundamentos}
 
-Un fichero `hosts` permite resolución local:
+Un fichero `hosts` permite resolución local:  192.168.157.80  www.p07-l03.ser.test
 
-```text
-192.168.157.80  www.p07-l03.ser.test
-```
 
 pero:
 
-1. Cada equipo tiene su copia.
-2. Hay que mantenerlo manualmente.
-3. No existe una base centralizada.
-4. No escala.
+| N.º | Limitación |
+| ---: | --- |
+| 1 | Cada equipo tiene su copia. |
+| 2 | Hay que mantenerlo manualmente. |
+| 3 | No existe una base centralizada. |
+| 4 | No escala. |
 
 DNS centraliza esta información.
 
@@ -240,11 +239,8 @@ Conceptos:
 - **FQDN**: nombre completo;
 - **zona**: parte del espacio de nombres administrada por un servidor.
 
-Ejemplo:
+Ejemplo: www.p07-l03.ser.test.
 
-```text
-www.p07-l03.ser.test.
-```
 
 El punto final representa el nombre absoluto.
 
@@ -258,12 +254,6 @@ Un **dominio** describe una parte del árbol de nombres.
 
 Una **zona** es la información que un servidor administra de forma autoritativa.
 
-Para SMR basta con recordar:
-
-```text
-dominio → espacio de nombres
-zona    → datos que administra el DNS
-```
 
 ---
 
@@ -275,9 +265,8 @@ Nuestro DNS puede responder de tres formas principales:
 
 ### Datos de su propia zona
 
-```text
 www.p07-l03.ser.test
-```
+
 
 Si administra esa zona, responde como **autoritativo**.
 
@@ -301,17 +290,15 @@ El **TTL** indica cuánto tiempo puede mantenerse una respuesta en caché.
 
 TTL pequeño:
 
-```text
-cambios se propagan antes
-más consultas
-```
+- cambios se propagan antes
+- más consultas
+
+
 
 TTL grande:
 
-```text
-menos consultas
-cambios tardan más en desaparecer de caché
-```
+- cambios tardan más en desaparecer de caché
+- menos consultas
 
 ---
 
@@ -333,11 +320,8 @@ cambios tardan más en desaparecer de caché
 
 DNS publica información.
 
-Un registro:
+Un registro: www → 192.168.157.80
 
-```text
-www → 192.168.157.80
-```
 
 no demuestra que exista un servidor web en esa IP.
 
@@ -359,29 +343,11 @@ nombre → IP
 IP → nombre
 ```
 
-Para:
+Para: 192.168.157.0/24
 
-```text
-192.168.157.0/24
-```
+la zona inversa es: 157.168.192.in-addr.arpa
 
-la zona inversa es:
-
-```text
-157.168.192.in-addr.arpa
-```
-
-No confundas:
-
-```text
-registro A
-```
-
-con:
-
-```text
-registro PTR
-```
+***No confundas un registro A con registro PTR***
 
 Son datos distintos en zonas distintas.
 
@@ -393,16 +359,11 @@ Son datos distintos en zonas distintas.
 
 Trabajaremos inicialmente con:
 
-```text
-ser-dns01  → Debian 13 + BIND9
-ser-cli01  → Debian / Windows cliente
-```
+- ser-dns01  → Debian 13 + BIND9
+- ser-cli01  → Debian / Windows cliente
 
-Y después incorporaremos:
+Y después incorporaremos: ser-dns02  → Windows Server 2022/2025
 
-```text
-ser-dns02  → Windows Server 2022/2025
-```
 
 El escenario final será:
 
@@ -414,11 +375,9 @@ Windows secondary
 clientes
 ```
 
-> En SMR no necesitamos Active Directory para aprender DNS. En Windows utilizaremos zonas estándar basadas en fichero.
-
 ---
 
-## 9. Direccionamiento docente
+## 9. Direccionamiento tipo
 
 Ejemplo de aprendizaje:
 
@@ -429,8 +388,6 @@ Windows sec.    192.168.160.20
 Cliente         192.168.160.100
 Dominio         demo.ser.test
 ```
-
-Las prácticas evaluables tendrán otros valores.
 
 ---
 
@@ -479,11 +436,11 @@ cat /etc/bind/named.conf
 
 Debian separa:
 
-```text
-opciones globales
-zonas locales
-zonas por defecto
-```
+
+- opciones globales
+- zonas locales
+- zonas por defecto
+
 
 ---
 
@@ -529,7 +486,7 @@ options {
 };
 ```
 
-No copies esas IP si tu red es distinta.
+**VERIFICA estas IPs con las tuyas.**
 
 ### Validar
 
@@ -572,10 +529,10 @@ zone "demo.ser.test" {
 
 En BIND 9.20 utilizaremos los términos:
 
-```text
-primary
-secondary
-```
+
+- primary
+- secondary
+
 
 ---
 
@@ -616,29 +573,15 @@ intranet    IN  CNAME   www.demo.ser.test.
 
 El SOA identifica información básica de la zona.
 
-Nos interesa especialmente:
+Nos interesa especialmente: *serial*
 
-```text
-serial
-```
 
-Usaremos:
+Usaremos: **AAAAMMDDNN**
 
-```text
-AAAAMMDDNN
-```
+Ejemplo: *2026111901*
 
-Ejemplo:
 
-```text
-2026111901
-```
-
-Si vuelves a modificar la zona ese mismo día:
-
-```text
-2026111902
-```
+Si vuelves a modificar la zona ese mismo día: *2026111902*
 
 Cuando exista un secundario, aumentar el serial será fundamental.
 
@@ -652,11 +595,7 @@ Observa:
 intranet IN CNAME www.demo.ser.test.
 ```
 
-El punto final indica:
-
-```text
-este nombre ya es absoluto
-```
+El punto final indica que el *nombre ya es absoluto*.
 
 Sin él, BIND puede completar el nombre añadiendo el origen de la zona.
 
@@ -670,11 +609,7 @@ Es uno de los errores más comunes de aprendizaje.
 sudo named-checkzone demo.ser.test /etc/bind/db.demo.ser.test
 ```
 
-Resultado esperado:
-
-```text
-OK
-```
+Resultado esperado: **OK**
 
 Después:
 
@@ -689,11 +624,7 @@ sudo rndc reload
 
 ## 18. Declararla
 
-Para:
-
-```text
-192.168.160.0/24
-```
+Para: *192.168.160.0/24*
 
 declaramos:
 
@@ -749,9 +680,7 @@ IPv4
 → 192.168.160.10
 ```
 
-Debian:
-
-> No edites `/etc/resolv.conf` a ciegas.
+En Debian, **no edites** `/etc/resolv.conf` a ciegas.
 
 Comprueba primero:
 
@@ -805,17 +734,9 @@ Prueba:
 dig @192.168.160.10 demo.ser.test SOA +norecurse
 ```
 
-En una respuesta autoritativa esperamos la bandera:
+En una respuesta autoritativa esperamos la bandera: **aa**
 
-```text
-aa
-```
-
-`aa` significa:
-
-```text
-Authoritative Answer
-```
+`aa` significa: `Authoritative Answer`
 
 ---
 
@@ -824,19 +745,13 @@ Authoritative Answer
 Este caso es muy habitual:
 
 ```text
-dig @192.168.160.10 www.demo.ser.test
-→ funciona
+dig @192.168.160.10 www.demo.ser.test → funciona
 
-dig www.demo.ser.test
-→ falla
+dig www.demo.ser.test → falla
 ```
 
-Conclusión probable:
+Conclusión probable: `BIND funciona pero el cliente está usando otro DNS`
 
-```text
-BIND funciona
-pero el cliente está usando otro DNS
-```
 
 No modifiques la zona antes de comprobar:
 
@@ -892,10 +807,9 @@ journalctl -u named.service -n 50 --no-pager
 
 DNS utiliza:
 
-```text
-UDP 53
-TCP 53
-```
+- **UDP 53**
+- **TCP 53**
+
 
 No memorices:
 
@@ -914,11 +828,9 @@ Las transferencias de zona utilizan transporte TCP.
 En nuestro escenario final:
 
 ```text
-Debian BIND9
-→ primary
+Debian BIND9 → primary
 
-Windows Server
-→ secondary
+Windows Server → secondary
 ```
 
 El secundario obtiene una copia de la zona.
@@ -994,21 +906,13 @@ Orden recomendado:
 
 ### NXDOMAIN
 
-Significa, simplificando:
-
-```text
-el nombre solicitado no existe
-```
+Significa, simplificando: *el nombre solicitado no existe*
 
 ### SERVFAIL
 
-Significa:
+Significa: *el servidor no ha podido completar correctamente la consulta*
 
-```text
-el servidor no ha podido completar correctamente la consulta
-```
-
-No son lo mismo.
+**No** son los mismos fallos.
 
 ---
 
@@ -1053,86 +957,33 @@ serial
 
 En la práctica final:
 
-```text
-P = número de puesto
-L = inicial del primer apellido
-```
+
+- P = número de puesto
+- L = inicial del primer apellido
+
 
 Se utilizará:
 
-```text
-Red:
-192.168.(150+P).0/24
 
-Dominio:
-pXX-lYY.ser.test
+- Red: 192.168.(150+P).0/24
 
-Debian primary:
-host (10+L)
+- Dominio: pXX-lYY.ser.test
 
-Windows secondary:
-host (50+L)
+- Debian primary: host (10+L)
 
-Cliente:
-host (100+P)
-```
+- Windows secondary: host (50+L)
 
-Ejemplo P07-L03:
+- Cliente: host (100+P)
 
-```text
-Red              192.168.157.0/24
-Dominio          p07-l03.ser.test
-Debian primary   192.168.157.13
-Windows sec.     192.168.157.53
-Cliente          192.168.157.107
-```
+Ejemplo :
 
-El alumno deberá decidir las IP de:
-
-```text
-www
-files
-mail
-```
-
-sin producir conflictos.
-
----
-
-# PARTE X · PRÁCTICAS {#practicas}
-
-## 34. Entrenamiento
-
-Antes de la práctica final trabajaremos:
-
-```text
-P01 · caché y reenviadores
-P02 · zona directa y registros
-P03 · zona inversa y consultas
-P04 · DNS en Windows Server
-P05 · transferencia Debian → Windows
-```
-
-Son prácticas de aprendizaje.
-
----
-
-## 35. Práctica final
-
-La práctica final será un único caso profesional:
-
-```text
-Debian primary
-+ caché/reenviadores
-+ directa/inversa
-+ registros
-+ cliente
-+ Windows secondary
-+ transferencia
-+ incidencia
-```
-
-No se facilitarán los clics ni la configuración exacta.
+| Servicio | Dirección | 
+|---|---|
+|Red|192.168.157.0/24|
+|Dominio| p03-l13.ser.test|
+|Debian primary |192.168.157.13|
+|Windows sec. |192.168.157.53|
+|Cliente |192.168.157.107|
 
 ---
 
@@ -1196,18 +1047,17 @@ nslookup nombre IP_DNS
 
 Antes de pasar a otro servicio deberías poder responder:
 
-```text
-¿qué problema resuelve DNS?
-¿qué diferencia hay entre dominio y zona?
-¿qué es un FQDN?
-¿qué significa autoritativo?
-¿qué hace una caché?
-¿qué es TTL?
-¿qué diferencia hay entre A y PTR?
-¿para qué sirven CNAME y MX?
-¿qué hace el serial?
-¿qué diferencia hay entre primary y secondary?
-¿cómo separo un fallo del servidor de un fallo del cliente?
-```
+- ¿qué problema resuelve DNS?
+- ¿qué diferencia hay entre dominio y zona?
+- ¿qué es un FQDN?
+- ¿qué significa autoritativo?
+- ¿qué hace una caché?
+- ¿qué es TTL?
+- ¿qué diferencia hay entre A y PTR?
+- ¿para qué sirven CNAME y MX?
+- ¿qué hace el serial?
+- ¿qué diferencia hay entre primary y secondary?
+- ¿cómo separo un fallo del servidor de un fallo del cliente?
+
 
 ➡️ **[Continuar: DNS en Windows Server 2022/2025]({{ '/docencia/smr/ser/ut02-windows/' | relative_url }})**
