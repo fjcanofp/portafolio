@@ -332,20 +332,16 @@ no demuestra que exista un servidor web en esa IP.
 ![Directa e inversa]({{ '/assets/docencia/ser/ut02/dns/04_directa_inversa.svg' | relative_url }})
 
 ### Directa
+**nombre → IP**
 
-```text
-nombre → IP
-```
 
 ### Inversa
 
-```text
-IP → nombre
-```
+**IP → nombre**
 
-Para: 192.168.157.0/24
+Para: *192.168.157.0/24*
 
-la zona inversa es: 157.168.192.in-addr.arpa
+la zona inversa es: *157.168.192.in-addr.arpa*
 
 ***No confundas un registro A con registro PTR***
 
