@@ -206,14 +206,12 @@ Un fichero `hosts` permite resolución local:
 
 pero:
 
-```text
-cada equipo tiene su copia
-hay que mantenerlo manualmente
-no existe una base centralizada
-no escala
-```
+1. Cada equipo tiene su copia.
+2. Hay que mantenerlo manualmente.
+3. No existe una base centralizada.
+4. No escala.
 
-DNS centraliza esa información.
+DNS centraliza esta información.
 
 ### Mecanismos que reconoceremos
 
