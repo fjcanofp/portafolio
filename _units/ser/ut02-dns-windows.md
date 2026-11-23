@@ -53,7 +53,7 @@ tags:
   - ra2
 
 permalink: /docencia/smr/ser/ut02-windows/
-published: true
+published: false
 
 toc:
   - title: Objetivo

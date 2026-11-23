@@ -169,13 +169,13 @@ En esta UT trabajaremos el **RA2 completo**.
 
 Una pequeña organización tiene:
 
-```text
-servidor web
-servidor de ficheros
-correo
-impresoras
-varios clientes
-```
+
+- servidor web
+- servidor de ficheros
+- correo
+- impresoras
+- varios clientes
+
 
 Trabajar únicamente con IP provoca problemas:
 
@@ -186,13 +186,10 @@ Trabajar únicamente con IP provoca problemas:
 
 Queremos usar:
 
-```text
-www.empresa
-files.empresa
-mail.empresa
-```
 
-sin perder el control técnico.
+- www.empresa
+- files.empresa
+- mail.empresa
 
 ---
 
@@ -214,13 +211,13 @@ DNS centraliza esta información.
 
 ### Mecanismos que reconoceremos
 
-```text
-hosts local
-DNS configurado en el sistema
-caché
-servidor autoritativo
-reenviador / resolución recursiva
-```
+
+- hosts local
+- DNS configurado en el sistema
+- caché
+- servidor autoritativo
+- reenviador / resolución recursiva
+
 
 ---
 
@@ -276,13 +273,8 @@ Si resolvió antes un nombre externo, puede conservar temporalmente la respuesta
 
 ### Consultas que no conoce
 
-Puede:
+Puede: *resolverlas o reenviarlas a otro DNS*
 
-```text
-resolverlas
-o
-reenviarlas a otro DNS
-```
 
 ### TTL
 
@@ -320,10 +312,7 @@ TTL grande:
 
 DNS publica información.
 
-Un registro: www → 192.168.157.80
-
-
-no demuestra que exista un servidor web en esa IP.
+Un registro: www → 192.168.157.80  no demuestra que exista un servidor web en esa IP.
 
 ---
 
@@ -823,11 +812,10 @@ Las transferencias de zona utilizan transporte TCP.
 
 En nuestro escenario final:
 
-```text
-Debian BIND9 → primary
 
-Windows Server → secondary
-```
+- Debian BIND9 → primary
+
+- Windows Server → secondary
 
 El secundario obtiene una copia de la zona.
 
@@ -1055,5 +1043,6 @@ Antes de pasar a otro servicio deberías poder responder:
 - ¿qué diferencia hay entre primary y secondary?
 - ¿cómo separo un fallo del servidor de un fallo del cliente?
 
-
+{% comment %}<!--
 ➡️ **[Continuar: DNS en Windows Server 2022/2025]({{ '/docencia/smr/ser/ut02-windows/' | relative_url }})**
+-->{% endcomment %}
