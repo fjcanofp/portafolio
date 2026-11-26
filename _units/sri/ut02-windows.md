@@ -37,7 +37,6 @@ order: 2.1
 hours: 10
 tags:
 - dns
-- windows-server-2025
 - powershell
 - zonas
 - ptr
